@@ -5,7 +5,7 @@ The course consists of two main projects, where you will find more information r
 
 # Project 1
 
-## Simulation of trapped bosons using variational Monte Carlo
+## Variational Monte Carlo on Bosons
 
 
 # Project 2
