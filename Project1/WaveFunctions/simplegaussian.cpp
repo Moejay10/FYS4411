@@ -4,6 +4,8 @@
 #include "wavefunction.h"
 #include "../system.h"
 #include "../particle.h"
+#include <iostream>
+using namespace std;
 
 SimpleGaussian::SimpleGaussian(System* system, double alpha) :
         WaveFunction(system) {
@@ -21,7 +23,10 @@ double SimpleGaussian::evaluate(std::vector<class Particle*> particles) {
      * For the actual expression, use exp(-alpha * r^2), with alpha being the
      * (only) variational parameter.
      */
-    return 0;
+     double r = m_system->getParticles()[0]->getPosition()[0];
+     double alpha = m_parameters[0];
+     double psi_T = exp(-alpha*r*r);
+    return psi_T;
 }
 
 double SimpleGaussian::computeDoubleDerivative(std::vector<class Particle*> particles) {
@@ -33,5 +38,10 @@ double SimpleGaussian::computeDoubleDerivative(std::vector<class Particle*> part
      * This quantity is needed to compute the (local) energy (consider the
      * Schrödinger equation to see how the two are related).
      */
-    return 0;
+     double r = m_system->getParticles()[0]->getPosition()[0];
+     double alpha = m_parameters[0];
+     double factor = -2*alpha + 4*alpha*alpha*r*r;
+     double psi_T = evaluate(particles);
+     double nabla2 = factor;
+    return nabla2;
 }

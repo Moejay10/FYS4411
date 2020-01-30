@@ -24,9 +24,9 @@ double HarmonicOscillator::computeLocalEnergy(std::vector<Particle*> particles) 
      * getWaveFunction method in the m_system object in the super-class, i.e.
      * m_system->getWaveFunction()...
      */
-
-    double potentialEnergy = 0;
-    double kineticEnergy   = 0;
+    double r = m_system->getParticles()[0]->getPosition()[0];
+    double derivative = m_system->getWaveFunction()->computeDoubleDerivative(particles);
+    double potentialEnergy = 0.5*r*r;
+    double kineticEnergy   = -0.5*derivative;
     return kineticEnergy + potentialEnergy;
 }
-
