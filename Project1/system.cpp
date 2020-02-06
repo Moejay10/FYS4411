@@ -1,5 +1,6 @@
 #include "system.h"
 #include <cassert>
+#include <random>
 #include "sampler.h"
 #include "particle.h"
 #include "WaveFunctions/wavefunction.h"
@@ -13,8 +14,29 @@ bool System::metropolisStep() {
      * accepted by the Metropolis test (compare the wave function evaluated
      * at this new position with the one at the old position).
      */
+     // Initialize the seed and call the Mersienne algo
+     std::random_device rd;
+     std::mt19937_64 gen(rd());
+     // Set up the uniform distribution for x \in [[0, 1]
+     std::uniform_real_distribution<double> RandomNumberGenerator(0.0,1.0);
 
+
+     double r = m_particles[0]->getPosition()[0];
+     double psi1 = getWaveFunction()->evaluate(m_particles);
+     double a = RandomNumberGenerator(gen);
+     m_particles[0]->adjustPosition(a, 0);
+     double psi2 = getWaveFunction()->evaluate(m_particles);
+
+     // Metropolis test
+	if ( RandomNumberGenerator(gen) <= psi2*psi2/(psi1*psi1) ){
+    return true;
+
+  }
+  else{
+    m_particles[0]->adjustPosition(-a, 0);
     return false;
+  }
+
 }
 
 void System::runMetropolisSteps(int numberOfMetropolisSteps) {
@@ -67,5 +89,3 @@ void System::setWaveFunction(WaveFunction* waveFunction) {
 void System::setInitialState(InitialState* initialState) {
     m_initialState = initialState;
 }
-
-

@@ -1,10 +1,12 @@
 #include "randomuniform.h"
 #include <iostream>
 #include <cassert>
+#include <random>
 #include "Math/random.h"
 #include "../particle.h"
 #include "../system.h"
 
+using namespace  std;
 using std::cout;
 using std::endl;
 
@@ -27,6 +29,13 @@ RandomUniform::RandomUniform(System*    system,
 }
 
 void RandomUniform::setupInitialState() {
+
+  // Initialize the seed and call the Mersienne algo
+  std::random_device rd;
+  std::mt19937_64 gen(rd());
+  // Set up the uniform distribution for x \in [[0, 1]
+  std::uniform_real_distribution<double> RandomNumberGenerator(0.0,1.0);
+
     for (int i=0; i < m_numberOfParticles; i++) {
         std::vector<double> position = std::vector<double>();
 
@@ -42,7 +51,9 @@ void RandomUniform::setupInitialState() {
              * according to their index in the particles list (this is
              * obviously NOT a good idea).
              */
-            position.push_back(i);
+
+            position.push_back(RandomNumberGenerator(gen)*(double)i);
+            //position.push_back(i);
         }
         m_particles.push_back(new Particle());
         m_particles.at(i)->setNumberOfDimensions(m_numberOfDimensions);

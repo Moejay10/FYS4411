@@ -26,6 +26,7 @@ void Sampler::sample(bool acceptedStep) {
         m_cumulativeEnergy = 0;
     }
 
+    if (acceptedStep == true){
     /* Here you should sample all the interesting things you want to measure.
      * Note that there are (way) more than the single one here currently.
      */
@@ -33,6 +34,7 @@ void Sampler::sample(bool acceptedStep) {
                          computeLocalEnergy(m_system->getParticles());
     m_cumulativeEnergy  += localEnergy;
     m_stepNumber++;
+  }
 }
 
 void Sampler::printOutputToTerminal() {
