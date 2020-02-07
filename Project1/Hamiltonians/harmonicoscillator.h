@@ -10,4 +10,3 @@ public:
 private:
     double m_omega = 0;
 };
-

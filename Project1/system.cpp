@@ -7,6 +7,9 @@
 #include "Hamiltonians/hamiltonian.h"
 #include "InitialStates/initialstate.h"
 #include "Math/random.h"
+#include <armadillo>
+
+using namespace arma;
 
 bool System::metropolisStep() {
     /* Perform the actual Metropolis step: Choose a particle at random and
@@ -20,20 +23,31 @@ bool System::metropolisStep() {
      // Set up the uniform distribution for x \in [[0, 1]
      std::uniform_real_distribution<double> RandomNumberGenerator(0.0,1.0);
 
+     double a = RandomNumberGenerator(gen); // Random number
 
-     double r = m_particles[0]->getPosition()[0];
-     double psi1 = getWaveFunction()->evaluate(m_particles);
-     double a = RandomNumberGenerator(gen);
-     m_particles[0]->adjustPosition(a, 0);
-     double psi2 = getWaveFunction()->evaluate(m_particles);
+     int N = getNumberOfParticles();
+     int Dim = getNumberOfDimensions();
+
+     double r, wfold, wfnew;
+
+     // Initial Position
+     wfold = getWaveFunction()->evaluate(m_particles);
+
+     // Trial position moving one particle at the time
+     for (int i = 0; i < N; i++){
+       m_particles[i]->adjustPosition(a, 0);
+     }
+     wfnew = getWaveFunction()->evaluate(m_particles);
 
      // Metropolis test
-	if ( RandomNumberGenerator(gen) <= psi2*psi2/(psi1*psi1) ){
+	if ( RandomNumberGenerator(gen) <= wfnew*wfnew/(wfold*wfold) ){
     return true;
-
   }
+
   else{
-    m_particles[0]->adjustPosition(-a, 0);
+    for (int i = 0; i < N; i++){
+      m_particles[i]->adjustPosition(-a, 0);
+    }
     return false;
   }
 
