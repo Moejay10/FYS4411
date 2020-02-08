@@ -23,6 +23,7 @@ double SimpleGaussian::evaluate(std::vector<class Particle*> particles) {
      * For the actual expression, use exp(-alpha * r^2), with alpha being the
      * (only) variational parameter.
      */
+     int Dim = m_system->getNumberOfDimensions();
      int N = m_system->getNumberOfParticles(); // Number of Particles
      double r;
      double alpha = m_parameters[0];

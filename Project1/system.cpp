@@ -11,7 +11,8 @@
 
 using namespace arma;
 
-bool System::metropolisStep() {
+
+bool System::metropolisStep(int i) {
     /* Perform the actual Metropolis step: Choose a particle at random and
      * change it's position by a random amount, and check if the step is
      * accepted by the Metropolis test (compare the wave function evaluated
@@ -25,7 +26,6 @@ bool System::metropolisStep() {
 
      double a = RandomNumberGenerator(gen); // Random number
 
-     int N = getNumberOfParticles();
      int Dim = getNumberOfDimensions();
 
      double r, wfold, wfnew;
@@ -33,21 +33,21 @@ bool System::metropolisStep() {
      // Initial Position
      wfold = getWaveFunction()->evaluate(m_particles);
 
+
      // Trial position moving one particle at the time
-     for (int i = 0; i < N; i++){
-       m_particles[i]->adjustPosition(a, 0);
-     }
+     m_particles[i]->adjustPosition(a, 0);
      wfnew = getWaveFunction()->evaluate(m_particles);
 
      // Metropolis test
-	if ( RandomNumberGenerator(gen) <= wfnew*wfnew/(wfold*wfold) ){
+	if ( RandomNumberGenerator(gen) < wfnew*wfnew/wfold/wfold ){
+
+
     return true;
   }
 
   else{
-    for (int i = 0; i < N; i++){
-      m_particles[i]->adjustPosition(-a, 0);
-    }
+
+    m_particles[i]->adjustPosition(-a, 0);
     return false;
   }
 
@@ -59,8 +59,14 @@ void System::runMetropolisSteps(int numberOfMetropolisSteps) {
     m_numberOfMetropolisSteps   = numberOfMetropolisSteps;
     m_sampler->setNumberOfMetropolisSteps(numberOfMetropolisSteps);
 
+    int N = getNumberOfParticles();
+    bool acceptedStep;
     for (int i=0; i < numberOfMetropolisSteps; i++) {
-        bool acceptedStep = metropolisStep();
+
+        // Trial position moving one particle at the time
+        for (int j = 0; j < N; j++){
+
+        acceptedStep = metropolisStep(j);
 
         /* Here you should sample the energy (and maybe other things using
          * the m_sampler instance of the Sampler class. Make sure, though,
@@ -68,7 +74,10 @@ void System::runMetropolisSteps(int numberOfMetropolisSteps) {
          * for a while. You may handle this using the fraction of steps which
          * are equilibration steps; m_equilibrationFraction.
          */
-        m_sampler->sample(acceptedStep);
+
+      }
+      //std::cout << acceptedStep << endl; // Prints only zeros?
+      m_sampler->sample(acceptedStep);
     }
     m_sampler->computeAverages();
     m_sampler->printOutputToTerminal();

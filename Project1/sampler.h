@@ -14,5 +14,8 @@ private:
     int     m_stepNumber = 0;
     double  m_energy = 0;
     double  m_cumulativeEnergy = 0;
+    double  m_cumulativeEnergy2 = 0;
+    double  m_variance = 0;
+    double  m_STD = 0;
     class System* m_system = nullptr;
 };
