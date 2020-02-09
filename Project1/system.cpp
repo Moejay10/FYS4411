@@ -26,7 +26,7 @@ bool System::metropolisStep(int i) {
 
      double a = RandomNumberGenerator(gen); // Random number
 
-     int Dim = getNumberOfDimensions();
+     int Dim = getNumberOfDimensions(); // The Dimensions
 
      double r, wfold, wfnew;
 
@@ -34,20 +34,24 @@ bool System::metropolisStep(int i) {
      wfold = getWaveFunction()->evaluate(m_particles);
 
 
-     // Trial position moving one particle at the time
-     m_particles[i]->adjustPosition(a, 0);
+     // Trial position moving one particle at the time in all dimensions
+     for (int k = 0; k < Dim; k++){
+     m_particles[i]->adjustPosition(a, k);
+      }
      wfnew = getWaveFunction()->evaluate(m_particles);
 
      // Metropolis test
 	if ( RandomNumberGenerator(gen) < wfnew*wfnew/wfold/wfold ){
-
 
     return true;
   }
 
   else{
 
-    m_particles[i]->adjustPosition(-a, 0);
+    for (int k = 0; k < Dim; k++){
+    m_particles[i]->adjustPosition(-a, k);
+     }
+     
     return false;
   }
 

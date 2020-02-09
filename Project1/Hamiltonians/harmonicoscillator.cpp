@@ -26,14 +26,20 @@ double HarmonicOscillator::computeLocalEnergy(std::vector<Particle*> particles) 
      */
     double alpha = m_system->getWaveFunction()->getParameters()[0];
     int N = m_system->getNumberOfParticles(); // Number of Particles
-    double r;
+    int Dim = m_system->getNumberOfDimensions(); // The Dimension
+    double r, temp;
     double E_L;
     double derivative = m_system->getWaveFunction()->computeDoubleDerivative(particles);
 
+
     for (int i = 0; i < N; i++){
-      r = m_system->getParticles()[i]->getPosition()[i];
-      E_L += r*r;
+      for (int j = 0; j < Dim; j++){
+        temp = m_system->getParticles()[i]->getPosition()[j];
+        r += temp*temp; // x^2 + y^2 + z^2
+      }
+     //r = sqrt(r); // sqrt(x^2 + y^2 + z^2)
+     E_L += r;
     }
-    E_L = N*alpha + (0.5 - 2*alpha*alpha)*E_L;
+    E_L = Dim*N*alpha + (0.5 - 2*alpha*alpha)*E_L;
     return E_L;
 }

@@ -25,13 +25,17 @@ double SimpleGaussian::evaluate(std::vector<class Particle*> particles) {
      */
      int Dim = m_system->getNumberOfDimensions();
      int N = m_system->getNumberOfParticles(); // Number of Particles
-     double r;
+     double temp, r;
      double alpha = m_parameters[0];
      double psi_T = 0;
 
      for (int i = 0; i < N; i++){
-       r = m_system->getParticles()[i]->getPosition()[i];
-       psi_T *= exp(-alpha*r*r);
+       for (int j = 0; j < Dim; j++){
+       temp = m_system->getParticles()[i]->getPosition()[j];
+       r += temp*temp; // x^2 + y^2 + z^2
+      }
+      r = sqrt(r); // sqrt(x^2 + y^2 + z^2)
+      psi_T *= exp(-alpha*r*r);
      }
 
     return psi_T;
@@ -46,15 +50,20 @@ double SimpleGaussian::computeDoubleDerivative(std::vector<class Particle*> part
      * This quantity is needed to compute the (local) energy (consider the
      * Schrödinger equation to see how the two are related).
      */
+     int Dim = m_system->getNumberOfDimensions(); // The Dimension
      int N = m_system->getNumberOfParticles(); // Number of Particles
-     double r;
+     double r, temp;
      double alpha = m_parameters[0];
      double psi_T = evaluate(particles);
      double factor = 0;
 
      for (int i = 0; i < N; i++){
-       r = m_system->getParticles()[i]->getPosition()[i];
-       factor += (-2*alpha + 4*alpha*alpha*r*r);
+       for (int j = 0; j < Dim; j++){
+         temp = m_system->getParticles()[i]->getPosition()[j];
+         r += temp*temp; // x^2 + y^2 + z^2
+       }
+      r = sqrt(r); // sqrt(x^2 + y^2 + z^2)
+      factor += (-2*alpha + 4*alpha*alpha*r*r);
      }
 
      double nabla2 = factor;
