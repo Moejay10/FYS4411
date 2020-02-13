@@ -35,13 +35,14 @@ bool System::metropolisStep(int i) {
 
 
      // Trial position moving one particle at the time in all dimensions
-     for (int k = 0; k < Dim; k++){
-     m_particles[i]->adjustPosition(a, k);
-      }
+     for (int k = 0; k < Dim; k++)
+     {
+        m_particles[i]->adjustPosition(a, k);
+     }
      wfnew = getWaveFunction()->evaluate(m_particles);
 
      // Metropolis test
-	if ( RandomNumberGenerator(gen) < wfnew*wfnew/wfold/wfold ){
+	if ( RandomNumberGenerator(gen) <= wfnew*wfnew/(wfold*wfold) ){
 
     return true;
   }
@@ -49,9 +50,9 @@ bool System::metropolisStep(int i) {
   else{
 
     for (int k = 0; k < Dim; k++){
-    m_particles[i]->adjustPosition(-a, k);
+        m_particles[i]->adjustPosition(-a, k);
      }
-     
+
     return false;
   }
 
@@ -78,10 +79,8 @@ void System::runMetropolisSteps(int numberOfMetropolisSteps) {
          * for a while. You may handle this using the fraction of steps which
          * are equilibration steps; m_equilibrationFraction.
          */
-
+         m_sampler->sample(acceptedStep);
       }
-      //std::cout << acceptedStep << endl; // Prints only zeros?
-      m_sampler->sample(acceptedStep);
     }
     m_sampler->computeAverages();
     m_sampler->printOutputToTerminal();

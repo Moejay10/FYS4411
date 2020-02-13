@@ -27,9 +27,10 @@ double HarmonicOscillator::computeLocalEnergy(std::vector<Particle*> particles) 
     double alpha = m_system->getWaveFunction()->getParameters()[0];
     int N = m_system->getNumberOfParticles(); // Number of Particles
     int Dim = m_system->getNumberOfDimensions(); // The Dimension
-    double r, temp;
-    double E_L;
-    double derivative = m_system->getWaveFunction()->computeDoubleDerivative(particles);
+    double r, temp, sum_r, sum_r2;
+    double psi = m_system->getWaveFunction()->evaluate(particles); // psi(r)
+    double analytical_E_L;
+    double analytical_derivative = m_system->getWaveFunction()->computeDoubleDerivative(particles);
 
 
     for (int i = 0; i < N; i++){
@@ -38,9 +39,22 @@ double HarmonicOscillator::computeLocalEnergy(std::vector<Particle*> particles) 
         temp = m_system->getParticles()[i]->getPosition()[j];
         r += temp*temp; // x^2 + y^2 + z^2
       }
-     //r = sqrt(r); // sqrt(x^2 + y^2 + z^2)
-     E_L += r;
+      sum_r += r;
+      sum_r2 += r*0.5;
     }
-    E_L = Dim*N*alpha + (0.5 - 2*alpha*alpha)*E_L;
-    return E_L;
+    analytical_E_L = Dim*N*alpha + (0.5 - 2*alpha*alpha)*sum_r;
+
+    double kineticenergy = m_system->getWaveFunction()->computeDoubleNumericalDerivative(particles);
+    double potentialenergy = 0.5*sum_r;
+    double numerical_E_L = kineticenergy + potentialenergy;
+
+/*
+    cout << "Numerical Energy " << numerical_E_L << endl;
+    cout << "Analytical Energy " << analytical_E_L << endl;
+    cout << "Numerical Kinetic Energy " << kineticenergy + potentialenergy<< endl;
+    cout << "Numerical Potential Energy " << potentialenergy << endl;
+*/
+
+
+    return numerical_E_L;
 }

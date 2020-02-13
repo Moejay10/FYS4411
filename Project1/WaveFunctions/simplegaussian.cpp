@@ -27,7 +27,7 @@ double SimpleGaussian::evaluate(std::vector<class Particle*> particles) {
      int N = m_system->getNumberOfParticles(); // Number of Particles
      double temp, r;
      double alpha = m_parameters[0];
-     double psi_T = 0;
+     double psi_T = 1;
 
     for (int i = 0; i < N; i++){
        r = 0;
@@ -72,7 +72,7 @@ double SimpleGaussian::computeDoubleDerivative(std::vector<class Particle*> part
     return nabla2;
 }
 
-double SimpleGaussian::computeDoubleDerivativeNumerical(std::vector<class Particle*> particles) {
+double SimpleGaussian::computeDoubleNumericalDerivative(std::vector<class Particle*> particles) {
     /* All wave functions need to implement this function, so you need to
      * find the double derivative analytically. Note that by double derivative,
      * we actually mean the sum of the Laplacians with respect to the
@@ -83,40 +83,33 @@ double SimpleGaussian::computeDoubleDerivativeNumerical(std::vector<class Partic
      */
      int Dim = m_system->getNumberOfDimensions(); // The Dimension
      int N = m_system->getNumberOfParticles(); // Number of Particles
-     double r_plus, r_minus, temp_plus, temp_minus;
      double alpha = m_parameters[0];
-     double psi_plus, psi_minus;
+     double psi_plus, psi_minus = 0;
      double psi = evaluate(particles); // psi(r)
-     double factor = 0;
+     double kineticenergy, nabla2;
 
-     double h = 0.01;
+     double h = 1e-8;
      double hh= h*h;
 
+
      for (int i = 0; i < N; i++){
-       r_plus = 0;
-       r_minus = 0;
        for (int j = 0; j < Dim; j++){
          particles[i]->adjustPosition(h,j);
-         temp_plus = m_system->getParticles()[i]->getPosition()[j];
-         r_plus += temp_plus*temp_plus; // x^2 + y^2 + z^2
+         psi_plus = evaluate(particles);
 
          particles[i]->adjustPosition(-2*h,j);
-         temp_minus = m_system->getParticles()[i]->getPosition()[j];
-         r_minus += temp_minus*temp_minus; // x^2 + y^2 + z^2
+         psi_minus = evaluate(particles);
 
-         particles[i]->adjustPosition(+h,j);
+         particles[i]->adjustPosition(h,j);
 
+         nabla2 += (psi_plus - 2*psi + psi_minus);
        }
-       r_plus = sqrt(r_plus); // sqrt(x^2 + y^2 + z^2)
-       psi_plus *= exp(-alpha*r_plus*r_plus);
-
-       r_minus = sqrt(r_minus); // sqrt(x^2 + y^2 + z^2)
-       psi_minus *= exp(-alpha*r_minus*r_minus);
 
      }
 
-     double nabla2 = (psi_plus - 2*psi + psi_minus)/(hh);
+      kineticenergy = -0.5/(hh*psi)* nabla2;
 
 
-     return nabla2;
+
+     return kineticenergy;
 }
