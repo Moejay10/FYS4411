@@ -33,6 +33,7 @@ double HarmonicOscillator::computeLocalEnergy(std::vector<Particle*> particles) 
 
 
     for (int i = 0; i < N; i++){
+      r = 0;
       for (int j = 0; j < Dim; j++){
         temp = m_system->getParticles()[i]->getPosition()[j];
         r += temp*temp; // x^2 + y^2 + z^2
