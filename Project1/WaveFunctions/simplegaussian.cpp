@@ -96,15 +96,15 @@ double SimpleGaussian::computeDoubleDerivativeNumerical(std::vector<class Partic
        r_plus = 0;
        r_minus = 0;
        for (int j = 0; j < Dim; j++){
-         m_particles[i]->adjustPosition(h,j);
+         particles[i]->adjustPosition(h,j);
          temp_plus = m_system->getParticles()[i]->getPosition()[j];
          r_plus += temp_plus*temp_plus; // x^2 + y^2 + z^2
 
-         m_particles[i]->adjustPosition(-2*h,j);
+         particles[i]->adjustPosition(-2*h,j);
          temp_minus = m_system->getParticles()[i]->getPosition()[j];
          r_minus += temp_minus*temp_minus; // x^2 + y^2 + z^2
 
-         m_particles[i]->adjustPosition(+h,j);
+         particles[i]->adjustPosition(+h,j);
 
        }
        r_plus = sqrt(r_plus); // sqrt(x^2 + y^2 + z^2)
