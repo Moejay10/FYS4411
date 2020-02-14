@@ -25,9 +25,9 @@ double SimpleGaussian::evaluate(std::vector<class Particle*> particles) {
      */
      int Dim = m_system->getNumberOfDimensions();
      int N = m_system->getNumberOfParticles(); // Number of Particles
-     double temp, r2;
+     double temp, r2, sum_r2;
      double alpha = m_parameters[0];
-     double psi_T = 1;
+     double wavefunction;
 
     for (int i = 0; i < N; i++){
       r2 = 0;
@@ -35,11 +35,11 @@ double SimpleGaussian::evaluate(std::vector<class Particle*> particles) {
          temp = m_system->getParticles()[i]->getPosition()[j];
          r2 += temp*temp; // x^2 + y^2 + z^2
          }
-
-      psi_T *= exp(-alpha*r2);
+      sum_r2 += r2;
       }
+    wavefunction = exp(-alpha*sum_r2);
 
-    return psi_T;
+    return wavefunction;
 }
 
 double SimpleGaussian::computeDoubleDerivative(std::vector<class Particle*> particles) {
@@ -101,14 +101,13 @@ double SimpleGaussian::computeDoubleNumericalDerivative(std::vector<class Partic
          particles[i]->adjustPosition(-2*h,j);
          psi_minus = evaluate(particles);
 
-         nabla2 += (psi_plus - 2*psi + psi_minus);
-
          particles[i]->adjustPosition(h,j);
+
+         nabla2 += (psi_plus - 2*psi + psi_minus);
        }
 
      }
-
-      kineticenergy = (1.0/psi)*(-0.5*nabla2/hh);
+     kineticenergy = (1.0/psi)*(-0.5*nabla2/hh) - (N-1)*alpha; // Why substract to work?
 
      return kineticenergy;
 }
