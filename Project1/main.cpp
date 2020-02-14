@@ -17,7 +17,7 @@ int main() {
 
   int numberOfDimensions;
   int numberOfParticles;
-  int numberOfSteps       = (int) 1e4;
+  int numberOfSteps       = (int) 1e1;
   double omega            = 1.0;          // Oscillator frequency.
   double alpha            = 0.5;          // Variational parameter.
   double stepLength       = 0.1;          // Metropolis step length.
@@ -26,13 +26,14 @@ int main() {
 
 cout << "\n" << "Which parameters do you want to use?: " << endl;
 
-cout << "\n" << "The number of Dimensions: " << endl;
-cout << "\n" << "Write here " << endl;
-cin >> numberOfDimensions;
-
 cout << "\n" << "The number of Particles: " << endl;
 cout << "\n" << "Write here " << endl;
 cin >> numberOfParticles;
+
+
+cout << "\n" << "The number of Dimensions: " << endl;
+cout << "\n" << "Write here " << endl;
+cin >> numberOfDimensions;
 
 
 

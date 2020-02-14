@@ -27,33 +27,35 @@ double HarmonicOscillator::computeLocalEnergy(std::vector<Particle*> particles) 
     double alpha = m_system->getWaveFunction()->getParameters()[0];
     int N = m_system->getNumberOfParticles(); // Number of Particles
     int Dim = m_system->getNumberOfDimensions(); // The Dimension
-    double r, temp, sum_r, sum_r2;
+    double r2, temp;
     double psi = m_system->getWaveFunction()->evaluate(particles); // psi(r)
-    double analytical_E_L;
-    double analytical_derivative = m_system->getWaveFunction()->computeDoubleDerivative(particles);
+    double numerical_kineticenergy, potentialenergy;
+    double analytical_E_L, numerical_E_L;
+    double analytical_kineticenergy;
 
-
+    potentialenergy = 0;
     for (int i = 0; i < N; i++){
-      r = 0;
+      r2 = 0;
       for (int j = 0; j < Dim; j++){
         temp = m_system->getParticles()[i]->getPosition()[j];
-        r += temp*temp; // x^2 + y^2 + z^2
+        r2 += temp*temp; // x^2 + y^2 + z^2
       }
-      sum_r += r;
-      sum_r2 += r*0.5;
+      potentialenergy += 0.5*r2;
     }
-    analytical_E_L = Dim*N*alpha + (0.5 - 2*alpha*alpha)*sum_r;
 
-    double kineticenergy = m_system->getWaveFunction()->computeDoubleNumericalDerivative(particles);
-    double potentialenergy = 0.5*sum_r;
-    double numerical_E_L = kineticenergy + potentialenergy;
+    numerical_kineticenergy = m_system->getWaveFunction()->computeDoubleNumericalDerivative(particles);
+    numerical_E_L = numerical_kineticenergy + potentialenergy;
 
-/*
-    cout << "Numerical Energy " << numerical_E_L << endl;
-    cout << "Analytical Energy " << analytical_E_L << endl;
-    cout << "Numerical Kinetic Energy " << kineticenergy + potentialenergy<< endl;
-    cout << "Numerical Potential Energy " << potentialenergy << endl;
-*/
+    analytical_kineticenergy = m_system->getWaveFunction()->computeDoubleDerivative(particles);
+    analytical_E_L = analytical_kineticenergy + potentialenergy;
+    //analytical_E_L = Dim*N*alpha + (0.5 - 2*alpha*alpha)*sum_r;
+
+
+    cout << "Numerical Energy = " << numerical_E_L << endl;
+    cout << "Analytical Energy = " << analytical_E_L << endl;
+    cout << "Numerical Kinetic Energy = " << numerical_kineticenergy<< endl;
+    cout << "Analytical Kinetic Energy = " << analytical_kineticenergy<< endl;
+    cout << "Potential Energy = " << potentialenergy << endl;
 
 
     return numerical_E_L;

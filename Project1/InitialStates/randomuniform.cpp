@@ -52,7 +52,7 @@ void RandomUniform::setupInitialState() {
              * obviously NOT a good idea).
              */
 
-            position.push_back(RandomNumberGenerator(gen) + (double)i);
+            position.push_back(RandomNumberGenerator(gen) + (double)i* (double)j );
             //position.push_back(i);
         }
         m_particles.push_back(new Particle());
