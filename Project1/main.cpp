@@ -17,7 +17,7 @@ int main() {
 
   int numberOfDimensions;
   int numberOfParticles;
-  int numberOfSteps       = (int) 1e5;
+  int numberOfSteps       = (int) 1e6;
   double omega            = 1.0;          // Oscillator frequency.
   double alpha            = 0.5;          // Variational parameter.
   double stepLength       = 0.1;          // Metropolis step length.
