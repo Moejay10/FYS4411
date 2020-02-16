@@ -70,7 +70,7 @@ double SimpleGaussian::computeDoubleDerivative(std::vector<class Particle*> part
        }
 
     nabla2 *= -2*alpha*alpha;
-    nabla2 += Dim*alpha; // Why not multiply with N?
+    nabla2 += N*Dim*alpha; // Why not multiply with N?
 
     return nabla2;
 }
@@ -109,7 +109,7 @@ double SimpleGaussian::computeDoubleNumericalDerivative(std::vector<class Partic
        }
 
      }
-     kineticenergy = (1.0/psi)*(-0.5*nabla2/hh) - Dim*(N-1)*alpha; // Why substract to work?
+     kineticenergy = (1.0/psi)*(-0.5*nabla2/hh); //- Dim*(N-1)*alph; // Why substract to work?
 
      return kineticenergy;
 }

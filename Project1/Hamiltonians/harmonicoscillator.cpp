@@ -1,12 +1,14 @@
 #include "harmonicoscillator.h"
 #include <cassert>
 #include <iostream>
+#include <armadillo>
 #include "../system.h"
 #include "../particle.h"
 #include "../WaveFunctions/wavefunction.h"
 
 using std::cout;
 using std::endl;
+using namespace arma;
 
 HarmonicOscillator::HarmonicOscillator(System* system, double omega) :
         Hamiltonian(system) {
@@ -52,13 +54,39 @@ double HarmonicOscillator::computeLocalEnergy(std::vector<Particle*> particles) 
     analytical_E_L = analytical_kineticenergy + potentialenergy;
     //analytical_E_L = Dim*N*alpha + (0.5 - 2*alpha*alpha)*sum_r;
 
-/*
+
     cout << "Numerical Energy = " << numerical_E_L << endl;
     cout << "Analytical Energy = " << analytical_E_L << endl;
     cout << "Numerical Kinetic Energy = " << numerical_kineticenergy<< endl;
     cout << "Analytical Kinetic Energy = " << analytical_kineticenergy<< endl;
     cout << "Potential Energy = " << potentialenergy << endl;
-*/
+
 
     return analytical_E_L;
 }
+
+
+std::vector<double> HarmonicOscillator::computeQuantumForce(std::vector<Particle*> particles, int i) {
+
+
+  /* All wave functions need to implement this function, so you need to
+   * find the double derivative analytically. Note that by double derivative,
+   * we actually mean the sum of the Laplacians with respect to the
+   * coordinates of each particle.
+   *
+   * This quantity is needed to compute the (local) energy (consider the
+   * Schrödinger equation to see how the two are related).
+   */
+   int Dim = m_system->getNumberOfDimensions(); // The Dimension
+   int N = m_system->getNumberOfParticles(); // Number of Particles
+   double alpha = m_system->getWaveFunction()->getParameters()[0];
+
+   std::vector<double> force;
+
+     for (int j = 0; j < Dim; j++){
+       force.push_back(-4*alpha*m_system->getParticles()[i]->getPosition()[j]);
+     }
+
+
+  return force;
+  }

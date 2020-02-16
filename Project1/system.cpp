@@ -58,6 +58,67 @@ bool System::metropolisStep(int i) {
 
 }
 
+
+bool System::ImportanceMetropolisStep(int i) {
+    /* Perform the actual Metropolis step: Choose a particle at random and
+     * change it's position by a random amount, and check if the step is
+     * accepted by the Metropolis test (compare the wave function evaluated
+     * at this new position with the one at the old position).
+     */
+     // Initialize the seed and call the Mersienne algo
+     std::random_device rd;
+     std::mt19937_64 gen(rd());
+     // Set up the uniform distribution for x \in [[0, 1]
+     std::uniform_real_distribution<double> RandomNumberGenerator(0.0,1.0);
+
+     double a = RandomNumberGenerator(gen); // Random number
+
+     int Dim = getNumberOfDimensions(); // The Dimensions
+
+     double r, wfold, wfnew, poschange;
+     std::vector<double> posold, posnew, qfold, qfnew;
+
+     // Initial Position
+     posold = getParticles()[i]->getPosition();
+     wfold = getWaveFunction()->evaluate(m_particles);
+     qfold = getHamiltonian()->computeQuantumForce(m_particles, i);
+
+
+     // Trial position moving one particle at the time in all dimensions
+     for (int k = 0; k < Dim; k++)
+     {
+        poschange = a*sqrt(m_stepLength) + qfold[k]*m_stepLength*m_diffusionCoefficient;
+        m_particles[i]->adjustPosition(poschange, k);
+     }
+     posnew = getParticles()[i]->getPosition();
+     wfnew = getWaveFunction()->evaluate(m_particles);
+     qfnew = getHamiltonian()->computeQuantumForce(m_particles, i);
+
+     // Greens function
+     double greensFunction = 0;
+     for (int k = 0; k < Dim; k++)
+     {
+       greensFunction += 0.25*(qfold[k] + qfnew[k])*(m_diffusionCoefficient*m_stepLength*(qfold[k] - qfnew[k]) - posnew[k] + posold[k]);
+     }
+     greensFunction = exp(greensFunction);
+     // Metropolis test
+	if ( RandomNumberGenerator(gen) <= greensFunction*wfnew*wfnew/(wfold*wfold) ){
+
+    return true;
+  }
+
+  else{
+
+    for (int k = 0; k < Dim; k++){
+      poschange = a*sqrt(m_stepLength) + qfold[k]*m_stepLength*m_diffusionCoefficient;
+      m_particles[i]->adjustPosition(-poschange, k);
+     }
+
+    return false;
+  }
+
+}
+
 void System::runMetropolisSteps(int numberOfMetropolisSteps) {
     m_particles                 = m_initialState->getParticles();
     m_sampler                   = new Sampler(this);
@@ -70,8 +131,9 @@ void System::runMetropolisSteps(int numberOfMetropolisSteps) {
 
         // Trial position moving one particle at the time
         for (int j = 0; j < N; j++){
-
         acceptedStep = metropolisStep(j);
+
+        //acceptedStep = ImportanceMetropolisStep(j);
 
         /* Here you should sample the energy (and maybe other things using
          * the m_sampler instance of the Sampler class. Make sure, though,
@@ -114,4 +176,9 @@ void System::setWaveFunction(WaveFunction* waveFunction) {
 
 void System::setInitialState(InitialState* initialState) {
     m_initialState = initialState;
+}
+
+
+void System::setDiffusionCoefficient(double diffusionCoefficient) {
+    m_diffusionCoefficient = diffusionCoefficient;
 }

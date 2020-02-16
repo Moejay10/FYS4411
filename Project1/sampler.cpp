@@ -70,9 +70,12 @@ void Sampler::computeAverages() {
     /* Compute the averages of the sampled quantities. You need to think
      * thoroughly through what is written here currently; is this correct?
      */
-    m_energy = m_cumulativeEnergy / m_system->getNumberOfMetropolisSteps();
-    m_cumulativeEnergy2 = m_cumulativeEnergy2 / m_system->getNumberOfMetropolisSteps();
-    m_cumulativeEnergy = m_cumulativeEnergy / m_system->getNumberOfMetropolisSteps();
+    int Dim = m_system->getNumberOfDimensions(); // The Dimension
+    int N = m_system->getNumberOfParticles(); // Number of Particles
+    int MC = m_system->getNumberOfMetropolisSteps(); // Number of Monte Carlo steps
+    m_energy = m_cumulativeEnergy / (MC * N);
+    m_cumulativeEnergy2 = m_cumulativeEnergy2 / (MC * N);
+    m_cumulativeEnergy = m_cumulativeEnergy / (MC * N);
     m_variance = m_cumulativeEnergy2 - m_cumulativeEnergy*m_cumulativeEnergy;
-    m_STD = sqrt(m_variance/m_system->getNumberOfMetropolisSteps());
+    m_STD = sqrt(m_variance/(MC * N));
 }

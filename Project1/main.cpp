@@ -17,10 +17,11 @@ int main() {
 
   int numberOfDimensions;
   int numberOfParticles;
-  int numberOfSteps       = (int) 1e6;
+  int numberOfSteps       = (int) 1e1;
   double omega            = 1.0;          // Oscillator frequency.
   double alpha            = 0.5;          // Variational parameter.
   double stepLength       = 0.1;          // Metropolis step length.
+  double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
   double equilibration    = 0.1;          // Amount of the total steps used
   // for equilibration.
 
@@ -54,6 +55,7 @@ cin >> numberOfDimensions;
     system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
     system->setEquilibrationFraction    (equilibration);
     system->setStepLength               (stepLength);
+    system->setDiffusionCoefficient     (diffusionCoefficient);
     system->runMetropolisSteps          (numberOfSteps);
     return 0;
 }
