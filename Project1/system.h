@@ -1,11 +1,14 @@
 #pragma once
 #include <vector>
+#include <fstream>
+#include <iostream>
+using namespace std;
 
 class System {
 public:
     bool ImportanceMetropolisStep   (int);
     bool metropolisStep             (int);
-    void runMetropolisSteps         (int numberOfMetropolisSteps);
+    void runMetropolisSteps         (ofstream& ofile, int numberOfMetropolisSteps);
     void setNumberOfParticles       (int numberOfParticles);
     void setNumberOfDimensions      (int numberOfDimensions);
     void setStepLength              (double stepLength);

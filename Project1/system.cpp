@@ -8,7 +8,6 @@
 #include "InitialStates/initialstate.h"
 #include "Math/random.h"
 #include <armadillo>
-
 using namespace arma;
 
 
@@ -119,7 +118,7 @@ bool System::ImportanceMetropolisStep(int i) {
 
 }
 
-void System::runMetropolisSteps(int numberOfMetropolisSteps) {
+void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
     m_particles                 = m_initialState->getParticles();
     m_sampler                   = new Sampler(this);
     m_numberOfMetropolisSteps   = numberOfMetropolisSteps;
@@ -127,22 +126,23 @@ void System::runMetropolisSteps(int numberOfMetropolisSteps) {
 
     int N = getNumberOfParticles();
     bool acceptedStep;
-    for (int i=0; i < numberOfMetropolisSteps; i++) {
+    for (int i = 1; i <= numberOfMetropolisSteps; i++) {
 
         // Trial position moving one particle at the time
         for (int j = 0; j < N; j++){
-        acceptedStep = metropolisStep(j);
+          acceptedStep = ImportanceMetropolisStep(j);
 
-        //acceptedStep = ImportanceMetropolisStep(j);
+          //acceptedStep = ImportanceMetropolisStep(j);
 
-        /* Here you should sample the energy (and maybe other things using
-         * the m_sampler instance of the Sampler class. Make sure, though,
-         * to only begin sampling after you have let the system equilibrate
-         * for a while. You may handle this using the fraction of steps which
-         * are equilibration steps; m_equilibrationFraction.
-         */
-         m_sampler->sample(acceptedStep);
-      }
+          /* Here you should sample the energy (and maybe other things using
+          * the m_sampler instance of the Sampler class. Make sure, though,
+          * to only begin sampling after you have let the system equilibrate
+          * for a while. You may handle this using the fraction of steps which
+          * are equilibration steps; m_equilibrationFraction.
+          */
+          m_sampler->sample(ofile, acceptedStep, i);
+        }
+        m_sampler->WriteResultstoFile(ofile, i);
     }
     m_sampler->computeAverages();
     m_sampler->printOutputToTerminal();

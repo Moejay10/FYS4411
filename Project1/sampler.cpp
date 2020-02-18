@@ -20,7 +20,7 @@ void Sampler::setNumberOfMetropolisSteps(int steps) {
     m_numberOfMetropolisSteps = steps;
 }
 
-void Sampler::sample(bool acceptedStep) {
+void Sampler::sample(ofstream& ofile, bool acceptedStep, int MCcycles) {
     // Make sure the sampling variable(s) are initialized at the first step.
     if (m_stepNumber == 0) {
         m_cumulativeEnergy = 0;
@@ -32,11 +32,10 @@ void Sampler::sample(bool acceptedStep) {
      */
     double localEnergy = m_system->getHamiltonian()->
                          computeLocalEnergy(m_system->getParticles());
-
+    //cout << "Local Energy = " << localEnergy << endl;
     m_cumulativeEnergy  += localEnergy;
     m_cumulativeEnergy2  += localEnergy*localEnergy;
     m_stepNumber++;
-
 }
 
 void Sampler::printOutputToTerminal() {
@@ -73,9 +72,35 @@ void Sampler::computeAverages() {
     int Dim = m_system->getNumberOfDimensions(); // The Dimension
     int N = m_system->getNumberOfParticles(); // Number of Particles
     int MC = m_system->getNumberOfMetropolisSteps(); // Number of Monte Carlo steps
-    m_energy = m_cumulativeEnergy / (MC * N);
-    m_cumulativeEnergy2 = m_cumulativeEnergy2 / (MC * N);
-    m_cumulativeEnergy = m_cumulativeEnergy / (MC * N);
+    m_energy = m_cumulativeEnergy / (MC);
+    m_cumulativeEnergy2 = m_cumulativeEnergy2 / (MC);
+    m_cumulativeEnergy = m_cumulativeEnergy / (MC);
     m_variance = m_cumulativeEnergy2 - m_cumulativeEnergy*m_cumulativeEnergy;
-    m_STD = sqrt(m_variance/(MC * N));
+    m_STD = sqrt(m_variance/(MC));
 }
+
+
+void Sampler::WriteResultstoFile(ofstream& ofile, int MCcycles)
+{
+  int N = m_system->getNumberOfParticles(); // Number of Particles
+  double norm = 1.0/((double) (MCcycles));  // divided by  number of cycles
+
+  double Energy = m_cumulativeEnergy * norm;
+  double CumulativeEnergy2 = m_cumulativeEnergy2 *norm;
+  double CumulativeEnergy = m_cumulativeEnergy *norm;
+  double Variance = CumulativeEnergy2 - CumulativeEnergy*CumulativeEnergy;
+  double STD = sqrt(Variance*norm);
+
+
+  ofile << setiosflags(ios::showpoint | ios::uppercase);
+  //ofile << "| Temperature | Energy-Mean | Magnetization-Mean|    Cv    | Susceptibility |\n";
+
+
+  ofile << "\n";
+  //ofile << setw(15) << setprecision(8) << MCcycles; // # Monte Carlo cycles (sweeps per lattice)
+  ofile << setw(15) << setprecision(8) << Energy; // Mean energy
+  //ofile << setw(15) << setprecision(8) << Variance; // Variance
+  //ofile << setw(15) << setprecision(8) << STD; // # Standard deviation
+
+
+} // end output function

@@ -1,4 +1,6 @@
 #include <iostream>
+#include <iomanip>
+#include <fstream>
 #include <random>
 #include "system.h"
 #include "particle.h"
@@ -9,7 +11,7 @@
 #include "InitialStates/initialstate.h"
 #include "InitialStates/randomuniform.h"
 #include "Math/random.h"
-
+ofstream ofile;
 using namespace std;
 
 
@@ -17,13 +19,15 @@ int main() {
 
   int numberOfDimensions;
   int numberOfParticles;
-  int numberOfSteps       = (int) 1e1;
+  int numberOfSteps       = (int) 1e4;
   double omega            = 1.0;          // Oscillator frequency.
   double alpha            = 0.5;          // Variational parameter.
-  double stepLength       = 0.1;          // Metropolis step length.
+  double stepLength       = 1.0;          // Metropolis step length.
   double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
   double equilibration    = 0.1;          // Amount of the total steps used
   // for equilibration.
+
+
 
 cout << "\n" << "Which parameters do you want to use?: " << endl;
 
@@ -48,6 +52,13 @@ cin >> numberOfDimensions;
     double equilibration    = 0.1;          // Amount of the total steps used
     // for equilibration.
 */
+    string file = "Python/Results/Energies.dat";
+    ofile.open(file);
+    ofile << setiosflags(ios::showpoint | ios::uppercase);
+    ofile << setw(15) << setprecision(8) << "MCcycles"; // # Monte Carlo cycles (sweeps per lattice)
+    ofile << setw(15) << setprecision(8) << "Energy"; // Mean energy
+    ofile << setw(15) << setprecision(8) << "Variance"; // Variance
+    ofile << setw(15) << setprecision(8) << "STD"; // # Standard deviation
 
     System* system = new System();
     system->setHamiltonian              (new HarmonicOscillator(system, omega));
@@ -56,6 +67,8 @@ cin >> numberOfDimensions;
     system->setEquilibrationFraction    (equilibration);
     system->setStepLength               (stepLength);
     system->setDiffusionCoefficient     (diffusionCoefficient);
-    system->runMetropolisSteps          (numberOfSteps);
+    system->runMetropolisSteps          (ofile, numberOfSteps);
+
+    ofile.close();
     return 0;
 }

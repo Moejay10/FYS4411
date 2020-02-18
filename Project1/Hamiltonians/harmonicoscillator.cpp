@@ -54,15 +54,15 @@ double HarmonicOscillator::computeLocalEnergy(std::vector<Particle*> particles) 
     analytical_E_L = analytical_kineticenergy + potentialenergy;
     //analytical_E_L = Dim*N*alpha + (0.5 - 2*alpha*alpha)*sum_r;
 
-
+/*
     cout << "Numerical Energy = " << numerical_E_L << endl;
     cout << "Analytical Energy = " << analytical_E_L << endl;
     cout << "Numerical Kinetic Energy = " << numerical_kineticenergy<< endl;
     cout << "Analytical Kinetic Energy = " << analytical_kineticenergy<< endl;
     cout << "Potential Energy = " << potentialenergy << endl;
+*/
 
-
-    return analytical_E_L;
+    return numerical_E_L;
 }
 
 

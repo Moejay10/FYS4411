@@ -1,12 +1,17 @@
 #pragma once
+#include <fstream>
+#include <iostream>
+#include <iomanip>
+using namespace std;
 
 class Sampler {
 public:
     Sampler(class System* system);
     void setNumberOfMetropolisSteps(int steps);
-    void sample(bool acceptedStep);
+    void sample(ofstream& ofile, bool acceptedStep, int MCcycles);
     void printOutputToTerminal();
     void computeAverages();
+    void WriteResultstoFile(ofstream& ofile, int MCcycles);
     double getEnergy()          { return m_energy; }
 
 private:
