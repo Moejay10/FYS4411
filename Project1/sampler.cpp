@@ -20,7 +20,7 @@ void Sampler::setNumberOfMetropolisSteps(int steps) {
     m_numberOfMetropolisSteps = steps;
 }
 
-void Sampler::sample(ofstream& ofile, bool acceptedStep, int MCcycles) {
+void Sampler::sample(ofstream& ofile, bool numerical_derivative, bool acceptedStep, int MCcycles) {
     // Make sure the sampling variable(s) are initialized at the first step.
     if (m_stepNumber == 0) {
         m_cumulativeEnergy = 0;
@@ -30,12 +30,26 @@ void Sampler::sample(ofstream& ofile, bool acceptedStep, int MCcycles) {
     /* Here you should sample all the interesting things you want to measure.
      * Note that there are (way) more than the single one here currently.
      */
+    if (numerical_derivative == false)
+    {
     double localEnergy = m_system->getHamiltonian()->
-                         computeLocalEnergy(m_system->getParticles());
-    //cout << "Local Energy = " << localEnergy << endl;
+                         computeLocalEnergyAnalytical(m_system->getParticles());
+
+
     m_cumulativeEnergy  += localEnergy;
     m_cumulativeEnergy2  += localEnergy*localEnergy;
     m_stepNumber++;
+    }
+
+    if (numerical_derivative == true)
+    {
+    double localEnergy = m_system->getHamiltonian()->
+                         computeLocalEnergyNumerical(m_system->getParticles());
+
+    m_cumulativeEnergy  += localEnergy;
+    m_cumulativeEnergy2  += localEnergy*localEnergy;
+    m_stepNumber++;
+    }
 }
 
 void Sampler::printOutputToTerminal() {

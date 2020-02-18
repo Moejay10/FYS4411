@@ -118,7 +118,7 @@ bool System::ImportanceMetropolisStep(int i) {
 
 }
 
-void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
+void System::runMetropolisSteps(ofstream& ofile, bool numerical_derivative, bool brute_force, int numberOfMetropolisSteps) {
     m_particles                 = m_initialState->getParticles();
     m_sampler                   = new Sampler(this);
     m_numberOfMetropolisSteps   = numberOfMetropolisSteps;
@@ -127,11 +127,13 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
     int N = getNumberOfParticles();
     double counter = 0;
     bool acceptedStep;
+
+    if (brute_force == true)
+    {
     for (int i = 1; i <= numberOfMetropolisSteps; i++) {
 
         // Trial position moving one particle at the time
         for (int j = 0; j < N; j++){
-          //acceptedStep = ImportanceMetropolisStep(j);
 
           acceptedStep = metropolisStep(j);
 
@@ -141,15 +143,39 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
           * for a while. You may handle this using the fraction of steps which
           * are equilibration steps; m_equilibrationFraction.
           */
-          m_sampler->sample(ofile, acceptedStep, i);
+          m_sampler->sample(ofile, numerical_derivative, acceptedStep, i);
           counter += acceptedStep;
         }
         m_sampler->WriteResultstoFile(ofile, i);
     }
     m_sampler->computeAverages();
     m_sampler->printOutputToTerminal();
-    cout << "# Accepted Step = " << counter << endl;
+    //cout << "# Accepted Step = " << counter << endl;
+  }
 
+  if (brute_force == false)
+  {
+  for (int i = 1; i <= numberOfMetropolisSteps; i++) {
+
+      // Trial position moving one particle at the time
+      for (int j = 0; j < N; j++){
+        acceptedStep = ImportanceMetropolisStep(j);
+
+        /* Here you should sample the energy (and maybe other things using
+        * the m_sampler instance of the Sampler class. Make sure, though,
+        * to only begin sampling after you have let the system equilibrate
+        * for a while. You may handle this using the fraction of steps which
+        * are equilibration steps; m_equilibrationFraction.
+        */
+        m_sampler->sample(ofile, numerical_derivative, acceptedStep, i);
+        counter += acceptedStep;
+      }
+      m_sampler->WriteResultstoFile(ofile, i);
+  }
+  m_sampler->computeAverages();
+  m_sampler->printOutputToTerminal();
+  //cout << "# Accepted Step = " << counter << endl;
+}
 }
 
 void System::setNumberOfParticles(int numberOfParticles) {

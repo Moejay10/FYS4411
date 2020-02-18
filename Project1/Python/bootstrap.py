@@ -38,4 +38,4 @@ X = loadtxt(infile)
 # arg1: the data
 def stat(data):
     return mean(data)
-t = tsboot(X, stat, 2**13, 2**11)
+t = tsboot(X, stat, 10, 50)

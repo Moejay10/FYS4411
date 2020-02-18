@@ -2,13 +2,14 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <string>
 using namespace std;
 
 class System {
 public:
     bool ImportanceMetropolisStep   (int);
     bool metropolisStep             (int);
-    void runMetropolisSteps         (ofstream& ofile, int numberOfMetropolisSteps);
+    void runMetropolisSteps         (ofstream& ofile, bool numerical_derivative, bool brute_force, int numberOfMetropolisSteps);
     void setNumberOfParticles       (int numberOfParticles);
     void setNumberOfDimensions      (int numberOfDimensions);
     void setStepLength              (double stepLength);
