@@ -125,14 +125,15 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
     m_sampler->setNumberOfMetropolisSteps(numberOfMetropolisSteps);
 
     int N = getNumberOfParticles();
+    double counter = 0;
     bool acceptedStep;
     for (int i = 1; i <= numberOfMetropolisSteps; i++) {
 
         // Trial position moving one particle at the time
         for (int j = 0; j < N; j++){
-          acceptedStep = ImportanceMetropolisStep(j);
-
           //acceptedStep = ImportanceMetropolisStep(j);
+
+          acceptedStep = metropolisStep(j);
 
           /* Here you should sample the energy (and maybe other things using
           * the m_sampler instance of the Sampler class. Make sure, though,
@@ -141,11 +142,14 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
           * are equilibration steps; m_equilibrationFraction.
           */
           m_sampler->sample(ofile, acceptedStep, i);
+          counter += acceptedStep;
         }
         m_sampler->WriteResultstoFile(ofile, i);
     }
     m_sampler->computeAverages();
     m_sampler->printOutputToTerminal();
+    cout << "# Accepted Step = " << counter << endl;
+
 }
 
 void System::setNumberOfParticles(int numberOfParticles) {
