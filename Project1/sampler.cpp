@@ -85,12 +85,14 @@ void Sampler::computeAverages() {
      */
     int Dim = m_system->getNumberOfDimensions(); // The Dimension
     int N = m_system->getNumberOfParticles(); // Number of Particles
-    int MC = m_system->getNumberOfMetropolisSteps(); // Number of Monte Carlo steps
-    m_energy = m_cumulativeEnergy / (MC);
-    m_cumulativeEnergy2 = m_cumulativeEnergy2 / (MC);
-    m_cumulativeEnergy = m_cumulativeEnergy / (MC);
+    int MCcycles = m_system->getNumberOfMetropolisSteps(); // Number of Monte Carlo steps
+    double norm = 1.0/((double) (MCcycles));  // divided by  number of cycles
+
+    m_energy = m_cumulativeEnergy *norm;
+    m_cumulativeEnergy2 = m_cumulativeEnergy2 *norm;
+    m_cumulativeEnergy = m_cumulativeEnergy *norm;
     m_variance = m_cumulativeEnergy2 - m_cumulativeEnergy*m_cumulativeEnergy;
-    m_STD = sqrt(m_variance/(MC));
+    m_STD = sqrt(m_variance*norm);
 }
 
 

@@ -91,7 +91,7 @@ double SimpleGaussian::computeDoubleNumericalDerivative(std::vector<class Partic
      double psi = evaluate(particles); // psi(r)
      double kineticenergy, nabla2;
 
-     double h = 1e-4;
+     double h = m_system->getStepSize();
      double hh= h*h;
 
      nabla2 = 0;

@@ -13,6 +13,7 @@ public:
     void setNumberOfParticles       (int numberOfParticles);
     void setNumberOfDimensions      (int numberOfDimensions);
     void setStepLength              (double stepLength);
+    void setStepSize                (double stepSize);
     void setEquilibrationFraction   (double equilibrationFraction);
     void setDiffusionCoefficient    (double diffusionCoefficient);
     void setHamiltonian             (class Hamiltonian* hamiltonian);
@@ -26,6 +27,10 @@ public:
     int getNumberOfDimensions()         { return m_numberOfDimensions; }
     int getNumberOfMetropolisSteps()    { return m_numberOfMetropolisSteps; }
     double getEquilibrationFraction()   { return m_equilibrationFraction; }
+    double getStepLength()              { return m_stepLength; }
+    double getStepSize()                { return m_stepSize; }
+    double getDiffusionCoefficient()    { return m_diffusionCoefficient; }
+
 
 private:
     int                             m_numberOfParticles = 0;
@@ -33,6 +38,7 @@ private:
     int                             m_numberOfMetropolisSteps = 0;
     double                          m_equilibrationFraction = 0.0;
     double                          m_stepLength = 0.1;
+    double                          m_stepSize = 0.1;
     double                          m_diffusionCoefficient = 1.0;
     class WaveFunction*             m_waveFunction = nullptr;
     class Hamiltonian*              m_hamiltonian = nullptr;

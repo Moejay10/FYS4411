@@ -39,6 +39,7 @@ if (Task == "b")
   double omega            = 1.0;          // Oscillator frequency.
   double alpha            = 0.5;          // Variational parameter.
   double stepLength       = 1.0;          // Metropolis step length.
+  double stepSize         = 1e-4;         // Stepsize in the numerical derivative for kinetic energy
   double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
   double equilibration    = 0.1;          // Amount of the total steps used
   // for equilibration.
@@ -82,6 +83,7 @@ cin >> numberOfDimensions;
     system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
     system->setEquilibrationFraction    (equilibration);
     system->setStepLength               (stepLength);
+    system->setStepSize                 (stepSize);
     system->setDiffusionCoefficient     (diffusionCoefficient);
     system->runMetropolisSteps          (ofile, numerical_derivative, brute_force, numberOfSteps);
 
@@ -94,6 +96,7 @@ cin >> numberOfDimensions;
     system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
     system->setEquilibrationFraction    (equilibration);
     system->setStepLength               (stepLength);
+    system->setStepSize                 (stepSize);
     system->setDiffusionCoefficient     (diffusionCoefficient);
     system->runMetropolisSteps          (ofile, numerical_derivative, brute_force, numberOfSteps);
 
@@ -109,6 +112,7 @@ cin >> numberOfDimensions;
   double omega            = 1.0;          // Oscillator frequency.
   double alpha            = 0.5;          // Variational parameter.
   double stepLength       = 1.0;          // Metropolis step length.
+  double stepSize         = 1e-4;         // Stepsize in the numerical derivative for kinetic energy
   double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
   double equilibration    = 0.1;          // Amount of the total steps used
   // for equilibration.
@@ -153,6 +157,7 @@ cin >> numberOfDimensions;
     system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
     system->setEquilibrationFraction    (equilibration);
     system->setStepLength               (stepLength);
+    system->setStepSize                 (stepSize);
     system->setDiffusionCoefficient     (diffusionCoefficient);
     system->runMetropolisSteps          (ofile, numerical_derivative, brute_force, numberOfSteps);
 
@@ -167,6 +172,7 @@ cin >> numberOfDimensions;
     double omega            = 1.0;          // Oscillator frequency.
     double alpha            = 0.5;          // Variational parameter.
     double stepLength       = 1.0;          // Metropolis step length.
+    double stepSize         = 1e-4;         // Stepsize in the numerical derivative for kinetic energy
     double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
     double equilibration    = 0.1;          // Amount of the total steps used
     // for equilibration.
@@ -218,6 +224,7 @@ cin >> numberOfDimensions;
       system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
       system->setEquilibrationFraction    (equilibration);
       system->setStepLength               (stepLength);
+      system->setStepSize                 (stepSize);
       system->setDiffusionCoefficient     (diffusionCoefficient);
       system->runMetropolisSteps          (ofile, numerical_derivative, brute_force, numberOfSteps);
 

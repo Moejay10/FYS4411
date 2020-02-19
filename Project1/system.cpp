@@ -143,9 +143,10 @@ void System::runMetropolisSteps(ofstream& ofile, bool numerical_derivative, bool
           * for a while. You may handle this using the fraction of steps which
           * are equilibration steps; m_equilibrationFraction.
           */
-          m_sampler->sample(ofile, numerical_derivative, acceptedStep, i);
-          counter += acceptedStep;
+
         }
+        m_sampler->sample(ofile, numerical_derivative, acceptedStep, i);
+        counter += acceptedStep;
         m_sampler->WriteResultstoFile(ofile, i);
     }
     m_sampler->computeAverages();
@@ -167,9 +168,9 @@ void System::runMetropolisSteps(ofstream& ofile, bool numerical_derivative, bool
         * for a while. You may handle this using the fraction of steps which
         * are equilibration steps; m_equilibrationFraction.
         */
-        m_sampler->sample(ofile, numerical_derivative, acceptedStep, i);
-        counter += acceptedStep;
       }
+      m_sampler->sample(ofile, numerical_derivative, acceptedStep, i);
+      counter += acceptedStep;
       m_sampler->WriteResultstoFile(ofile, i);
   }
   m_sampler->computeAverages();
@@ -189,6 +190,11 @@ void System::setNumberOfDimensions(int numberOfDimensions) {
 void System::setStepLength(double stepLength) {
     assert(stepLength >= 0);
     m_stepLength = stepLength;
+}
+
+void System::setStepSize(double stepSize) {
+    assert(stepSize >= 0);
+    m_stepSize = stepSize;
 }
 
 void System::setEquilibrationFraction(double equilibrationFraction) {
