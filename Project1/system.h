@@ -9,6 +9,7 @@ class System {
 public:
     bool ImportanceMetropolisStep   (int);
     bool metropolisStep             (int);
+    bool setRepulsivePotential      (bool);
     void runMetropolisSteps         (ofstream& ofile, bool numerical_derivative, bool brute_force, int numberOfMetropolisSteps);
     void setNumberOfParticles       (int numberOfParticles);
     void setNumberOfDimensions      (int numberOfDimensions);
@@ -30,9 +31,9 @@ public:
     double getStepLength()              { return m_stepLength; }
     double getStepSize()                { return m_stepSize; }
     double getDiffusionCoefficient()    { return m_diffusionCoefficient; }
-
-
+    bool   getRepulsivePotential()        { return m_statement;}
 private:
+    bool                            m_statement = false;
     int                             m_numberOfParticles = 0;
     int                             m_numberOfDimensions = 0;
     int                             m_numberOfMetropolisSteps = 0;

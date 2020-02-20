@@ -218,3 +218,7 @@ void System::setInitialState(InitialState* initialState) {
 void System::setDiffusionCoefficient(double diffusionCoefficient) {
     m_diffusionCoefficient = diffusionCoefficient;
 }
+
+bool System::setRepulsivePotential(bool statement){
+  m_statement = statement;
+}

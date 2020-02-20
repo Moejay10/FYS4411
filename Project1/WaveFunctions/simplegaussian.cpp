@@ -7,12 +7,16 @@
 #include <iostream>
 using namespace std;
 
-SimpleGaussian::SimpleGaussian(System* system, double alpha) :
+SimpleGaussian::SimpleGaussian(System* system, double alpha, double beta, double gamma) :
         WaveFunction(system) {
     assert(alpha >= 0);
-    m_numberOfParameters = 1;
-    m_parameters.reserve(1);
+    assert(beta >= 0);
+    assert(gamma >= 0);
+    m_numberOfParameters = 3;
+    m_parameters.reserve(3);
     m_parameters.push_back(alpha);
+    m_parameters.push_back(beta);
+    m_parameters.push_back(gamma);
 }
 
 double SimpleGaussian::evaluate(std::vector<class Particle*> particles) {
@@ -27,14 +31,20 @@ double SimpleGaussian::evaluate(std::vector<class Particle*> particles) {
      int N = m_system->getNumberOfParticles(); // Number of Particles
      double temp, r2, sum_r2;
      double alpha = m_parameters[0];
+     double beta  = m_parameters[1];
      double wavefunction;
 
     for (int i = 0; i < N; i++){
       r2 = 0;
       for (int j = 0; j < Dim; j++){
-         temp = m_system->getParticles()[i]->getPosition()[j];
-         r2 += temp*temp; // x^2 + y^2 + z^2
-         }
+        if (j == 2){
+            temp = beta*m_system->getParticles()[i]->getPosition()[j];
+        }
+        else{
+            temp = m_system->getParticles()[i]->getPosition()[j];
+        }
+        r2 += temp*temp; // x^2 + y^2 + z^2
+      }
       sum_r2 += r2;
       }
     wavefunction = exp(-alpha*sum_r2);
@@ -55,6 +65,7 @@ double SimpleGaussian::computeDoubleDerivative(std::vector<class Particle*> part
      int N = m_system->getNumberOfParticles(); // Number of Particles
      double r2, temp;
      double alpha = m_parameters[0];
+     double beta = m_parameters[1];
      double psi_T = evaluate(particles);
      double factor, nabla2;
 
@@ -63,7 +74,12 @@ double SimpleGaussian::computeDoubleDerivative(std::vector<class Particle*> part
      for (int i = 0; i < N; i++){
        r2 = 0;
        for (int j = 0; j < Dim; j++){
-         temp = m_system->getParticles()[i]->getPosition()[j];
+         if (j == 2){
+             temp = beta*m_system->getParticles()[i]->getPosition()[j];
+         }
+         else{
+             temp = m_system->getParticles()[i]->getPosition()[j];
+         }
          r2 += temp*temp; // x^2 + y^2 + z^2
          }
        nabla2 += r2;
