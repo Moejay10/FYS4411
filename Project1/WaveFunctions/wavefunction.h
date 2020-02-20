@@ -8,6 +8,7 @@ public:
     int     getNumberOfParameters() { return m_numberOfParameters; }
     std::vector<double> getParameters() { return m_parameters; }
     virtual double evaluate(std::vector<class Particle*> particles) = 0;
+    virtual double derivativeWavefunction(std::vector<class Particle*> particles) = 0;
     virtual double computeDoubleDerivative(std::vector<class Particle*> particles) = 0;
     virtual double computeDoubleNumericalDerivative(std::vector<class Particle*> particles) = 0;
 

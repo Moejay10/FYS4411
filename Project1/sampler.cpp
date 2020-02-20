@@ -35,7 +35,11 @@ void Sampler::sample(ofstream& ofile, bool numerical_derivative, bool acceptedSt
     double localEnergy = m_system->getHamiltonian()->
                          computeLocalEnergyAnalytical(m_system->getParticles());
 
+    double DerPsi     = m_system->getWaveFunction()->
+                        derivativeWavefunction(m_system->getParticles());
 
+    m_DeltaPsi += DerPsi;
+    m_DerivativePsiE += DerPsi*localEnergy;
     m_cumulativeEnergy  += localEnergy;
     m_cumulativeEnergy2  += localEnergy*localEnergy;
     m_stepNumber++;
@@ -93,6 +97,12 @@ void Sampler::computeAverages() {
     m_cumulativeEnergy = m_cumulativeEnergy *norm;
     m_variance = m_cumulativeEnergy2 - m_cumulativeEnergy*m_cumulativeEnergy;
     m_STD = sqrt(m_variance*norm);
+
+    m_DerivativePsiE *= norm;
+    m_DeltaPsi *= norm;
+    m_EnergyDer = 2*(m_DerivativePsiE - m_DeltaPsi*m_energy);
+
+
 }
 
 
@@ -106,7 +116,6 @@ void Sampler::WriteResultstoFile(ofstream& ofile, int MCcycles)
   double CumulativeEnergy = m_cumulativeEnergy *norm;
   double Variance = CumulativeEnergy2 - CumulativeEnergy*CumulativeEnergy;
   double STD = sqrt(Variance*norm);
-
 
   ofile << setiosflags(ios::showpoint | ios::uppercase);
   //ofile << "| Temperature | Energy-Mean | Magnetization-Mean|    Cv    | Susceptibility |\n";

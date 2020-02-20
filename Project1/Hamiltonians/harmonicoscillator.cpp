@@ -75,7 +75,7 @@ double HarmonicOscillator::computeRepulsiveInteraction(std::vector<Particle*> pa
     double psi = m_system->getWaveFunction()->evaluate(particles); // psi(r)
     double potentialenergy;
     double a = 0.0043;
-    double infty = 10.0;
+    double infty = 1000.0;
 
     potentialenergy = 0;
     for (int i = 0; i < N; i++){

@@ -34,6 +34,7 @@ double SimpleGaussian::evaluate(std::vector<class Particle*> particles) {
      double beta  = m_parameters[1];
      double wavefunction;
 
+    sum_r2 = 0;
     for (int i = 0; i < N; i++){
       r2 = 0;
       for (int j = 0; j < Dim; j++){
@@ -50,6 +51,40 @@ double SimpleGaussian::evaluate(std::vector<class Particle*> particles) {
     wavefunction = exp(-alpha*sum_r2);
 
     return wavefunction;
+}
+
+double SimpleGaussian::derivativeWavefunction(std::vector<class Particle*> particles) {
+    /* You need to implement a Gaussian wave function here. The positions of
+     * the particles are accessible through the particle[i].getPosition()
+     * function.
+     *
+     * For the actual expression, use exp(-alpha * r^2), with alpha being the
+     * (only) variational parameter.
+     */
+     int Dim = m_system->getNumberOfDimensions();
+     int N = m_system->getNumberOfParticles(); // Number of Particles
+     double temp, r2, sum_r2;
+     double alpha = m_parameters[0];
+     double beta  = m_parameters[1];
+     double derivative_wavefunction;
+
+    sum_r2 = 0;
+    for (int i = 0; i < N; i++){
+      r2 = 0;
+      for (int j = 0; j < Dim; j++){
+        if (j == 2){
+            temp = beta*m_system->getParticles()[i]->getPosition()[j];
+        }
+        else{
+            temp = m_system->getParticles()[i]->getPosition()[j];
+        }
+        r2 += temp*temp; // x^2 + y^2 + z^2
+      }
+      sum_r2 += r2;
+      }
+    derivative_wavefunction = -sum_r2;
+
+    return derivative_wavefunction;
 }
 
 double SimpleGaussian::computeDoubleDerivative(std::vector<class Particle*> particles) {

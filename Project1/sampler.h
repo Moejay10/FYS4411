@@ -14,6 +14,8 @@ public:
     void computeAverages();
     void WriteResultstoFile(ofstream& ofile, int MCcycles);
     double getEnergy()          { return m_energy; }
+    double getEnergyDer()       { return m_EnergyDer; }
+
 
 private:
     int     m_numberOfMetropolisSteps = 0;
@@ -21,6 +23,9 @@ private:
     double  m_energy = 0;
     double  m_cumulativeEnergy = 0;
     double  m_cumulativeEnergy2 = 0;
+    double  m_DeltaPsi  = 0;
+    double  m_DerivativePsiE  = 0;
+    double  m_EnergyDer  = 0;
     double  m_variance = 0;
     double  m_STD = 0;
     class System* m_system = nullptr;
