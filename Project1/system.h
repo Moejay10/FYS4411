@@ -2,6 +2,7 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 #include <string>
 using namespace std;
 
@@ -10,7 +11,9 @@ public:
     bool ImportanceMetropolisStep   (int);
     bool metropolisStep             (int);
     bool setRepulsivePotential      (bool);
-    void runMetropolisSteps         (ofstream& ofile, bool numerical_derivative, bool brute_force, int numberOfMetropolisSteps);
+    bool setImportanceSampling      (bool);
+    bool setNumericalDerivative     (bool);
+    void runMetropolisSteps         (ofstream& ofile, int numberOfMetropolisSteps);
     void setNumberOfParticles       (int numberOfParticles);
     void setNumberOfDimensions      (int numberOfDimensions);
     void setStepLength              (double stepLength);
@@ -31,9 +34,16 @@ public:
     double getStepLength()              { return m_stepLength; }
     double getStepSize()                { return m_stepSize; }
     double getDiffusionCoefficient()    { return m_diffusionCoefficient; }
-    bool   getRepulsivePotential()        { return m_statement;}
+    bool   getRepulsivePotential()      { return m_statement;}
+    bool   getImportanceSampling()      { return m_importance_sampling;}
+    bool   getNumericalDerivative()     { return m_numerical_dericative;}
+
+
+
 private:
     bool                            m_statement = false;
+    bool                            m_importance_sampling = false;
+    bool                            m_numerical_dericative = false;
     int                             m_numberOfParticles = 0;
     int                             m_numberOfDimensions = 0;
     int                             m_numberOfMetropolisSteps = 0;

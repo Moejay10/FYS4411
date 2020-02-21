@@ -9,7 +9,7 @@ class Sampler {
 public:
     Sampler(class System* system);
     void setNumberOfMetropolisSteps(int steps);
-    void sample(ofstream& ofile, bool numerical_derivative, bool acceptedStep, int MCcycles);
+    void sample(bool acceptedStep, int MCcycles);
     void printOutputToTerminal();
     void computeAverages();
     void WriteResultstoFile(ofstream& ofile, int MCcycles);

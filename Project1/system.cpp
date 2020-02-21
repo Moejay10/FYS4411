@@ -1,5 +1,7 @@
 #include "system.h"
 #include <cassert>
+#include <fstream>
+#include <iostream>
 #include <random>
 #include "sampler.h"
 #include "particle.h"
@@ -118,7 +120,7 @@ bool System::ImportanceMetropolisStep(int i) {
 
 }
 
-void System::runMetropolisSteps(ofstream& ofile, bool numerical_derivative, bool brute_force, int numberOfMetropolisSteps) {
+void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
     m_particles                 = m_initialState->getParticles();
     m_sampler                   = new Sampler(this);
     m_numberOfMetropolisSteps   = numberOfMetropolisSteps;
@@ -128,14 +130,14 @@ void System::runMetropolisSteps(ofstream& ofile, bool numerical_derivative, bool
     double counter = 0;
     bool acceptedStep;
 
-    if (brute_force == true)
+    if (getImportanceSampling())
     {
     for (int i = 1; i <= numberOfMetropolisSteps; i++) {
 
         // Trial position moving one particle at the time
         for (int j = 0; j < N; j++){
 
-          acceptedStep = metropolisStep(j);
+          acceptedStep = ImportanceMetropolisStep(j);
 
           /* Here you should sample the energy (and maybe other things using
           * the m_sampler instance of the Sampler class. Make sure, though,
@@ -145,7 +147,7 @@ void System::runMetropolisSteps(ofstream& ofile, bool numerical_derivative, bool
           */
 
         }
-        m_sampler->sample(ofile, numerical_derivative, acceptedStep, i);
+        m_sampler->sample(acceptedStep, i);
         counter += acceptedStep;
         m_sampler->WriteResultstoFile(ofile, i);
     }
@@ -154,13 +156,13 @@ void System::runMetropolisSteps(ofstream& ofile, bool numerical_derivative, bool
     //cout << "# Accepted Step = " << counter << endl;
   }
 
-  if (brute_force == false)
+  else
   {
   for (int i = 1; i <= numberOfMetropolisSteps; i++) {
 
       // Trial position moving one particle at the time
       for (int j = 0; j < N; j++){
-        acceptedStep = ImportanceMetropolisStep(j);
+        acceptedStep = metropolisStep(j);
 
         /* Here you should sample the energy (and maybe other things using
         * the m_sampler instance of the Sampler class. Make sure, though,
@@ -169,7 +171,7 @@ void System::runMetropolisSteps(ofstream& ofile, bool numerical_derivative, bool
         * are equilibration steps; m_equilibrationFraction.
         */
       }
-      m_sampler->sample(ofile, numerical_derivative, acceptedStep, i);
+      m_sampler->sample(acceptedStep, i);
       counter += acceptedStep;
       m_sampler->WriteResultstoFile(ofile, i);
   }
@@ -215,11 +217,19 @@ void System::setInitialState(InitialState* initialState) {
 }
 
 
-
 void System::setDiffusionCoefficient(double diffusionCoefficient) {
     m_diffusionCoefficient = diffusionCoefficient;
 }
 
+
 bool System::setRepulsivePotential(bool statement){
   m_statement = statement;
+}
+
+bool System::setImportanceSampling(bool importance_sampling){
+  m_importance_sampling = importance_sampling;
+}
+
+bool System::setNumericalDerivative(bool numerical_derivative){
+  m_numerical_dericative = numerical_derivative;
 }

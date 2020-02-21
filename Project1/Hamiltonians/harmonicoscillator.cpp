@@ -75,7 +75,7 @@ double HarmonicOscillator::computeRepulsiveInteraction(std::vector<Particle*> pa
     double psi = m_system->getWaveFunction()->evaluate(particles); // psi(r)
     double potentialenergy;
     double a = 0.0043;
-    double infty = 1000.0;
+    double infty = 0.0;
 
     potentialenergy = 0;
     for (int i = 0; i < N; i++){
@@ -127,15 +127,7 @@ double HarmonicOscillator::computeLocalEnergyAnalytical(std::vector<Particle*> p
 
     analytical_kineticenergy = m_system->getWaveFunction()->computeDoubleDerivative(particles);
     analytical_E_L = analytical_kineticenergy + potentialenergy + repulsiveInteraction;
-    //analytical_E_L = Dim*N*alpha + (0.5 - 2*alpha*alpha)*sum_r;
 
-/*
-    cout << "Numerical Energy = " << numerical_E_L << endl;
-    cout << "Analytical Energy = " << analytical_E_L << endl;
-    cout << "Numerical Kinetic Energy = " << numerical_kineticenergy<< endl;
-    cout << "Analytical Kinetic Energy = " << analytical_kineticenergy<< endl;
-    cout << "Potential Energy = " << potentialenergy << endl;
-*/
 
     return analytical_E_L;
 }
@@ -163,14 +155,6 @@ double HarmonicOscillator::computeLocalEnergyNumerical(std::vector<Particle*> pa
 
     numerical_kineticenergy = m_system->getWaveFunction()->computeDoubleNumericalDerivative(particles);
     numerical_E_L = numerical_kineticenergy + potentialenergy;
-
-/*
-    cout << "Numerical Energy = " << numerical_E_L << endl;
-    cout << "Analytical Energy = " << analytical_E_L << endl;
-    cout << "Numerical Kinetic Energy = " << numerical_kineticenergy<< endl;
-    cout << "Analytical Kinetic Energy = " << analytical_kineticenergy<< endl;
-    cout << "Potential Energy = " << potentialenergy << endl;
-*/
 
     return numerical_E_L;
 }

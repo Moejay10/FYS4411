@@ -1,4 +1,6 @@
 #include <iostream>
+#include <iomanip>
+#include <fstream>
 #include <cmath>
 #include <vector>
 #include "sampler.h"
@@ -6,7 +8,6 @@
 #include "particle.h"
 #include "Hamiltonians/hamiltonian.h"
 #include "WaveFunctions/wavefunction.h"
-
 using std::cout;
 using std::endl;
 
@@ -20,7 +21,7 @@ void Sampler::setNumberOfMetropolisSteps(int steps) {
     m_numberOfMetropolisSteps = steps;
 }
 
-void Sampler::sample(ofstream& ofile, bool numerical_derivative, bool acceptedStep, int MCcycles) {
+void Sampler::sample(bool acceptedStep, int MCcycles) {
     // Make sure the sampling variable(s) are initialized at the first step.
     if (m_stepNumber == 0) {
         m_cumulativeEnergy = 0;
@@ -30,7 +31,19 @@ void Sampler::sample(ofstream& ofile, bool numerical_derivative, bool acceptedSt
     /* Here you should sample all the interesting things you want to measure.
      * Note that there are (way) more than the single one here currently.
      */
-    if (numerical_derivative == false)
+
+     if (m_system->getNumericalDerivative())
+     {
+     double localEnergy = m_system->getHamiltonian()->
+                          computeLocalEnergyNumerical(m_system->getParticles());
+
+     m_cumulativeEnergy  += localEnergy;
+     m_cumulativeEnergy2  += localEnergy*localEnergy;
+     m_stepNumber++;
+     }
+
+
+    else
     {
     double localEnergy = m_system->getHamiltonian()->
                          computeLocalEnergyAnalytical(m_system->getParticles());
@@ -43,17 +56,18 @@ void Sampler::sample(ofstream& ofile, bool numerical_derivative, bool acceptedSt
     m_cumulativeEnergy  += localEnergy;
     m_cumulativeEnergy2  += localEnergy*localEnergy;
     m_stepNumber++;
-    }
-
-    if (numerical_derivative == true)
+  }
+/*
+    else
     {
     double localEnergy = m_system->getHamiltonian()->
-                         computeLocalEnergyNumerical(m_system->getParticles());
+                         computeLocalEnergyAnalytical(m_system->getParticles());
 
     m_cumulativeEnergy  += localEnergy;
     m_cumulativeEnergy2  += localEnergy*localEnergy;
     m_stepNumber++;
     }
+*/
 }
 
 void Sampler::printOutputToTerminal() {
