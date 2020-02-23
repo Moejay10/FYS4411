@@ -50,7 +50,6 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
 
     double DerPsi     = m_system->getWaveFunction()->
                         derivativeWavefunction(m_system->getParticles());
-
     m_DeltaPsi += DerPsi;
     m_DerivativePsiE += DerPsi*localEnergy;
     m_cumulativeEnergy  += localEnergy;
@@ -131,14 +130,14 @@ void Sampler::WriteResultstoFile(ofstream& ofile, int MCcycles)
   double Variance = CumulativeEnergy2 - CumulativeEnergy*CumulativeEnergy;
   double STD = sqrt(Variance*norm);
 
-  ofile << setiosflags(ios::showpoint | ios::uppercase);
+  //ofile << setiosflags(ios::showpoint | ios::uppercase);
   //ofile << "| Temperature | Energy-Mean | Magnetization-Mean|    Cv    | Susceptibility |\n";
 
 
-  ofile << "\n";
+  //ofile << "\n";
   //ofile << setw(15) << setprecision(8) << MCcycles; // # Monte Carlo cycles (sweeps per lattice)
-  ofile << setw(15) << setprecision(8) << Energy; // Mean energy
-  //ofile << setw(15) << setprecision(8) << Variance; // Variance
+  ofile << setw(15) << setprecision(8) << Energy << endl; // Mean energy
+  //ofile << setw(15) << setprecision(8) << m_cumulativeEnergy; // Variance
   //ofile << setw(15) << setprecision(8) << STD; // # Standard deviation
 
 

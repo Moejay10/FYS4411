@@ -3,6 +3,9 @@
 #include <fstream>
 #include <random>
 #include <string>
+#include <cmath>
+#include <math.h>
+#include <cassert>
 #include "system.h"
 #include "particle.h"
 #include "sampler.h"
@@ -165,6 +168,11 @@ cin >> numberOfDimensions;
   cout << "\n" << "The number of Monte Carlo cycles: " << endl;
   cout << "\n" << "Write here " << endl;
   cin >> numberOfSteps;
+  double x = log2(numberOfSteps);
+  int y = (int) x;
+  double diff = x-y;
+  cout << "Warning: log2(MCcycles) must be an integer" << endl;
+
 
   cout << "\n" << "The number of Particles: " << endl;
   cout << "\n" << "Write here " << endl;
@@ -178,9 +186,9 @@ cin >> numberOfDimensions;
 
   string file = "Python/Results/Energies.dat";
   ofile.open(file);
-  ofile << setiosflags(ios::showpoint | ios::uppercase);
+  //ofile << setiosflags(ios::showpoint | ios::uppercase);
   //ofile << setw(15) << setprecision(8) << "MCcycles"; // # Monte Carlo cycles (sweeps per lattice)
-  ofile << setw(15) << setprecision(8) << "Energy"; // Mean energy
+  ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
   //ofile << setw(15) << setprecision(8) << "Variance"; // Variance
   //ofile << setw(15) << setprecision(8) << "STD"; // # Standard deviation
 
@@ -207,15 +215,15 @@ cin >> numberOfDimensions;
     int numberOfParticles;
     int numberOfDimensions;
     double omega            = 1.0;          // Oscillator frequency.
-    double alpha            = 0.3;          // Variational parameter.
+    double alpha            = 0.5;          // Variational parameter.
     double beta             = 2.82843;          // Variational parameter.
     double gamma            = beta;          // Variational parameter.
     double stepLength       = 1.0;          // Metropolis step length.
     double stepSize         = 1e-4;         // Stepsize in the numerical derivative for kinetic energy
-    double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
+    double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.
     double equilibration    = 0.1;          // Amount of the total steps used
     // for equilibration.
-    
+
 
   cout << "\n" << "Which parameters do you want to use?: " << endl;
 
@@ -233,6 +241,13 @@ cin >> numberOfDimensions;
   cin >> numberOfDimensions;
 
 
+  string file = "Exercise_e.dat";
+  ofile.open(file);
+  ofile << setiosflags(ios::showpoint | ios::uppercase);
+  ofile << setw(15) << setprecision(8) << "Energy"; // Mean energy
+  ofile << setw(15) << setprecision(8) << "CumulativeEnergy"; // # Monte Carlo cycles (sweeps per lattice)
+
+
       // Analyitcal Run
       cout << "-------------- \n" << "Repulsive Interaction \n" << "-------------- \n" << endl;
       System* system = new System();
@@ -242,7 +257,10 @@ cin >> numberOfDimensions;
       system->setEquilibrationFraction    (equilibration);
       system->setDiffusionCoefficient     (diffusionCoefficient);
       system->setRepulsivePotential       (true);
+      //system->setImportanceSampling       (true);
       system->runMetropolisSteps          (ofile, numberOfSteps);
+
+      ofile.close();
 
   }
 

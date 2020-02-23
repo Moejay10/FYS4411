@@ -46,13 +46,13 @@ double HarmonicOscillator::computePotentialEnergy(std::vector<Particle*> particl
         else{
             temp = m_system->getParticles()[i]->getPosition()[j];
         }
-        r2 += temp*temp; // x^2 + y^2 + z^2
+        r2 += temp*temp; // x^2 + y^2 + gamma^2*z^2
       }
       potentialenergy += r2;
     }
 
     potentialenergy *= 0.5;
-
+    //cout << potentialenergy << endl;
     return potentialenergy;
 }
 
@@ -79,12 +79,12 @@ double HarmonicOscillator::computeRepulsiveInteraction(std::vector<Particle*> pa
 
     potentialenergy = 0;
     for (int i = 0; i < N; i++){
-      ri = 0;
       for (int j = i+1; j < N; j++){
       rj = 0;
+      ri = 0;
         for (int k = 0; k < Dim; k++){
-          temp_i = gamma*m_system->getParticles()[i]->getPosition()[k];
-          temp_j = gamma*m_system->getParticles()[j]->getPosition()[k];
+          temp_i = m_system->getParticles()[i]->getPosition()[k];
+          temp_j = m_system->getParticles()[j]->getPosition()[k];
           ri += temp_i*temp_i; // x^2 + y^2 + z^2
           rj += temp_j*temp_j; // x^2 + y^2 + z^2
           }
@@ -97,7 +97,6 @@ double HarmonicOscillator::computeRepulsiveInteraction(std::vector<Particle*> pa
         }
       }
     }
-
     return potentialenergy;
 }
 
@@ -112,11 +111,9 @@ double HarmonicOscillator::computeLocalEnergyAnalytical(std::vector<Particle*> p
      * getWaveFunction method in the m_system object in the super-class, i.e.
      * m_system->getWaveFunction()...
      */
-    double alpha = m_system->getWaveFunction()->getParameters()[0];
     int N = m_system->getNumberOfParticles(); // Number of Particles
     int Dim = m_system->getNumberOfDimensions(); // The Dimension
     double r2, temp;
-    double psi = m_system->getWaveFunction()->evaluate(particles); // psi(r)
     double analytical_kineticenergy, potentialenergy, analytical_E_L;
     double repulsiveInteraction = 0;
 
@@ -128,7 +125,7 @@ double HarmonicOscillator::computeLocalEnergyAnalytical(std::vector<Particle*> p
     analytical_kineticenergy = m_system->getWaveFunction()->computeDoubleDerivative(particles);
     analytical_E_L = analytical_kineticenergy + potentialenergy + repulsiveInteraction;
 
-
+    //cout << analytical_kineticenergy << " " << potentialenergy << " " << analytical_E_L <<  endl;
     return analytical_E_L;
 }
 

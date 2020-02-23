@@ -38,7 +38,7 @@ bool System::metropolisStep(int i) {
      // Trial position moving one particle at the time in all dimensions
      for (int k = 0; k < Dim; k++)
      {
-        m_particles[i]->adjustPosition(a, k);
+        m_particles[i]->adjustPosition(m_stepLength*a, k);
      }
      wfnew = getWaveFunction()->evaluate(m_particles);
 
@@ -51,7 +51,7 @@ bool System::metropolisStep(int i) {
   else{
 
     for (int k = 0; k < Dim; k++){
-        m_particles[i]->adjustPosition(-a, k);
+        m_particles[i]->adjustPosition(-m_stepLength*a, k);
      }
 
     return false;
@@ -129,7 +129,7 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
     int N = getNumberOfParticles();
     double counter = 0;
     bool acceptedStep;
-
+    
     if (getImportanceSampling())
     {
     for (int i = 1; i <= numberOfMetropolisSteps; i++) {
@@ -153,32 +153,35 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
     }
     m_sampler->computeAverages();
     m_sampler->printOutputToTerminal();
-    //cout << "# Accepted Step = " << counter << endl;
+    cout << "# Accepted Step = " << counter << endl;
   }
 
   else
   {
-  for (int i = 1; i <= numberOfMetropolisSteps; i++) {
+    for (int i = 1; i <= numberOfMetropolisSteps; i++) {
 
-      // Trial position moving one particle at the time
-      for (int j = 0; j < N; j++){
-        acceptedStep = metropolisStep(j);
+        // Trial position moving one particle at the time
+        for (int j = 0; j < N; j++){
 
-        /* Here you should sample the energy (and maybe other things using
-        * the m_sampler instance of the Sampler class. Make sure, though,
-        * to only begin sampling after you have let the system equilibrate
-        * for a while. You may handle this using the fraction of steps which
-        * are equilibration steps; m_equilibrationFraction.
-        */
-      }
-      m_sampler->sample(acceptedStep, i);
-      counter += acceptedStep;
-      m_sampler->WriteResultstoFile(ofile, i);
+          acceptedStep = metropolisStep(j);
+
+          /* Here you should sample the energy (and maybe other things using
+          * the m_sampler instance of the Sampler class. Make sure, though,
+          * to only begin sampling after you have let the system equilibrate
+          * for a while. You may handle this using the fraction of steps which
+          * are equilibration steps; m_equilibrationFraction.
+          */
+
+        }
+        m_sampler->sample(acceptedStep, i);
+        counter += acceptedStep;
+        m_sampler->WriteResultstoFile(ofile, i);
+    }
+    m_sampler->computeAverages();
+    m_sampler->printOutputToTerminal();
+    cout << "# Accepted Step = " << counter << endl;
   }
-  m_sampler->computeAverages();
-  m_sampler->printOutputToTerminal();
-  //cout << "# Accepted Step = " << counter << endl;
-}
+
 }
 
 void System::setNumberOfParticles(int numberOfParticles) {

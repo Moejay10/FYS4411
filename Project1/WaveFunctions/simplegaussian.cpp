@@ -39,7 +39,7 @@ double SimpleGaussian::evaluate(std::vector<class Particle*> particles) {
       r2 = 0;
       for (int j = 0; j < Dim; j++){
         if (j == 2){
-            temp = beta*m_system->getParticles()[i]->getPosition()[j];
+            temp = sqrt(beta)*m_system->getParticles()[i]->getPosition()[j];
         }
         else{
             temp = m_system->getParticles()[i]->getPosition()[j];
@@ -101,7 +101,6 @@ double SimpleGaussian::computeDoubleDerivative(std::vector<class Particle*> part
      double r2, temp;
      double alpha = m_parameters[0];
      double beta = m_parameters[1];
-     double psi_T = evaluate(particles);
      double factor, nabla2;
 
      nabla2 = 0;
@@ -110,7 +109,7 @@ double SimpleGaussian::computeDoubleDerivative(std::vector<class Particle*> part
        r2 = 0;
        for (int j = 0; j < Dim; j++){
          if (j == 2){
-             temp = beta*m_system->getParticles()[i]->getPosition()[j];
+             temp = sqrt(beta)*m_system->getParticles()[i]->getPosition()[j];
          }
          else{
              temp = m_system->getParticles()[i]->getPosition()[j];
@@ -121,7 +120,7 @@ double SimpleGaussian::computeDoubleDerivative(std::vector<class Particle*> part
        }
 
     nabla2 *= -2*alpha*alpha;
-    nabla2 += N*Dim*alpha; // Why not multiply with N?
+    nabla2 += N*Dim*alpha; 
 
     return nabla2;
 }
