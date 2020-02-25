@@ -257,7 +257,7 @@ cin >> numberOfDimensions;
       system->setEquilibrationFraction    (equilibration);
       system->setDiffusionCoefficient     (diffusionCoefficient);
       system->setRepulsivePotential       (true);
-      system->setImportanceSampling       (true);
+      //system->setImportanceSampling       (true);
       system->runMetropolisSteps          (ofile, numberOfSteps);
 
       ofile.close();

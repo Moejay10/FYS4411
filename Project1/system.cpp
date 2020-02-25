@@ -129,7 +129,7 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
     int N = getNumberOfParticles();
     double counter = 0;
     bool acceptedStep;
-    
+
     if (getImportanceSampling())
     {
     for (int i = 1; i <= numberOfMetropolisSteps; i++) {
@@ -147,9 +147,11 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
           */
 
         }
-        m_sampler->sample(acceptedStep, i);
+        //if (i >= m_equilibrationFraction*m_numberOfMetropolisSteps){
+          m_sampler->sample(acceptedStep, i);
+          m_sampler->WriteResultstoFile(ofile, i);
+        //}
         counter += acceptedStep;
-        m_sampler->WriteResultstoFile(ofile, i);
     }
     m_sampler->computeAverages();
     m_sampler->printOutputToTerminal();
@@ -173,9 +175,11 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
           */
 
         }
-        m_sampler->sample(acceptedStep, i);
+        //if (i >= m_equilibrationFraction*m_numberOfMetropolisSteps){
+          m_sampler->sample(acceptedStep, i);
+          m_sampler->WriteResultstoFile(ofile, i);
+        //}
         counter += acceptedStep;
-        m_sampler->WriteResultstoFile(ofile, i);
     }
     m_sampler->computeAverages();
     m_sampler->printOutputToTerminal();

@@ -109,7 +109,7 @@ double SimpleGaussian::computeDoubleDerivative(std::vector<class Particle*> part
        r2 = 0;
        for (int j = 0; j < Dim; j++){
          if (j == 2){
-             temp = sqrt(beta)*m_system->getParticles()[i]->getPosition()[j];
+             temp = beta*m_system->getParticles()[i]->getPosition()[j];
          }
          else{
              temp = m_system->getParticles()[i]->getPosition()[j];
@@ -120,7 +120,14 @@ double SimpleGaussian::computeDoubleDerivative(std::vector<class Particle*> part
        }
 
     nabla2 *= -2*alpha*alpha;
-    nabla2 += N*Dim*alpha; 
+
+    if (m_system->getRepulsivePotential()){
+      nabla2 += N*(2*alpha + alpha*beta);
+    }
+
+    else {
+      nabla2 += N*Dim*alpha;
+    }
 
     return nabla2;
 }
