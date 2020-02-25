@@ -244,8 +244,8 @@ cin >> numberOfDimensions;
   string file = "Exercise_e.dat";
   ofile.open(file);
   ofile << setiosflags(ios::showpoint | ios::uppercase);
-  ofile << setw(15) << setprecision(8) << "Energy"; // Mean energy
-  ofile << setw(15) << setprecision(8) << "CumulativeEnergy"; // # Monte Carlo cycles (sweeps per lattice)
+  ofile << setw(15) << setprecision(8) << "Energy "; // Mean energy
+  ofile << setw(15) << setprecision(8) << "  CumulativeEnergy" << endl;; // # Monte Carlo cycles (sweeps per lattice)
 
 
       // Analyitcal Run
@@ -257,7 +257,7 @@ cin >> numberOfDimensions;
       system->setEquilibrationFraction    (equilibration);
       system->setDiffusionCoefficient     (diffusionCoefficient);
       system->setRepulsivePotential       (true);
-      //system->setImportanceSampling       (true);
+      system->setImportanceSampling       (true);
       system->runMetropolisSteps          (ofile, numberOfSteps);
 
       ofile.close();

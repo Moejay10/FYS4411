@@ -43,7 +43,7 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
      }
 
 
-    else
+    else if (m_system->getRepulsivePotential())
     {
     double localEnergy = m_system->getHamiltonian()->
                          computeLocalEnergyAnalytical(m_system->getParticles());
@@ -55,8 +55,9 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
     m_cumulativeEnergy  += localEnergy;
     m_cumulativeEnergy2  += localEnergy*localEnergy;
     m_stepNumber++;
-  }
-/*
+    }
+
+
     else
     {
     double localEnergy = m_system->getHamiltonian()->
@@ -66,7 +67,7 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
     m_cumulativeEnergy2  += localEnergy*localEnergy;
     m_stepNumber++;
     }
-*/
+
 }
 
 void Sampler::printOutputToTerminal() {
@@ -136,8 +137,8 @@ void Sampler::WriteResultstoFile(ofstream& ofile, int MCcycles)
 
   //ofile << "\n";
   //ofile << setw(15) << setprecision(8) << MCcycles; // # Monte Carlo cycles (sweeps per lattice)
-  ofile << setw(15) << setprecision(8) << Energy << endl; // Mean energy
-  //ofile << setw(15) << setprecision(8) << m_cumulativeEnergy; // Variance
+  ofile << setw(15) << setprecision(8) << Energy; // Mean energy
+  ofile << setw(15) << setprecision(8) << m_cumulativeEnergy << endl; // Variance
   //ofile << setw(15) << setprecision(8) << STD; // # Standard deviation
 
 
