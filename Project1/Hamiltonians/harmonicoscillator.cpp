@@ -171,13 +171,19 @@ std::vector<double> HarmonicOscillator::computeQuantumForce(std::vector<Particle
    int Dim = m_system->getNumberOfDimensions(); // The Dimension
    int N = m_system->getNumberOfParticles(); // Number of Particles
    double alpha = m_system->getWaveFunction()->getParameters()[0];
+   double beta = m_system->getWaveFunction()->getParameters()[1];
 
    std::vector<double> force;
 
      for (int j = 0; j < Dim; j++){
-       force.push_back(-4*alpha*m_system->getParticles()[i]->getPosition()[j]);
-     }
+       if (j==2){
+         force.push_back(-4*alpha*beta*m_system->getParticles()[i]->getPosition()[j]);
+        }
 
+       else{
+         force.push_back(-4*alpha*m_system->getParticles()[i]->getPosition()[j]);
+       }
+     }
 
   return force;
   }

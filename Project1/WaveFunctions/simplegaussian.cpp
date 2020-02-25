@@ -132,6 +132,66 @@ double SimpleGaussian::computeDoubleDerivative(std::vector<class Particle*> part
     return nabla2;
 }
 
+
+double SimpleGaussian::computeDoubleDerivativeInteraction(std::vector<class Particle*> particles) {
+    /* All wave functions need to implement this function, so you need to
+     * find the double derivative analytically. Note that by double derivative,
+     * we actually mean the sum of the Laplacians with respect to the
+     * coordinates of each particle.
+     *
+     * This quantity is needed to compute the (local) energy (consider the
+     * Schrödinger equation to see how the two are related).
+     */
+     int Dim = m_system->getNumberOfDimensions(); // The Dimension
+     int N = m_system->getNumberOfParticles(); // Number of Particles
+     double r, temp;
+     double r_i, r_j, temp_i, temp_j;
+     double alpha = m_parameters[0];
+     double beta = m_parameters[1];
+     double term1, term2;
+
+     term1 = 0;
+     //factor = -0.5*(-2*Dim*alpha + 4*alpha*alpha);
+     for (int i = 0; i < N; i++){
+       r = 0;
+       for (int j = 0; j < Dim; j++){
+         if (j == 2){
+             temp = beta*m_system->getParticles()[i]->getPosition()[j];
+         }
+         else{
+             temp = m_system->getParticles()[i]->getPosition()[j];
+         }
+         r += temp; // x + y + beta*z
+         }
+       term1 += -4*alpha*r;
+       }
+
+       term2 = 0;
+       for (int i = 0; i < N; i++){
+         for (int j = i+1; j < N; j++){
+         rj = 0;
+         ri = 0;
+           for (int k = 0; k < Dim; k++){
+             temp_i = m_system->getParticles()[i]->getPosition()[k];
+             temp_j = m_system->getParticles()[j]->getPosition()[k];
+             ri += temp_i*temp_i; // x^2 + y^2 + z^2
+             rj += temp_j*temp_j; // x^2 + y^2 + z^2
+             }
+           ri = sqrt(ri);
+           rj = sqrt(rj);
+           diff = fabs(ri - rj);
+
+           if (diff <= a){
+             potentialenergy += infty;
+           }
+         }
+       }
+
+
+
+    return nabla2;
+}
+
 double SimpleGaussian::computeDoubleNumericalDerivative(std::vector<class Particle*> particles) {
     /* All wave functions need to implement this function, so you need to
      * find the double derivative analytically. Note that by double derivative,
