@@ -127,7 +127,7 @@ double HarmonicOscillator::computeLocalEnergyAnalytical(std::vector<Particle*> p
     analytical_kineticenergy = m_system->getWaveFunction()->computeDoubleDerivative(particles) + correlation;
     analytical_E_L = analytical_kineticenergy + potentialenergy + repulsiveInteraction;
 
-    cout << analytical_kineticenergy << " " << potentialenergy << " " << correlation << " " << analytical_E_L <<  endl;
+    //cout << analytical_kineticenergy << " " << potentialenergy << " " << correlation << " " << analytical_E_L <<  endl;
     return analytical_E_L;
 }
 

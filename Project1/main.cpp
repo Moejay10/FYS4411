@@ -45,7 +45,7 @@ if (Task == "b")
   double beta             = 1.0;          // Variational parameter.
   double gamma            = 1.0;          // Variational parameter.
   double a                = 0.0;          // Interaction parameter.
-  double stepLength       = 1.0;          // Metropolis step length.
+  double stepLength       = 2.0;          // Metropolis step length.
   double stepSize         = 1e-4;         // Stepsize in the numerical derivative for kinetic energy
   double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
   double equilibration    = 0.1;          // Amount of the total steps used
@@ -78,9 +78,10 @@ cin >> numberOfDimensions;
     system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
     system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
     system->setEquilibrationFraction    (equilibration);
+    system->setStepLength               (stepLength);
     system->setStepSize                 (stepSize);
     system->runMetropolisSteps          (ofile, numberOfSteps);
-
+/*
     // Numerical Run
     cout << "-------------- \n" << "Numerical Run \n" << "-------------- \n" << endl;
     system = new System();
@@ -89,9 +90,10 @@ cin >> numberOfDimensions;
     system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
     system->setEquilibrationFraction    (equilibration);
     system->setStepSize                 (stepSize);
+    system->setStepLength               (stepLength);
     system->setNumericalDerivative      (true);
     system->runMetropolisSteps          (ofile, numberOfSteps);
-
+*/
   }
 
 
@@ -102,7 +104,7 @@ cin >> numberOfDimensions;
   int numberOfParticles;
   int numberOfDimensions;
   double omega            = 1.0;          // Oscillator frequency.
-  double alpha            = 0.6;          // Variational parameter.
+  double alpha            = 0.4;          // Variational parameter.
   double beta             = 1.0;          // Variational parameter.
   double gamma            = 1.0;          // Variational parameter.
   double a                = 0.0;          // Interaction parameter.

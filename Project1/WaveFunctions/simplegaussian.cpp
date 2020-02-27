@@ -124,14 +124,14 @@ double SimpleGaussian::computeDoubleDerivative(std::vector<class Particle*> part
        }
 
     nabla2 *= -2*alpha*alpha;
-
+/*
     if (m_system->getRepulsivePotential() and Dim == 3){
       nabla2 += N*(2*alpha + alpha*beta);
     }
+*/
 
-    else {
       nabla2 += N*Dim*alpha;
-    }
+    
 
     return nabla2;
 }

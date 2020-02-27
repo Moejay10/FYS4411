@@ -25,7 +25,7 @@ bool System::metropolisStep(int i) {
      // Set up the uniform distribution for x \in [[0, 1]
      std::uniform_real_distribution<double> RandomNumberGenerator(0.0,1.0);
 
-     double a = RandomNumberGenerator(gen); // Random number
+     double a = RandomNumberGenerator(gen) - 0.5; // Random number
 
      int Dim = getNumberOfDimensions(); // The Dimensions
 
@@ -43,7 +43,8 @@ bool System::metropolisStep(int i) {
      wfnew = getWaveFunction()->evaluate(m_particles);
 
      // Metropolis test
-	if ( RandomNumberGenerator(gen) <= wfnew*wfnew/(wfold*wfold) ){
+     cout << "wavefunc " << wfnew*wfnew/(wfold*wfold) << endl;
+	if ( RandomNumberGenerator(gen) < wfnew*wfnew/(wfold*wfold) ){
 
     return true;
   }
@@ -72,7 +73,7 @@ bool System::ImportanceMetropolisStep(int i) {
      // Set up the uniform distribution for x \in [[0, 1]
      std::uniform_real_distribution<double> RandomNumberGenerator(0.0,1.0);
 
-     double a = RandomNumberGenerator(gen); // Random number
+     double a = RandomNumberGenerator(gen) - 0.5; // Random number
 
      int Dim = getNumberOfDimensions(); // The Dimensions
 
@@ -103,7 +104,7 @@ bool System::ImportanceMetropolisStep(int i) {
      }
      greensFunction = exp(greensFunction);
      // Metropolis test
-	if ( RandomNumberGenerator(gen) <= greensFunction*wfnew*wfnew/(wfold*wfold) ){
+	if ( RandomNumberGenerator(gen) < greensFunction*wfnew*wfnew/(wfold*wfold) ){
 
     return true;
   }
