@@ -7,6 +7,7 @@
 #include <iostream>
 #include <armadillo>
 using namespace std;
+using namespace arma;
 
 SimpleGaussian::SimpleGaussian(System* system, double alpha, double beta, double gamma, double a) :
         WaveFunction(system) {
@@ -43,12 +44,12 @@ double SimpleGaussian::evaluate(std::vector<class Particle*> particles) {
       r2 = 0;
       for (int j = 0; j < Dim; j++){
         if (j == 2){
-            temp = sqrt(beta)*m_system->getParticles()[i]->getPosition()[j];
+            temp = beta*m_system->getParticles()[i]->getPosition()[j];
         }
         else{
             temp = m_system->getParticles()[i]->getPosition()[j];
         }
-        r2 += temp*temp; // x^2 + y^2 + z^2
+        r2 += temp*temp; // x^2 + y^2 + beta*z^2
       }
       sum_r2 += r2;
       }
@@ -108,7 +109,6 @@ double SimpleGaussian::computeDoubleDerivative(std::vector<class Particle*> part
      double factor, nabla2;
 
      nabla2 = 0;
-     //factor = -0.5*(-2*Dim*alpha + 4*alpha*alpha);
      for (int i = 0; i < N; i++){
        r2 = 0;
        for (int j = 0; j < Dim; j++){
@@ -170,83 +170,70 @@ double SimpleGaussian::computeDoubleDerivativeInteraction(std::vector<class Part
 
      vec r_ij(Dim);
      vec r_ik(Dim);
+     vec force(Dim);
+
      double diff_ij, diff_ik;
-     double term1, term2;
+     double term1, term2, term3;
      double total_sum, sum1, sum2, sum3;
 
 
-     term1 = 0;
-     for (int i = 0; i < N; i++){
+     for (int i = 0; i < N-1; i++){
 
        r = 0;
        for (int d = 0; d < Dim; d++){
          if (d == 2){
-           temp = beta*m_system->getParticles()[i]->getPosition()[j];
+           force(d) = -4*alpha*beta*m_system->getParticles()[i]->getPosition()[d];
          }
          else{
-           temp = m_system->getParticles()[i]->getPosition()[j];
-         }
-         r += temp; // x + y + beta*z
-       }
-       term1 += -4*alpha*r;
-
-
-     term2 = 0;
-       for (int j = i+1; j < N; j++){
-         for (int d = 0; d < Dim; d++){
-            r_ij(d) = m_system->getParticles()[i]-getPosition()[d]- m_system->getParticles()[j]-getPosition()[d]
-            diff_ij += r_ij(d)*r_ij(d);
+           force(d) = -4*alpha*m_system->getParticles()[i]->getPosition()[d];
          }
        }
 
 
-     }
-/*
      term1 = 0;
      term2 = 0;
-     sum2 = 0;
-     sum3 = 0;
-     for (int k = 0; k < N; k++){
-       for (int i = k+1; i < N; i++){
-         for (int j = k+2; j < N; j++){
-           r = 0;
-           r_k = 0;
-           r_i = 0;
-           r_j = 0;
-            for (int d = 0; d < Dim; d++){
-              if (k == 2){
-                temp = beta*m_system->getParticles()[k]->getPosition()[d];
-                temp_k = sqrt(beta)*m_system->getParticles()[k]->getPosition()[d];
-                temp_i = sqrt(beta)*m_system->getParticles()[i]->getPosition()[d];
-                temp_j = sqrt(beta)*m_system->getParticles()[j]->getPosition()[d];
-                }
-              else{
-                temp = m_system->getParticles()[k]->getPosition()[d];
-                temp_k = m_system->getParticles()[k]->getPosition()[d];
-                temp_i = m_system->getParticles()[i]->getPosition()[d];
-                temp_j = m_system->getParticles()[j]->getPosition()[d];
-                }
-              r += temp; // x + y + beta*z
-              r_k += temp_k*temp_k; // x^2 + y^2 + beta*z^2
-              r_i += temp_i*temp_i; // x^2 + y^2 + beta*z^2
-              r_j += temp_j*temp_j; // x^2 + y^2 + beta*z^2
-              }
-            term1 += -4*alpha*r;
+     for (int j = N-1; j > i; j--){
+       for (int d = 0; d < Dim; d++){
+            r_ij(d) = m_system->getParticles()[i]->getPosition()[d] - m_system->getParticles()[j]->getPosition()[d];
+            diff_ij += r_ij(d)*r_ij(d);
+            term1 += force(d)*r_ij(d);
+         }
+       }
+       diff_ij = sqrt(diff_ij);
+       sum1 = term1/diff_ij * computeFirstDerivativeCorrelation(diff_ij);
 
-            r_ki = fabs(r_k - r_i); // r_ki
-            r_kj = fabs(r_k - r_j); // r_kj
+       diff_ij = 0;
+       diff_ik = 0;
+       for (int j = N-1; j > i; j--){
+         for (int k = N-1; k > i; k--){
+           for (int d = 0; d < Dim; d++){
+             r_ij(d) = m_system->getParticles()[i]->getPosition()[d] - m_system->getParticles()[j]->getPosition()[d];
+             r_ik(d) = m_system->getParticles()[i]->getPosition()[d] - m_system->getParticles()[k]->getPosition()[d];
+             diff_ij += r_ij(d)*r_ij(d);
+             diff_ik += r_ik(d)*r_ik(d);
+             term2   += r_ij(d)*r_ik(d);
+           }
+         }
+       }
+       diff_ij = sqrt(diff_ij);
+       diff_ik = sqrt(diff_ik);
+       sum2 = term2/(diff_ij*diff_ik) * computeFirstDerivativeCorrelation(diff_ij)*computeFirstDerivativeCorrelation(diff_ik);
 
-            term2 += (r_k-r_i)/r_ki * computeFirstDerivativeCorrelation(r_ki);
-            sum2  += (r_k-r_i)*(r_k-r_j)/(r_ki*r_kj) * computeFirstDerivativeCorrelation(r_ki)*computeFirstDerivativeCorrelation(r_kj);
-            sum3  += computeDoubleDerivativeCorrelation(r_ki) + 2/r_ki *computeFirstDerivativeCorrelation(r_ki);
-            }
-          }
-        }
-       sum1 = term1*term2;
+       diff_ij = 0;
+       for (int j = N-1; j > i; j--){
+         for (int d = 0; d < Dim; d++){
+           r_ij(d) = m_system->getParticles()[i]->getPosition()[d]- m_system->getParticles()[j]->getPosition()[d];
+           diff_ij += r_ij(d)*r_ij(d);
+         }
+       }
+       diff_ij = sqrt(diff_ij);
+       sum3 = computeDoubleDerivativeCorrelation(diff_ij) + 2/diff_ij * computeFirstDerivativeCorrelation(diff_ij);
 
+       total_sum += sum1 + sum2 + sum3;
+       //cout << sum1 << " " << sum2 << " " << sum3 << endl;
+     }
 
-       total_sum = sum1 + sum2 + sum3;
-*/
+    total_sum = -0.5*total_sum;
 
     return total_sum;
 }

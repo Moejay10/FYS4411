@@ -41,7 +41,7 @@ if (Task == "b")
   int numberOfParticles;
   int numberOfDimensions;
   double omega            = 1.0;          // Oscillator frequency.
-  double alpha            = 0.5;          // Variational parameter.
+  double alpha            = 0.4;          // Variational parameter.
   double beta             = 1.0;          // Variational parameter.
   double gamma            = 1.0;          // Variational parameter.
   double a                = 0.0;          // Interaction parameter.
@@ -102,7 +102,7 @@ cin >> numberOfDimensions;
   int numberOfParticles;
   int numberOfDimensions;
   double omega            = 1.0;          // Oscillator frequency.
-  double alpha            = 0.5;          // Variational parameter.
+  double alpha            = 0.6;          // Variational parameter.
   double beta             = 1.0;          // Variational parameter.
   double gamma            = 1.0;          // Variational parameter.
   double a                = 0.0;          // Interaction parameter.
@@ -218,7 +218,7 @@ cin >> numberOfDimensions;
     int numberOfParticles;
     int numberOfDimensions;
     double omega            = 1.0;          // Oscillator frequency.
-    double alpha            = 0.5;          // Variational parameter.
+    double alpha            = 0.4;          // Variational parameter.
     double beta             = 2.82843;      // Variational parameter.
     double gamma            = beta;         // Variational parameter.
     double a                = 0.0043;       // Interaction parameter.

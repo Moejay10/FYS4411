@@ -52,7 +52,7 @@ void RandomUniform::setupInitialState() {
              * obviously NOT a good idea).
              */
 
-            position.push_back(0 );
+            position.push_back(RandomNumberGenerator(gen) + i + j);
         }
         m_particles.push_back(new Particle());
         m_particles.at(i)->setNumberOfDimensions(m_numberOfDimensions);
