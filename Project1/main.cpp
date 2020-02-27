@@ -44,6 +44,7 @@ if (Task == "b")
   double alpha            = 0.5;          // Variational parameter.
   double beta             = 1.0;          // Variational parameter.
   double gamma            = 1.0;          // Variational parameter.
+  double a                = 0.0;          // Interaction parameter.
   double stepLength       = 1.0;          // Metropolis step length.
   double stepSize         = 1e-4;         // Stepsize in the numerical derivative for kinetic energy
   double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
@@ -74,7 +75,7 @@ cin >> numberOfDimensions;
     cout << "-------------- \n" << "Analyitcal Run \n" << "-------------- \n" << endl;
     System* system = new System();
     system->setHamiltonian              (new HarmonicOscillator(system, omega));
-    system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma));
+    system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
     system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
     system->setEquilibrationFraction    (equilibration);
     system->setStepSize                 (stepSize);
@@ -84,7 +85,7 @@ cin >> numberOfDimensions;
     cout << "-------------- \n" << "Numerical Run \n" << "-------------- \n" << endl;
     system = new System();
     system->setHamiltonian              (new HarmonicOscillator(system, omega));
-    system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma));
+    system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
     system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
     system->setEquilibrationFraction    (equilibration);
     system->setStepSize                 (stepSize);
@@ -104,6 +105,7 @@ cin >> numberOfDimensions;
   double alpha            = 0.5;          // Variational parameter.
   double beta             = 1.0;          // Variational parameter.
   double gamma            = 1.0;          // Variational parameter.
+  double a                = 0.0;          // Interaction parameter.
   double stepLength       = 1.0;          // Metropolis step length.
   double stepSize         = 1e-4;         // Stepsize in the numerical derivative for kinetic energy
   double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
@@ -135,7 +137,7 @@ cin >> numberOfDimensions;
 
     System* system = new System();
     system->setHamiltonian              (new HarmonicOscillator(system, omega));
-    system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma));
+    system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
     system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
     system->setEquilibrationFraction    (equilibration);
     system->setStepLength               (stepLength);
@@ -155,6 +157,7 @@ cin >> numberOfDimensions;
     double alpha            = 0.5;          // Variational parameter.
     double beta             = 1.0;          // Variational parameter.
     double gamma            = 1.0;          // Variational parameter.
+    double a                = 0.0;          // Interaction parameter.
     double stepLength       = 1.0;          // Metropolis step length.
     double stepSize         = 1e-4;         // Stepsize in the numerical derivative for kinetic energy
     double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
@@ -197,7 +200,7 @@ cin >> numberOfDimensions;
       cout << "-------------- \n" << "Statistical Analysis \n" << "-------------- \n" << endl;
       System* system = new System();
       system->setHamiltonian              (new HarmonicOscillator(system, omega));
-      system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma));
+      system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
       system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
       system->setEquilibrationFraction    (equilibration);
       system->setStepLength               (stepLength);
@@ -216,8 +219,9 @@ cin >> numberOfDimensions;
     int numberOfDimensions;
     double omega            = 1.0;          // Oscillator frequency.
     double alpha            = 0.5;          // Variational parameter.
-    double beta             = 2.82843;          // Variational parameter.
-    double gamma            = beta;          // Variational parameter.
+    double beta             = 2.82843;      // Variational parameter.
+    double gamma            = beta;         // Variational parameter.
+    double a                = 0.0043;       // Interaction parameter.
     double stepLength       = 1.0;          // Metropolis step length.
     double stepSize         = 1e-4;         // Stepsize in the numerical derivative for kinetic energy
     double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.
@@ -252,7 +256,7 @@ cin >> numberOfDimensions;
       cout << "-------------- \n" << "Repulsive Interaction \n" << "-------------- \n" << endl;
       System* system = new System();
       system->setHamiltonian              (new HarmonicOscillator(system, omega));
-      system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma));
+      system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
       system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
       system->setEquilibrationFraction    (equilibration);
       system->setDiffusionCoefficient     (diffusionCoefficient);
@@ -271,8 +275,9 @@ cin >> numberOfDimensions;
     int numberOfDimensions;
     double omega            = 1.0;          // Oscillator frequency.
     double alpha            = 0.1;          // Variational parameter.
-    double beta             = 2.82843;          // Variational parameter.
-    double gamma            = beta;          // Variational parameter.
+    double beta             = 2.82843;      // Variational parameter.
+    double gamma            = beta;         // Variational parameter.
+    double a                = 0.0043;       // Interaction parameter.
     double stepLength       = 1.0;          // Metropolis step length.
     double stepSize         = 1e-4;         // Stepsize in the numerical derivative for kinetic energy
     double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
@@ -312,7 +317,7 @@ cin >> numberOfDimensions;
         System* system = new System();
 
         system->setHamiltonian              (new HarmonicOscillator(system, omega));
-        system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma));
+        system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
         system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
         system->setEquilibrationFraction    (equilibration);
         system->setStepLength               (stepLength);

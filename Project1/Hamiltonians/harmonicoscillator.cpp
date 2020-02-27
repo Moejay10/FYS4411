@@ -68,13 +68,13 @@ double HarmonicOscillator::computeRepulsiveInteraction(std::vector<Particle*> pa
      */
     double alpha = m_system->getWaveFunction()->getParameters()[0];
     double gamma = m_system->getWaveFunction()->getParameters()[2];
+    double a = m_system->getWaveFunction()->getParameters()[3];
 
     int N = m_system->getNumberOfParticles(); // Number of Particles
     int Dim = m_system->getNumberOfDimensions(); // The Dimension
     double ri, rj, temp_i, temp_j, diff;
     double psi = m_system->getWaveFunction()->evaluate(particles); // psi(r)
     double potentialenergy;
-    double a = 0.0043;
     double infty = 0.0;
 
     potentialenergy = 0;
@@ -116,16 +116,18 @@ double HarmonicOscillator::computeLocalEnergyAnalytical(std::vector<Particle*> p
     double r2, temp;
     double analytical_kineticenergy, potentialenergy, analytical_E_L;
     double repulsiveInteraction = 0;
+    double correlation = 0;
 
     if (m_system->getRepulsivePotential()){
         repulsiveInteraction = computeRepulsiveInteraction(particles);
+        correlation = m_system->getWaveFunction()->computeDoubleDerivativeInteraction(particles);
     }
     potentialenergy = computePotentialEnergy(particles);
 
     analytical_kineticenergy = m_system->getWaveFunction()->computeDoubleDerivative(particles);
-    analytical_E_L = analytical_kineticenergy + potentialenergy + repulsiveInteraction;
+    analytical_E_L = analytical_kineticenergy + potentialenergy + repulsiveInteraction + correlation;
 
-    cout << analytical_kineticenergy << " " << potentialenergy << " " << analytical_E_L <<  endl;
+    cout << analytical_kineticenergy << " " << potentialenergy << " " << correlation << " " << analytical_E_L <<  endl;
     return analytical_E_L;
 }
 
