@@ -34,7 +34,8 @@ void RandomUniform::setupInitialState() {
   std::random_device rd;
   std::mt19937_64 gen(rd());
   // Set up the uniform distribution for x \in [[0, 1]
-  std::uniform_real_distribution<double> RandomNumberGenerator(0.0,1.0);
+  std::uniform_real_distribution<double> Uniform(0.0,1.0);
+  std::normal_distribution<double> Normal(0.0,1.0);
 
     for (int i=0; i < m_numberOfParticles; i++) {
         std::vector<double> position = std::vector<double>();
@@ -51,8 +52,12 @@ void RandomUniform::setupInitialState() {
              * according to their index in the particles list (this is
              * obviously NOT a good idea).
              */
-
-            position.push_back(RandomNumberGenerator(gen) - 0.5);
+            if (m_system->getImportanceSampling()){
+                  position.push_back(Normal(gen) *sqrt(m_system->getTimeStep()) );
+            }
+            else{
+              position.push_back(Uniform(gen) - 0.5 );
+            }
         }
         m_particles.push_back(new Particle());
         m_particles.at(i)->setNumberOfDimensions(m_numberOfDimensions);

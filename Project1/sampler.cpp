@@ -40,6 +40,9 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
      m_cumulativeEnergy  += localEnergy;
      m_cumulativeEnergy2  += localEnergy*localEnergy;
      m_stepNumber++;
+
+     //cout << "Numerical Derivative is true " << endl;
+
      }
 
 
@@ -55,6 +58,8 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
     m_cumulativeEnergy  += localEnergy;
     m_cumulativeEnergy2  += localEnergy*localEnergy;
     m_stepNumber++;
+
+    //cout << "Repulsive Interaction is true " << endl;
     }
 
 
@@ -66,6 +71,9 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
     m_cumulativeEnergy  += localEnergy;
     m_cumulativeEnergy2  += localEnergy*localEnergy;
     m_stepNumber++;
+
+    //cout << "Standard is true " << endl;
+
     }
 
 }

@@ -17,6 +17,7 @@ public:
     void setNumberOfParticles       (int numberOfParticles);
     void setNumberOfDimensions      (int numberOfDimensions);
     void setStepLength              (double stepLength);
+    void setTimeStep                (double timeStep);
     void setStepSize                (double stepSize);
     void setEquilibrationFraction   (double equilibrationFraction);
     void setDiffusionCoefficient    (double diffusionCoefficient);
@@ -32,6 +33,7 @@ public:
     int getNumberOfMetropolisSteps()    { return m_numberOfMetropolisSteps; }
     double getEquilibrationFraction()   { return m_equilibrationFraction; }
     double getStepLength()              { return m_stepLength; }
+    double getTimeStep()                { return m_timeStep; }
     double getStepSize()                { return m_stepSize; }
     double getDiffusionCoefficient()    { return m_diffusionCoefficient; }
     bool   getRepulsivePotential()      { return m_statement;}
@@ -49,6 +51,7 @@ private:
     int                             m_numberOfMetropolisSteps = 0;
     double                          m_equilibrationFraction = 0.0;
     double                          m_stepLength = 0.1;
+    double                          m_timeStep = 0.01;
     double                          m_stepSize = 0.1;
     double                          m_diffusionCoefficient = 1.0;
     class WaveFunction*             m_waveFunction = nullptr;

@@ -26,6 +26,8 @@ bool System::metropolisStep(int i) {
      std::uniform_real_distribution<double> RandomNumberGenerator(0.0,1.0);
 
      double a = RandomNumberGenerator(gen) - 0.5; // Random number
+     double b = RandomNumberGenerator(gen) - 0.5; // Random number
+     double c = RandomNumberGenerator(gen) - 0.5; // Random number
 
      int Dim = getNumberOfDimensions(); // The Dimensions
 
@@ -36,25 +38,32 @@ bool System::metropolisStep(int i) {
 
 
      // Trial position moving one particle at the time in all dimensions
-     for (int k = 0; k < Dim; k++)
-     {
-        m_particles[i]->adjustPosition(m_stepLength*a, k);
+
+     m_particles[i]->adjustPosition(m_stepLength*a, 0);
+     if (Dim>1){
+       m_particles[i]->adjustPosition(m_stepLength*b, 1);
+       if (Dim>2){
+         m_particles[i]->adjustPosition(m_stepLength*c, 2);
+       }
      }
+
      wfnew = getWaveFunction()->evaluate(m_particles);
 
      // Metropolis test
-     cout << "wavefunc " << wfnew*wfnew/(wfold*wfold) << endl;
-	if ( RandomNumberGenerator(gen) < wfnew*wfnew/(wfold*wfold) ){
+	if ( RandomNumberGenerator(gen) <= wfnew*wfnew/(wfold*wfold) ){
 
     return true;
   }
 
   else{
 
-    for (int k = 0; k < Dim; k++){
-        m_particles[i]->adjustPosition(-m_stepLength*a, k);
+     m_particles[i]->adjustPosition(-m_stepLength*a, 0);
+     if (Dim>1){
+       m_particles[i]->adjustPosition(-m_stepLength*b, 1);
+       if (Dim>2){
+         m_particles[i]->adjustPosition(-m_stepLength*c, 2);
+       }
      }
-
     return false;
   }
 
@@ -71,9 +80,13 @@ bool System::ImportanceMetropolisStep(int i) {
      std::random_device rd;
      std::mt19937_64 gen(rd());
      // Set up the uniform distribution for x \in [[0, 1]
-     std::uniform_real_distribution<double> RandomNumberGenerator(0.0,1.0);
+     std::normal_distribution<double> Normal(0.0,1.0);
+     std::uniform_real_distribution<double> Uniform(0.0,1.0);
 
-     double a = RandomNumberGenerator(gen) - 0.5; // Random number
+
+     double a = Normal(gen); // Random number
+     double b = Normal(gen); // Random number
+     double c = Normal(gen); // Random number
 
      int Dim = getNumberOfDimensions(); // The Dimensions
 
@@ -87,11 +100,18 @@ bool System::ImportanceMetropolisStep(int i) {
 
 
      // Trial position moving one particle at the time in all dimensions
-     for (int k = 0; k < Dim; k++)
-     {
-        poschange = a*sqrt(m_stepLength) + qfold[k]*m_stepLength*m_diffusionCoefficient;
-        m_particles[i]->adjustPosition(poschange, k);
+     poschange = a*sqrt(m_timeStep) + qfold[0]*m_timeStep*m_diffusionCoefficient;
+     m_particles[i]->adjustPosition(poschange, 0);
+     if (Dim > 1){
+       poschange = b*sqrt(m_timeStep) + qfold[1]*m_timeStep*m_diffusionCoefficient;
+       m_particles[i]->adjustPosition(poschange, 1);
+       if (Dim > 2){
+         poschange = c*sqrt(m_timeStep) + qfold[2]*m_timeStep*m_diffusionCoefficient;
+         m_particles[i]->adjustPosition(poschange, 2);
+       }
      }
+
+
      posnew = getParticles()[i]->getPosition();
      wfnew = getWaveFunction()->evaluate(m_particles);
      qfnew = getHamiltonian()->computeQuantumForce(m_particles, i);
@@ -100,22 +120,28 @@ bool System::ImportanceMetropolisStep(int i) {
      double greensFunction = 0;
      for (int k = 0; k < Dim; k++)
      {
-       greensFunction += 0.25*(qfold[k] + qfnew[k])*(m_diffusionCoefficient*m_stepLength*(qfold[k] - qfnew[k]) - posnew[k] + posold[k]);
+       greensFunction += 0.5*(qfold[k] + qfnew[k])*(m_diffusionCoefficient*m_timeStep*0.5*(qfold[k] - qfnew[k]) - posnew[k] + posold[k]);
      }
      greensFunction = exp(greensFunction);
-     // Metropolis test
-	if ( RandomNumberGenerator(gen) < greensFunction*wfnew*wfnew/(wfold*wfold) ){
+
+     // #Metropolis-Hastings test to see whether we accept the move
+	if ( Uniform(gen) <= greensFunction*wfnew*wfnew/(wfold*wfold) ){
 
     return true;
   }
 
   else{
 
-    for (int k = 0; k < Dim; k++){
-      poschange = a*sqrt(m_stepLength) + qfold[k]*m_stepLength*m_diffusionCoefficient;
-      m_particles[i]->adjustPosition(-poschange, k);
-     }
-
+    poschange = a*sqrt(m_timeStep) + qfold[0]*m_timeStep*m_diffusionCoefficient;
+    m_particles[i]->adjustPosition(-poschange, 0);
+    if (Dim > 1){
+      poschange = b*sqrt(m_timeStep) + qfold[1]*m_timeStep*m_diffusionCoefficient;
+      m_particles[i]->adjustPosition(-poschange, 1);
+      if (Dim > 2){
+        poschange = c*sqrt(m_timeStep) + qfold[2]*m_timeStep*m_diffusionCoefficient;
+        m_particles[i]->adjustPosition(-poschange, 2);
+      }
+    }
     return false;
   }
 
@@ -156,7 +182,7 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
     }
     m_sampler->computeAverages();
     m_sampler->printOutputToTerminal();
-    cout << "# Accepted Step = " << counter << endl;
+    cout << "# Accepted Step = " << counter/numberOfMetropolisSteps << endl;
   }
 
   else
@@ -184,7 +210,7 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
     }
     m_sampler->computeAverages();
     m_sampler->printOutputToTerminal();
-    cout << "# Accepted Step = " << counter << endl;
+    cout << "# Accepted Step = " << counter/numberOfMetropolisSteps << endl;
   }
 
 }
@@ -200,6 +226,11 @@ void System::setNumberOfDimensions(int numberOfDimensions) {
 void System::setStepLength(double stepLength) {
     assert(stepLength >= 0);
     m_stepLength = stepLength;
+}
+
+void System::setTimeStep(double timeStep) {
+    assert(timeStep >= 0);
+    m_timeStep = timeStep;
 }
 
 void System::setStepSize(double stepSize) {

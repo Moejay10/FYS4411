@@ -5,6 +5,8 @@
 class WaveFunction {
 public:
     WaveFunction(class System* system);
+    double computeFirstDerivativeCorrelation(double diff);
+    double computeDoubleDerivativeCorrelation(double diff);
     int     getNumberOfParameters() { return m_numberOfParameters; }
     std::vector<double> getParameters() { return m_parameters; }
     virtual double evaluate(std::vector<class Particle*> particles) = 0;
@@ -12,8 +14,7 @@ public:
     virtual double computeDoubleDerivative(std::vector<class Particle*> particles) = 0;
     virtual double computeDoubleNumericalDerivative(std::vector<class Particle*> particles) = 0;
     virtual double computeDoubleDerivativeInteraction(std::vector<class Particle*> particles) = 0;
-    virtual double computeFirstDerivativeCorrelation(double diff) = 0;
-    virtual double computeDoubleDerivativeCorrelation(double diff) = 0;
+
 
 
 
