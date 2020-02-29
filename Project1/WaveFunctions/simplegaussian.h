@@ -10,8 +10,8 @@ public:
     double computeDoubleDerivative(std::vector<class Particle*> particles);
     double computeDoubleNumericalDerivative(std::vector<class Particle*> particles);
     double computeDoubleDerivativeInteraction(std::vector<class Particle*> particles);
-    double computeFirstDerivativeCorrelation(double diff);
-    double computeDoubleDerivativeCorrelation(double diff);
+    double computeFirstDerivativeCorrelation(double dist);
+    double computeDoubleDerivativeCorrelation(double dist);
 
 
 };

@@ -53,21 +53,21 @@ double SimpleGaussian::evaluate(std::vector<class Particle*> particles) {
       }
     wavefunction = exp(-alpha*r2);
 
-    double diff_ik;
+    double diff_ik = 0;
     double correlation = 1;
 
     vec r_ik(Dim);
 
     if (m_system->getRepulsivePotential()){
       for (int i = 0; i < N; i++){
-        for (int k = N-1; k > i; k++){
+        for (int k = N-1; k > i; k--){
           for (int d = 0; d < Dim; d++){
             r_ik(d) = m_system->getParticles()[i]->getPosition()[d] - m_system->getParticles()[k]->getPosition()[d];
             diff_ik += r_ik(d)*r_ik(d);
           }
           diff_ik = sqrt(diff_ik);
           if(diff_ik > a){
-              correlation = correlation*(1 - a/diff_ik);
+              correlation *= 1 - a/diff_ik;
           }
           else{
             correlation = 0;
@@ -147,14 +147,17 @@ double SimpleGaussian::computeDoubleDerivative(std::vector<class Particle*> part
 }
 
 
-double SimpleGaussian::computeFirstDerivativeCorrelation(double diff){
+double SimpleGaussian::computeFirstDerivativeCorrelation(double dist){
   double a = m_parameters[3];
-  return a/(diff*(diff - a));
+  return a/(dist*dist - dist*a);
 }
 
-double SimpleGaussian::computeDoubleDerivativeCorrelation(double diff){
+double SimpleGaussian::computeDoubleDerivativeCorrelation(double dist){
   double a = m_parameters[3];
-  return a*(2*diff - a)/( (diff*diff)*(diff - a)*(diff - a) );
+  double denominator = a*(2*dist - a);
+  double numerator = dist*dist*(dist - a)*(dist - a);
+  double output = denominator/numerator;
+  return output;
 }
 
 
@@ -182,9 +185,9 @@ double SimpleGaussian::computeDoubleDerivativeInteraction(std::vector<class Part
      vec r_ik(Dim);
      vec force(Dim);
 
-     double diff_ij, diff_ik;
+     double diff_ij, diff_ik = 0;
      double term1, term2, term3;
-     double total_sum, sum1, sum2, sum3 = 0;
+     double total_sum, sum, sum1, sum2, sum3 = 0;
 
 
      for (int i = 0; i < N-1; i++){
@@ -248,6 +251,68 @@ double SimpleGaussian::computeDoubleDerivativeInteraction(std::vector<class Part
 
     return total_sum;
 }
+
+
+/*
+        for(int i = 0; i < N; i++){
+            sum = 0;
+
+            for(int d = 0; d < Dim; d++){
+                if(d==2){
+                    sum += beta*beta*m_system->getParticles()[i]->getPosition()[d]*m_system->getParticles()[i]->getPosition()[d] - beta/(2*alpha);
+                }
+                else{
+                    sum += m_system->getParticles()[i]->getPosition()[d]*m_system->getParticles()[i]->getPosition()[d] - 1/(2*alpha);
+                }
+            }
+
+            sum = 4*alpha*alpha*sum;
+
+            term1 = 0;
+            for(int j = N-1; j > i; j--) {
+                for(int d = 0; d < Dim; d++){
+                    r_ij(d) = m_system->getParticles()[i]->getPosition()[d] - m_system->getParticles()[j]->getPosition()[d];
+                    diff_ij += r_ij(d)*r_ij(d);
+                    if(d==2){
+                        term1 += m_system->getParticles()[i]->getPosition()[d] * r_ij(d) * beta;
+                    }
+                    else{
+                        term1 += m_system->getParticles()[i]->getPosition()[d] * r_ij(d);
+                    }
+
+
+                }
+                diff_ij = sqrt(diff_ij);
+
+                double u_der_ij = computeFirstDerivativeCorrelation(diff_ij);
+                cout << u_der_ij << endl;
+                sum -= 4*alpha*term1*u_der_ij/diff_ij;
+
+                term2 = 0;
+                for(int k = N-1; k > i; k--) {
+                    for(int d = 0; d < Dim; d++){
+                        r_ik(d) = m_system->getParticles()[i]->getPosition()[d] - m_system->getParticles()[k]->getPosition()[d];
+                        diff_ik += r_ik(d)*r_ik(d);
+                        term2 += r_ik(d)*r_ij(d);
+                    }
+                    diff_ik = sqrt(diff_ik);
+
+                    sum += term2/(diff_ij*diff_ik) *u_der_ij * computeFirstDerivativeCorrelation(diff_ik);
+                }
+
+                sum += computeDoubleDerivativeCorrelation(diff_ij) + 2*u_der_ij/diff_ik; // u''(r_ij) is nan
+                //cout << computeFirstDerivativeCorrelation(diff_ij) << endl;
+
+            }
+
+            total_sum += -0.5*sum;
+        }
+
+
+    return total_sum;
+}
+*/
+
 
 double SimpleGaussian::computeDoubleNumericalDerivative(std::vector<class Particle*> particles) {
     /* All wave functions need to implement this function, so you need to

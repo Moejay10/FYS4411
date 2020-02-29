@@ -39,7 +39,7 @@ double HarmonicOscillator::computePotentialEnergy(std::vector<Particle*> particl
     for (int i = 0; i < N; i++){
       for (int j = 0; j < Dim; j++){
         if (j == 2){
-            r2 += gamma*m_system->getParticles()[i]->getPosition()[j]*m_system->getParticles()[i]->getPosition()[j];
+            r2 += gamma*gamma*m_system->getParticles()[i]->getPosition()[j]*m_system->getParticles()[i]->getPosition()[j];
         }
         else{
             r2 += m_system->getParticles()[i]->getPosition()[j]*m_system->getParticles()[i]->getPosition()[j];
@@ -106,20 +106,19 @@ double HarmonicOscillator::computeLocalEnergyAnalytical(std::vector<Particle*> p
      * getWaveFunction method in the m_system object in the super-class, i.e.
      * m_system->getWaveFunction()...
      */
-    double analytical_kineticenergy, potentialenergy, analytical_E_L;
+    double analytical_E_L;
+    double potentialenergy = computePotentialEnergy(particles);
+    double analytical_kineticenergy = m_system->getWaveFunction()->computeDoubleDerivative(particles);
     double repulsiveInteraction = 0;
-    double correlation = 0;
 
     if (m_system->getRepulsivePotential()){
         repulsiveInteraction = computeRepulsiveInteraction(particles);
-        correlation = m_system->getWaveFunction()->computeDoubleDerivativeInteraction(particles);
+        analytical_kineticenergy += m_system->getWaveFunction()->computeDoubleDerivativeInteraction(particles);
     }
-    potentialenergy = computePotentialEnergy(particles);
 
-    analytical_kineticenergy = m_system->getWaveFunction()->computeDoubleDerivative(particles) + correlation;
     analytical_E_L = analytical_kineticenergy + potentialenergy + repulsiveInteraction;
 
-    cout << analytical_kineticenergy << " " << potentialenergy << " " << correlation << " " << analytical_E_L <<  endl;
+    //cout << analytical_kineticenergy << " " << potentialenergy << " " << " " << analytical_E_L <<  endl;
 
     return analytical_E_L;
 }

@@ -160,7 +160,6 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
     if (getImportanceSampling())
     {
     for (int i = 1; i <= numberOfMetropolisSteps; i++) {
-
         // Trial position moving one particle at the time
         for (int j = 0; j < N; j++){
 
