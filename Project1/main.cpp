@@ -316,12 +316,20 @@ cin >> numberOfDimensions;
       std::vector<double> vecEnergy = std::vector<double>();
       std::vector<double> vecEnergyDer = std::vector<double>();
 
-      double tol = 1e-8;
-      double diff = 0;
-      double learning_rate = 1e-0;
-      int Niterations = 50;
+      double tol = 1e-6;
+      double diff = 1;
+      double learning_rate = 1e-2;
+      int Maxiterations = 100;
 
-      for (int i = 0; i < Niterations; i++){
+      string file = "Gradient_Descent.dat";
+      ofile.open(file);
+      ofile << setiosflags(ios::showpoint | ios::uppercase);
+      ofile << setw(15) << setprecision(8) << "Alpha "; // Variational parameter
+      ofile << setw(15) << setprecision(8) << "Energy "; // Energy
+      ofile << setw(15) << setprecision(8) << "Derivative" << endl;
+
+      int i = 0;
+      while (i < Maxiterations || diff > tol){
         System* system = new System();
 
         system->setHamiltonian              (new HarmonicOscillator(system, omega));
@@ -336,15 +344,23 @@ cin >> numberOfDimensions;
         vecEnergy.push_back(system->getSampler()->getEnergy());
         vecEnergyDer.push_back(system->getSampler()->getEnergyDer());
 
-        if (i > 0){
-          diff = vecEnergy[i] - vecEnergy[i-1];
-        }
         alpha -= learning_rate*vecEnergyDer[i];
-        if (diff < tol){
-          cout << "best alpha was obtained at " << alpha << endl;
-          break;
+
+        ofile << setw(15) << setprecision(8) << alpha; // Variational parameter
+        ofile << setw(15) << setprecision(8) << vecEnergy[i]; // Energy
+        ofile << setw(15) << setprecision(8) << vecEnergyDer[i] << endl; // Derivative
+
+        if (i > 0){
+          diff = fabs(vecEnergy[i] - vecEnergy[i-1]);
         }
+
+        //cout << "Difference in energy " << diff << endl;
+
+        i++;
       }
+
+      ofile.close();
+
   }
 
     return 0;

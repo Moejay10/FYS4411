@@ -203,7 +203,7 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
         }
         //if (i >= m_equilibrationFraction*m_numberOfMetropolisSteps){
           m_sampler->sample(acceptedStep, i);
-          m_sampler->WriteResultstoFile(ofile, i);
+          //m_sampler->WriteResultstoFile(ofile, i);
         //}
         counter += acceptedStep;
     }
