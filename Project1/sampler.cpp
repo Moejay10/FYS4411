@@ -21,6 +21,10 @@ void Sampler::setNumberOfMetropolisSteps(int steps) {
     m_numberOfMetropolisSteps = steps;
 }
 
+void Sampler::setTime(double total_time){
+  m_total_time = total_time;
+}
+
 void Sampler::sample(bool acceptedStep, int MCcycles) {
     // Make sure the sampling variable(s) are initialized at the first step.
     if (m_stepNumber == 0) {
@@ -99,9 +103,11 @@ void Sampler::printOutputToTerminal() {
         cout << " Parameter " << i+1 << " : " << pa.at(i) << endl;
     }
     cout << endl;
-    cout << "  -- Reults -- " << endl;
+    cout << "  -- Results -- " << endl;
     cout << " Energy : " << m_energy << endl;
     cout << " Variance : " << m_variance << endl;
+    cout << " Time : " << getTime() << endl;
+
     cout << endl;
 }
 
@@ -126,6 +132,7 @@ void Sampler::computeAverages() {
 
 
 }
+
 
 
 void Sampler::WriteResultstoFile(ofstream& ofile, int MCcycles)

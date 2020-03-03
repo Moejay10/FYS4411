@@ -4,6 +4,8 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <time.h>
+#include <omp.h>
 using namespace std;
 
 class System {
@@ -39,7 +41,6 @@ public:
     bool   getRepulsivePotential()      { return m_statement;}
     bool   getImportanceSampling()      { return m_importance_sampling;}
     bool   getNumericalDerivative()     { return m_numerical_dericative;}
-
 
 
 private:

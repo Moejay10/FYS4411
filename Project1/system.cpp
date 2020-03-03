@@ -3,6 +3,8 @@
 #include <fstream>
 #include <iostream>
 #include <random>
+#include <omp.h>
+#include <time.h>
 #include "sampler.h"
 #include "particle.h"
 #include "WaveFunctions/wavefunction.h"
@@ -157,6 +159,8 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
     double counter = 0;
     bool acceptedStep;
 
+    double start_time = omp_get_wtime();
+
     if (getImportanceSampling())
     {
     for (int i = 1; i <= numberOfMetropolisSteps; i++) {
@@ -212,6 +216,10 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
     cout << "# Accepted Step = " << counter/numberOfMetropolisSteps << endl;
   }
 
+  double end_time = omp_get_wtime();
+  double total_time = end_time - start_time;
+  m_sampler->setTime(total_time);
+  cout << "Time is \n " << total_time << endl;
 }
 
 void System::setNumberOfParticles(int numberOfParticles) {
