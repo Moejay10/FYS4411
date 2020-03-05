@@ -258,6 +258,23 @@ void System::setWaveFunction(WaveFunction* waveFunction) {
     m_waveFunction = waveFunction;
 }
 
+void System::setBinVector(double binStartpoint, double binEndpoint, int numberofBins){
+  std::vector<double> binVector;
+  std::vector<int> binCounter;
+
+  double step = (binEndpoint-binStartpoint)/(numberofBins);
+  for (int i = 0; i < numberofBins; i++){
+    binVector.push_back((double)i * step);
+    binCounter.push_back(0);
+  }
+  m_binVector = binVector;
+  m_binCounter = binCounter;
+}
+
+void System::setOneBodyDensity(bool oneBodyDensity){
+  m_oneBodyDensity = oneBodyDensity;
+}
+
 void System::setInitialState(InitialState* initialState) {
     m_initialState = initialState;
 }
@@ -267,6 +284,17 @@ void System::setDiffusionCoefficient(double diffusionCoefficient) {
     m_diffusionCoefficient = diffusionCoefficient;
 }
 
+void System::setBinEndpoint(double binEndpoint) {
+    m_binEndpoint = binEndpoint;
+}
+
+void System::setBinStartpoint(double binStartpoint) {
+    m_binStartpoint = binStartpoint;
+}
+
+void System::setNumberofBins(int numberofBins) {
+    m_numberofBins = numberofBins;
+}
 
 bool System::setRepulsivePotential(bool statement){
   m_statement = statement;

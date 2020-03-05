@@ -13,6 +13,8 @@ public:
     void sample(bool acceptedStep, int MCcycles);
     void printOutputToTerminal();
     void computeAverages();
+    void Probability();
+
     void WriteResultstoFile(ofstream& ofile, int MCcycles);
     double getEnergy()          { return m_energy; }
     double getEnergyDer()       { return m_EnergyDer; }

@@ -61,7 +61,7 @@ if (Task == "b")
     numberOfParticles(2) = 100;
     numberOfParticles(3) = 500;
 
-    
+
     // Analyitcal Run
     cout << "-------------- \n" << "Analyitcal Run \n" << "-------------- \n" << endl;
     for (int i = 0; i < num; i++){
@@ -384,7 +384,9 @@ cin >> numberOfDimensions;
     double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
     double equilibration    = 0.1;          // Amount of the total steps used
     // for equilibration.
-
+    int numberofBins = 100;
+    double binStartpoint = 0;
+    double binEndpoint = 10;
 
   cout << "\n" << "Which parameters do you want to use?: " << endl;
 
@@ -417,6 +419,11 @@ cin >> numberOfDimensions;
   system->setEquilibrationFraction    (equilibration);
   system->setStepLength               (stepLength);
   system->setDiffusionCoefficient     (diffusionCoefficient);
+  system->setBinStartpoint            (binStartpoint);
+  system->setBinEndpoint              (binEndpoint);
+  system->setNumberofBins             (numberofBins);
+  system->setBinVector                (binStartpoint, binEndpoint, numberofBins);
+  system->setOneBodyDensity           (true);
   system->setRepulsivePotential       (true);
   system->runMetropolisSteps          (ofile, numberOfSteps);
 

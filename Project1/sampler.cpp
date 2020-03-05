@@ -50,6 +50,12 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
      }
 
 
+    else if (m_system->getOneBodyDensity()){
+      Probability();
+      //write bin and binvec to file.
+    }
+
+
     else if (m_system->getRepulsivePotential())
     {
     double localEnergy = m_system->getHamiltonian()->
@@ -133,6 +139,25 @@ void Sampler::computeAverages() {
 
 }
 
+void Sampler::Probability(){
+
+  int N = m_system->getNumberOfParticles(); // Number of Particles
+  int Dim = m_system->getNumberOfDimensions(); // The Dimension
+  double r2;
+  double tol = 0.5*(m_system->getBinEndpoint()-m_system->getBinStartpoint())/(m_system->getNumberofBins());
+  for (int i = 0; i < N; i++){
+    r2 = 0;
+    for (int j = 0; j < Dim; j++){
+      r2 += m_system->getParticles()[i]->getPosition()[j]*m_system->getParticles()[i]->getPosition()[j];
+    }
+    for (int k = 0; k < m_system->getNumberofBins(); k++){
+      if (fabs(r2 - m_system->getBinVector()[k]) <= tol){
+        m_system->getBinCounter()[k]++;
+      }
+    }
+
+  }
+}
 
 
 void Sampler::WriteResultstoFile(ofstream& ofile, int MCcycles)

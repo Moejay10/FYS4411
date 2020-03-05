@@ -23,6 +23,11 @@ public:
     void setStepSize                (double stepSize);
     void setEquilibrationFraction   (double equilibrationFraction);
     void setDiffusionCoefficient    (double diffusionCoefficient);
+    void setNumberofBins            (int numberofBins);
+    void setBinStartpoint           (double binStartpoint);
+    void setBinEndpoint             (double binEndpoint);
+    void setBinVector               (double binStartpoint, double binEndpoint, int numberofBins);
+    void setOneBodyDensity          (bool oneBodyDensity);
     void setHamiltonian             (class Hamiltonian* hamiltonian);
     void setWaveFunction            (class WaveFunction* waveFunction);
     void setInitialState            (class InitialState* initialState);
@@ -38,14 +43,20 @@ public:
     double getTimeStep()                { return m_timeStep; }
     double getStepSize()                { return m_stepSize; }
     double getDiffusionCoefficient()    { return m_diffusionCoefficient; }
+    int getNumberofBins()               { return m_numberofBins; }
+    double getBinStartpoint()           { return m_binStartpoint; }
+    double getBinEndpoint()             { return m_binEndpoint; }
     bool   getRepulsivePotential()      { return m_statement;}
     bool   getImportanceSampling()      { return m_importance_sampling;}
+    bool   getOneBodyDensity()          { return m_oneBodyDensity;}
     bool   getNumericalDerivative()     { return m_numerical_dericative;}
-
+    std::vector<double> getBinVector()  { return m_binVector;}
+    std::vector<int> getBinCounter()    { return m_binCounter;}
 
 private:
     bool                            m_statement = false;
     bool                            m_importance_sampling = false;
+    bool                            m_oneBodyDensity = false;
     bool                            m_numerical_dericative = false;
     int                             m_numberOfParticles = 0;
     int                             m_numberOfDimensions = 0;
@@ -55,9 +66,14 @@ private:
     double                          m_timeStep = 0.01;
     double                          m_stepSize = 0.1;
     double                          m_diffusionCoefficient = 1.0;
+    int                             m_numberofBins = 2;
+    double                          m_binStartpoint = 0.0;
+    double                          m_binEndpoint = 1.0;
     class WaveFunction*             m_waveFunction = nullptr;
     class Hamiltonian*              m_hamiltonian = nullptr;
     class InitialState*             m_initialState = nullptr;
     class Sampler*                  m_sampler = nullptr;
     std::vector<class Particle*>    m_particles = std::vector<class Particle*>();
+    std::vector<double>             m_binVector;
+    std::vector<int>                m_binCounter;
 };
