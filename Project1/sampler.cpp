@@ -21,9 +21,6 @@ void Sampler::setNumberOfMetropolisSteps(int steps) {
     m_numberOfMetropolisSteps = steps;
 }
 
-void Sampler::setTime(double total_time){
-  m_total_time = total_time;
-}
 
 void Sampler::sample(bool acceptedStep, int MCcycles) {
     // Make sure the sampling variable(s) are initialized at the first step.
@@ -84,7 +81,7 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
 
 }
 
-void Sampler::printOutputToTerminal() {
+void Sampler::printOutputToTerminal(double total_time, double acceptedStep) {
     int     np = m_system->getNumberOfParticles();
     int     nd = m_system->getNumberOfDimensions();
     int     ms = m_system->getNumberOfMetropolisSteps();
@@ -92,25 +89,29 @@ void Sampler::printOutputToTerminal() {
     double  ef = m_system->getEquilibrationFraction();
     std::vector<double> pa = m_system->getWaveFunction()->getParameters();
 
-    cout << endl;
-    cout << "  -- System info -- " << endl;
-    cout << " Number of particles  : " << np << endl;
-    cout << " Number of dimensions : " << nd << endl;
-    cout << " Number of Metropolis steps run : 10^" << std::log10(ms) << endl;
-    cout << " Number of equilibration steps  : 10^" << std::log10(std::round(ms*ef)) << endl;
-    cout << endl;
-    cout << "  -- Wave function parameters -- " << endl;
-    cout << " Number of parameters : " << p << endl;
-    for (int i=0; i < p; i++) {
-        cout << " Parameter " << i+1 << " : " << pa.at(i) << endl;
-    }
-    cout << endl;
-    cout << "  -- Results -- " << endl;
-    cout << " Energy : " << m_energy << endl;
-    cout << " Variance : " << m_variance << endl;
-    cout << " Time : " << getTime() << endl;
+    if (m_system->getPrintToTerminal()){
+      cout << endl;
+      cout << "  -- System info -- " << endl;
+      cout << " Number of particles  : " << np << endl;
+      cout << " Number of dimensions : " << nd << endl;
+      cout << " Number of Monte Carlo cycles : 10^" << std::log10(ms) << endl;
+      cout << " Number of equilibration steps  : 10^" << std::log10(std::round(ms*ef)) << endl;
+      cout << endl;
+      cout << "  -- Wave function parameters -- " << endl;
+      cout << " Number of parameters : " << p << endl;
+      for (int i=0; i < p; i++) {
+          cout << " Parameter " << i+1 << " : " << pa.at(i) << endl;
+      }
+      cout << endl;
+      cout << "  -- Results -- " << endl;
+      cout << " Energy : " << m_energy << endl;
+      cout << " Variance : " << m_variance << endl;
+      cout << " Time : " << total_time << endl;
+      cout << " # Accepted Steps : " << acceptedStep << endl;
 
-    cout << endl;
+
+      cout << endl;
+  }
 }
 
 void Sampler::computeAverages() {
@@ -167,14 +168,11 @@ void Sampler::WriteResultstoFile(ofstream& ofile, int MCcycles)
   double Variance = CumulativeEnergy2 - CumulativeEnergy*CumulativeEnergy;
   double STD = sqrt(Variance*norm);
 
-  //ofile << setiosflags(ios::showpoint | ios::uppercase);
-  //ofile << "| Temperature | Energy-Mean | Magnetization-Mean|    Cv    | Susceptibility |\n";
-
 
   //ofile << "\n";
   //ofile << setw(15) << setprecision(8) << MCcycles; // # Monte Carlo cycles (sweeps per lattice)
-  ofile << setw(15) << setprecision(8) << Energy; // Mean energy
-  ofile << setw(15) << setprecision(8) << m_cumulativeEnergy << endl; // Variance
+  ofile << setw(15) << setprecision(8) << Energy << endl;; // Mean energy
+  //ofile << setw(15) << setprecision(8) << m_cumulativeEnergy << endl; // Variance
   //ofile << setw(15) << setprecision(8) << STD; // # Standard deviation
 
 

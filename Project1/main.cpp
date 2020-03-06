@@ -41,62 +41,60 @@ cin >> Task;
 
 if (Task == "b")
   {
-  int numberOfSteps       = 1e2;
-  int numberOfDimensions  = 3;
+  int numberOfSteps;
+  int numberOfParticles;
+  int numberOfDimensions;
+
   double omega            = 1.0;          // Oscillator frequency.
   double alpha            = 0.5;          // Variational parameter.
   double beta             = 1.0;          // Variational parameter.
   double gamma            = 1.0;          // Variational parameter.
   double a                = 0.0;          // Interaction parameter.
-  double stepLength       = 1.0;          // Metropolis step length.
+  double stepLength       = 1.5;          // Metropolis step length.
   double stepSize         = 1e-2;         // Stepsize in the numerical derivative for kinetic energy
   double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
   double equilibration    = 0.1;          // Amount of the total steps used
   // for equilibration.
 
-    int num = 4;
-    vec numberOfParticles(num);
-    numberOfParticles(0) = 1;
-    numberOfParticles(1) = 10;
-    numberOfParticles(2) = 100;
-    numberOfParticles(3) = 500;
+
+  cout << "\n" << "Which parameters do you want to use?: " << endl;
+
+  cout << "\n" << "The number of Monte Carlo cycles: " << endl;
+  cout << "\n" << "Write here " << endl;
+  cin >> numberOfSteps;
+
+  cout << "\n" << "The number of Particles: " << endl;
+  cout << "\n" << "Write here " << endl;
+  cin >> numberOfParticles;
 
 
-    // Analyitcal Run
-    cout << "-------------- \n" << "Analyitcal Run \n" << "-------------- \n" << endl;
-    for (int i = 0; i < num; i++){
-      for (int j = 1; j <= numberOfDimensions; j++){
+  cout << "\n" << "The number of Dimensions: " << endl;
+  cout << "\n" << "Write here " << endl;
+  cin >> numberOfDimensions;
 
-        System* system = new System();
-        system->setHamiltonian              (new HarmonicOscillator(system, omega));
-        system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
-        system->setInitialState             (new RandomUniform(system, j, numberOfParticles(i) ));
-        system->setEquilibrationFraction    (equilibration);
-        system->setStepLength               (stepLength);
-        system->setStepSize                 (stepSize);
-        system->runMetropolisSteps          (ofile, numberOfSteps);
-      }
-    }
+  // Analyitcal Run
+  cout << "-------------- \n" << "Analyitcal Run \n" << "-------------- \n" << endl;
 
 
+  System* system = new System();
+  system->setHamiltonian              (new HarmonicOscillator(system, omega));
+  system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
+  system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles ));
+  system->setStepLength               (stepLength);
+  system->runMetropolisSteps          (ofile, numberOfSteps);
 
-    // Numerical Run
-    cout << "-------------- \n" << "Numerical Run \n" << "-------------- \n" << endl;
-    for (int i = 0; i < num; i++){
-      for (int j = 1; j <= numberOfDimensions; j++){
 
-        System* system = new System();
-        system->setHamiltonian              (new HarmonicOscillator(system, omega));
-        system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
-        system->setInitialState             (new RandomUniform(system, j, numberOfParticles(i) ));
-        system->setEquilibrationFraction    (equilibration);
-        system->setStepLength               (stepLength);
-        system->setStepSize                 (stepSize);
-        system->setNumericalDerivative      (true);
-        system->runMetropolisSteps          (ofile, numberOfSteps);
-      }
-    }
+  // Numerical Run
+  cout << "-------------- \n" << "Numerical Run \n" << "-------------- \n" << endl;
 
+  system = new System();
+  system->setHamiltonian              (new HarmonicOscillator(system, omega));
+  system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
+  system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles ));
+  system->setStepLength               (stepLength);
+  system->setStepSize                 (stepSize);
+  system->setNumericalDerivative      (true);
+  system->runMetropolisSteps          (ofile, numberOfSteps);
 
   }
 
@@ -107,34 +105,39 @@ if (Task == "b")
   int numberOfSteps;
   int numberOfParticles;
   int numberOfDimensions;
+  double timeStep;                        // Timestep to be used in Metropolis-Hastings.
+
   double omega            = 1.0;          // Oscillator frequency.
   double alpha            = 0.5;          // Variational parameter.
   double beta             = 1.0;          // Variational parameter.
   double gamma            = 1.0;          // Variational parameter.
   double a                = 0.0;          // Interaction parameter.
   double stepLength       = 1.0;          // Metropolis step length.
-  double timeStep         = 1.0;          // Timestep to be used in Metropolis-Hastings.
   double stepSize         = 1e-4;         // Stepsize in the numerical derivative for kinetic energy
   double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.
   double equilibration    = 0.1;          // Amount of the total steps used
   // for equilibration.
 
 
-cout << "\n" << "Which parameters do you want to use?: " << endl;
+    cout << "\n" << "Which parameters do you want to use?: " << endl;
 
-cout << "\n" << "The number of Monte Carlo cycles: " << endl;
-cout << "\n" << "Write here " << endl;
-cin >> numberOfSteps;
+    cout << "\n" << "The number of Monte Carlo cycles: " << endl;
+    cout << "\n" << "Write here " << endl;
+    cin >> numberOfSteps;
 
-cout << "\n" << "The number of Particles: " << endl;
-cout << "\n" << "Write here " << endl;
-cin >> numberOfParticles;
+    cout << "\n" << "The number of Particles: " << endl;
+    cout << "\n" << "Write here " << endl;
+    cin >> numberOfParticles;
 
 
-cout << "\n" << "The number of Dimensions: " << endl;
-cout << "\n" << "Write here " << endl;
-cin >> numberOfDimensions;
+    cout << "\n" << "The number of Dimensions: " << endl;
+    cout << "\n" << "Write here " << endl;
+    cin >> numberOfDimensions;
 
+
+    cout << "\n" << "The Time Step in the Importance Sampling: " << endl;
+    cout << "\n" << "Write here " << endl;
+    cin >> timeStep;
 
 
     // Analyitcal Run
@@ -145,7 +148,6 @@ cin >> numberOfDimensions;
     system->setHamiltonian              (new HarmonicOscillator(system, omega));
     system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
     system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
-    system->setEquilibrationFraction    (equilibration);
     system->setStepLength               (stepLength);
     system->setTimeStep                 (timeStep);
     system->setDiffusionCoefficient     (diffusionCoefficient);
@@ -160,13 +162,14 @@ cin >> numberOfDimensions;
     int numberOfSteps;
     int numberOfParticles;
     int numberOfDimensions;
+    double timeStep;                        // Timestep to be used in Metropolis-Hastings.
+
     double omega            = 1.0;          // Oscillator frequency.
     double alpha            = 0.5;          // Variational parameter.
     double beta             = 1.0;          // Variational parameter.
     double gamma            = 1.0;          // Variational parameter.
     double a                = 0.0;          // Interaction parameter.
     double stepLength       = 1.0;          // Metropolis step length.
-    double timeStep         = 1.0;          // Timestep to be used in Metropolis-Hastings.
     double stepSize         = 1e-4;         // Stepsize in the numerical derivative for kinetic energy
     double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
     double equilibration    = 0.1;          // Amount of the total steps used
@@ -175,13 +178,11 @@ cin >> numberOfDimensions;
 
   cout << "\n" << "Which parameters do you want to use?: " << endl;
 
-  cout << "\n" << "The number of Monte Carlo cycles: " << endl;
+  cout << "\n" << "The number of Monte Carlo cycles in powers of 2: " << endl;
+  cout << "\n" << "Useful information: 2^10 = 10^3 & 2^20 = 10^6" << endl;
   cout << "\n" << "Write here " << endl;
   cin >> numberOfSteps;
-  double x = log2(numberOfSteps);
-  int y = (int) x;
-  double diff = x-y;
-  cout << "Warning: log2(MCcycles) must be an integer" << endl;
+  numberOfSteps = pow(2, numberOfSteps);
 
 
   cout << "\n" << "The number of Particles: " << endl;
@@ -192,6 +193,10 @@ cin >> numberOfDimensions;
   cout << "\n" << "The number of Dimensions: " << endl;
   cout << "\n" << "Write here " << endl;
   cin >> numberOfDimensions;
+
+  cout << "\n" << "The Time Step in the Importance Sampling: " << endl;
+  cout << "\n" << "Write here " << endl;
+  cin >> timeStep;
 
 
   string file = "Python/Results/Energies.dat";
@@ -209,7 +214,6 @@ cin >> numberOfDimensions;
       system->setHamiltonian              (new HarmonicOscillator(system, omega));
       system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
       system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
-      system->setEquilibrationFraction    (equilibration);
       system->setStepLength               (stepLength);
       system->setTimeStep                 (timeStep);
       system->setDiffusionCoefficient     (diffusionCoefficient);
@@ -226,7 +230,7 @@ cin >> numberOfDimensions;
     int numberOfParticles;
     int numberOfDimensions;
     double omega            = 1.0;          // Oscillator frequency.
-    double alpha            = 0.5;          // Variational parameter.
+    double alpha            = 0.3;          // Variational parameter.
     double beta             = 2.82843;      // Variational parameter.
     double gamma            = beta;         // Variational parameter.
     double a                = 0.0043;       // Interaction parameter.
@@ -238,44 +242,55 @@ cin >> numberOfDimensions;
     // for equilibration.
 
 
-  cout << "\n" << "Which parameters do you want to use?: " << endl;
+    cout << "\n" << "Which parameters do you want to use?: " << endl;
 
-  cout << "\n" << "The number of Monte Carlo cycles: " << endl;
-  cout << "\n" << "Write here " << endl;
-  cin >> numberOfSteps;
+    cout << "\n" << "The number of Monte Carlo cycles: " << endl;
+    cout << "\n" << "Write here " << endl;
+    cin >> numberOfSteps;
 
-  cout << "\n" << "The number of Particles: " << endl;
-  cout << "\n" << "Write here " << endl;
-  cin >> numberOfParticles;
-
-
-  cout << "\n" << "The number of Dimensions: " << endl;
-  cout << "\n" << "Write here " << endl;
-  cin >> numberOfDimensions;
+    cout << "\n" << "The number of Particles: " << endl;
+    cout << "\n" << "Write here " << endl;
+    cin >> numberOfParticles;
 
 
-  string file = "Exercise_e.dat";
-  ofile.open(file);
-  ofile << setiosflags(ios::showpoint | ios::uppercase);
-  ofile << setw(15) << setprecision(8) << "Energy "; // Mean energy
-  ofile << setw(15) << setprecision(8) << "  CumulativeEnergy" << endl;; // # Monte Carlo cycles (sweeps per lattice)
+    cout << "\n" << "The number of Dimensions: " << endl;
+    cout << "\n" << "Write here " << endl;
+    cin >> numberOfDimensions;
 
 
-      // Analyitcal Run
-      cout << "-------------- \n" << "Repulsive Interaction \n" << "-------------- \n" << endl;
+    string file = "Exercise_e.dat";
+    ofile.open(file);
+    ofile << setiosflags(ios::showpoint | ios::uppercase);
+    ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
+
+    // Analyitcal Run
+    cout << "-------------- \n" << "Repulsive Interaction \n" << "-------------- \n" << endl;
+
+    int Maxiterations = 5;
+
+    //#pragma omp parallel for
+    for (int i = 0; i < Maxiterations; i++){
+
       System* system = new System();
       system->setHamiltonian              (new HarmonicOscillator(system, omega));
       system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
       system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
-      system->setEquilibrationFraction    (equilibration);
-      system->setDiffusionCoefficient     (diffusionCoefficient);
       system->setStepLength               (stepLength);
       system->setRepulsivePotential       (true);
-      //system->setTimeStep                 (timeStep);
-      //system->setImportanceSampling       (true);
+      system->setPrintOutToTerminal       (false);
       system->runMetropolisSteps          (ofile, numberOfSteps);
 
-      ofile.close();
+      ofile << "alpha =  " << alpha << endl; // Mean energy
+
+
+      alpha += 0.1;
+
+    }
+
+
+
+
+    ofile.close();
 
   }
 
@@ -297,73 +312,74 @@ cin >> numberOfDimensions;
     // for equilibration.
 
 
-  cout << "\n" << "Which parameters do you want to use?: " << endl;
+    cout << "\n" << "Which parameters do you want to use?: " << endl;
 
-  cout << "\n" << "The number of Monte Carlo cycles: " << endl;
-  cout << "\n" << "Write here " << endl;
-  cin >> numberOfSteps;
+    cout << "\n" << "The number of Monte Carlo cycles: " << endl;
+    cout << "\n" << "Write here " << endl;
+    cin >> numberOfSteps;
 
-  cout << "\n" << "The number of Particles: " << endl;
-  cout << "\n" << "Write here " << endl;
-  cin >> numberOfParticles;
-
-
-  cout << "\n" << "The number of Dimensions: " << endl;
-  cout << "\n" << "Write here " << endl;
-  cin >> numberOfDimensions;
+    cout << "\n" << "The number of Particles: " << endl;
+    cout << "\n" << "Write here " << endl;
+    cin >> numberOfParticles;
 
 
+    cout << "\n" << "The number of Dimensions: " << endl;
+    cout << "\n" << "Write here " << endl;
+    cin >> numberOfDimensions;
 
-      // Analyitcal Run
-      cout << "-------------- \n" << " Gradient Descent \n" << "-------------- \n" << endl;
 
-      std::vector<double> vecEnergy = std::vector<double>();
-      std::vector<double> vecEnergyDer = std::vector<double>();
 
-      double tol = 1e-6;
-      double diff = 1;
-      double learning_rate = 1e-2;
-      int Maxiterations = 100;
+    // Analyitcal Run
+    cout << "-------------- \n" << " Gradient Descent \n" << "-------------- \n" << endl;
 
-      string file = "Gradient_Descent.dat";
-      ofile.open(file);
-      ofile << setiosflags(ios::showpoint | ios::uppercase);
-      ofile << setw(15) << setprecision(8) << "Alpha "; // Variational parameter
-      ofile << setw(15) << setprecision(8) << "Energy "; // Energy
-      ofile << setw(15) << setprecision(8) << "Derivative" << endl;
+    std::vector<double> vecEnergy = std::vector<double>();
+    std::vector<double> vecEnergyDer = std::vector<double>();
 
-      int i = 0;
-      while (i < Maxiterations || diff > tol){
-        System* system = new System();
+    double tol = 1e-6;
+    double diff = 1;
+    double learning_rate = 1e-2;
+    int Maxiterations = 100;
 
-        system->setHamiltonian              (new HarmonicOscillator(system, omega));
-        system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
-        system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
-        system->setEquilibrationFraction    (equilibration);
-        system->setStepLength               (stepLength);
-        system->setDiffusionCoefficient     (diffusionCoefficient);
-        system->setRepulsivePotential       (true);
-        system->runMetropolisSteps          (ofile, numberOfSteps);
+    string file = "Gradient_Descent.dat";
+    ofile.open(file);
+    ofile << setiosflags(ios::showpoint | ios::uppercase);
+    ofile << setw(15) << setprecision(8) << "Alpha "; // Variational parameter
+    ofile << setw(15) << setprecision(8) << "Energy "; // Energy
+    ofile << setw(15) << setprecision(8) << "Derivative" << endl;
 
-        vecEnergy.push_back(system->getSampler()->getEnergy());
-        vecEnergyDer.push_back(system->getSampler()->getEnergyDer());
+    int i = 0;
+    while (i < Maxiterations || diff > tol){
+      System* system = new System();
 
-        alpha -= learning_rate*vecEnergyDer[i];
+      system->setHamiltonian              (new HarmonicOscillator(system, omega));
+      system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
+      system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
+      system->setEquilibrationFraction    (equilibration);
+      system->setStepLength               (stepLength);
+      system->setDiffusionCoefficient     (diffusionCoefficient);
+      system->setRepulsivePotential       (true);
+      system->setPrintOutToTerminal       (false);
+      system->runMetropolisSteps          (ofile, numberOfSteps);
 
-        ofile << setw(15) << setprecision(8) << alpha; // Variational parameter
-        ofile << setw(15) << setprecision(8) << vecEnergy[i]; // Energy
-        ofile << setw(15) << setprecision(8) << vecEnergyDer[i] << endl; // Derivative
+      vecEnergy.push_back(system->getSampler()->getEnergy());
+      vecEnergyDer.push_back(system->getSampler()->getEnergyDer());
 
-        if (i > 0){
-          diff = fabs(vecEnergy[i] - vecEnergy[i-1]);
-        }
+      alpha -= learning_rate*vecEnergyDer[i];
 
-        //cout << "Difference in energy " << diff << endl;
+      ofile << setw(15) << setprecision(8) << alpha; // Variational parameter
+      ofile << setw(15) << setprecision(8) << vecEnergy[i]; // Energy
+      ofile << setw(15) << setprecision(8) << vecEnergyDer[i] << endl; // Derivative
 
-        i++;
+      if (i > 0){
+        diff = fabs(vecEnergy[i] - vecEnergy[i-1]);
       }
 
-      ofile.close();
+      //cout << "Difference in energy " << diff << endl;
+
+      i++;
+    }
+
+    ofile.close();
 
   }
 

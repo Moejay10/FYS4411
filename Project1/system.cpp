@@ -159,8 +159,9 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
     double counter = 0;
     bool acceptedStep;
 
-    double start_time = omp_get_wtime();
+    double start_time, end_time, total_time;
 
+    start_time = omp_get_wtime();
     for (int i = 1; i <= numberOfMetropolisSteps; i++) {
         // Trial position moving one particle at the time
         for (int j = 0; j < N; j++){
@@ -177,27 +178,27 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
           * for a while. You may handle this using the fraction of steps which
           * are equilibration steps; m_equilibrationFraction.
           */
-
+          counter += acceptedStep;
         }
-        //if (i >= m_equilibrationFraction*m_numberOfMetropolisSteps){
         m_sampler->sample(acceptedStep, i);
         if (getOneBodyDensity() != true){
             m_sampler->WriteResultstoFile(ofile, i);
         }
 
-        //}
-        counter += acceptedStep;
+
     }
+
+    end_time = omp_get_wtime();
+    total_time = end_time - start_time;
+    counter = counter/(numberOfMetropolisSteps*N);
+
     m_sampler->computeAverages();
-    m_sampler->printOutputToTerminal();
-    cout << "# Accepted Step = " << counter/numberOfMetropolisSteps << endl;
+    m_sampler->printOutputToTerminal(total_time, counter);
+
     if (getOneBodyDensity()){
       m_sampler->WriteOneBodyDensitytoFile(ofile);
     }
-  double end_time = omp_get_wtime();
-  double total_time = end_time - start_time;
-  m_sampler->setTime(total_time);
-  cout << "Time is \n " << total_time << endl;
+
 }
 
 void System::setNumberOfParticles(int numberOfParticles) {
@@ -287,4 +288,8 @@ bool System::setImportanceSampling(bool importance_sampling){
 
 bool System::setNumericalDerivative(bool numerical_derivative){
   m_numerical_dericative = numerical_derivative;
+}
+
+bool System::setPrintOutToTerminal(bool print_terminal){
+  m_print_terminal = print_terminal;
 }

@@ -15,6 +15,7 @@ public:
     bool setRepulsivePotential      (bool);
     bool setImportanceSampling      (bool);
     bool setNumericalDerivative     (bool);
+    bool setPrintOutToTerminal      (bool);
     void runMetropolisSteps         (ofstream& ofile, int numberOfMetropolisSteps);
     void setNumberOfParticles       (int numberOfParticles);
     void setNumberOfDimensions      (int numberOfDimensions);
@@ -52,6 +53,7 @@ public:
     bool   getImportanceSampling()      { return m_importance_sampling;}
     bool   getOneBodyDensity()          { return m_oneBodyDensity;}
     bool   getNumericalDerivative()     { return m_numerical_dericative;}
+    bool   getPrintToTerminal()         { return m_print_terminal;}
     std::vector<double> getBinVector()  { return m_binVector;}
     std::vector<int> getBinCounter()    { return m_binCounter;}
 
@@ -60,12 +62,13 @@ private:
     bool                            m_importance_sampling = false;
     bool                            m_oneBodyDensity = false;
     bool                            m_numerical_dericative = false;
+    bool                            m_print_terminal = true;
     int                             m_numberOfParticles = 0;
     int                             m_numberOfDimensions = 0;
     int                             m_numberOfMetropolisSteps = 0;
-    double                          m_equilibrationFraction = 0.0;
+    double                          m_equilibrationFraction = 0.1;
     double                          m_stepLength = 0.1;
-    double                          m_timeStep = 0.01;
+    double                          m_timeStep = 0.1;
     double                          m_stepSize = 0.1;
     double                          m_diffusionCoefficient = 1.0;
     int                             m_numberofBins = 2;

@@ -9,9 +9,8 @@ class Sampler {
 public:
     Sampler(class System* system);
     void setNumberOfMetropolisSteps(int steps);
-    void setTime(double total_time);
     void sample(bool acceptedStep, int MCcycles);
-    void printOutputToTerminal();
+    void printOutputToTerminal(double time, double acceptedStep);
     void computeAverages();
     void Probability();
     void WriteOneBodyDensitytoFile(ofstream& ofile);
@@ -19,7 +18,6 @@ public:
     void WriteResultstoFile(ofstream& ofile, int MCcycles);
     double getEnergy()          { return m_energy; }
     double getEnergyDer()       { return m_EnergyDer; }
-    double getTime()            { return m_total_time; }
 
 
 private:
@@ -33,6 +31,5 @@ private:
     double  m_EnergyDer  = 0;
     double  m_variance = 0;
     double  m_STD = 0;
-    double m_total_time = 0;
     class System* m_system = nullptr;
 };
