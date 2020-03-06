@@ -31,58 +31,54 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
         m_cumulativeEnergy = 0;
     }
 
-
-    /* Here you should sample all the interesting things you want to measure.
-     * Note that there are (way) more than the single one here currently.
-     */
-
-     if (m_system->getNumericalDerivative())
-     {
-     double localEnergy = m_system->getHamiltonian()->
+    if (m_system->getNumericalDerivative()){
+        double localEnergy = m_system->getHamiltonian()->
                           computeLocalEnergyNumerical(m_system->getParticles());
 
-     m_cumulativeEnergy  += localEnergy;
-     m_cumulativeEnergy2  += localEnergy*localEnergy;
-     m_stepNumber++;
+        m_cumulativeEnergy  += localEnergy;
+        m_cumulativeEnergy2  += localEnergy*localEnergy;
+        m_stepNumber++;
 
-     //cout << "Numerical Derivative is true " << endl;
+        //cout << "Numerical Derivative is true " << endl;
 
      }
 
 
     else if (m_system->getOneBodyDensity()){
-      Probability();
-      //write bin and binvec to file.
+        Probability();
+
+        //write bin and binvec to file.
+
+        //cout << "getOneBodyDensity is true " << endl;
+
     }
 
 
-    else if (m_system->getRepulsivePotential())
-    {
-    double localEnergy = m_system->getHamiltonian()->
+    else if (m_system->getRepulsivePotential()){
+        double localEnergy = m_system->getHamiltonian()->
                          computeLocalEnergyAnalytical(m_system->getParticles());
 
-    double DerPsi     = m_system->getWaveFunction()->
+        double DerPsi     = m_system->getWaveFunction()->
                         derivativeWavefunction(m_system->getParticles());
-    m_DeltaPsi += DerPsi;
-    m_DerivativePsiE += DerPsi*localEnergy;
-    m_cumulativeEnergy  += localEnergy;
-    m_cumulativeEnergy2  += localEnergy*localEnergy;
-    m_stepNumber++;
+        m_DeltaPsi += DerPsi;
+        m_DerivativePsiE += DerPsi*localEnergy;
+        m_cumulativeEnergy  += localEnergy;
+        m_cumulativeEnergy2  += localEnergy*localEnergy;
+        m_stepNumber++;
 
     //cout << "Repulsive Interaction is true " << endl;
     }
 
 
-    else
-    {
-    double localEnergy = m_system->getHamiltonian()->
+    else{
+        double localEnergy = m_system->getHamiltonian()->
                          computeLocalEnergyAnalytical(m_system->getParticles());
 
-    m_cumulativeEnergy  += localEnergy;
-    m_cumulativeEnergy2  += localEnergy*localEnergy;
-    m_stepNumber++;
+        m_cumulativeEnergy  += localEnergy;
+        m_cumulativeEnergy2  += localEnergy*localEnergy;
+        m_stepNumber++;
 
-    //cout << "Standard is true " << endl;
+        //cout << "Standard is true " << endl;
 
     }
 
@@ -140,7 +136,6 @@ void Sampler::computeAverages() {
 }
 
 void Sampler::Probability(){
-
   int N = m_system->getNumberOfParticles(); // Number of Particles
   int Dim = m_system->getNumberOfDimensions(); // The Dimension
   double r2;
@@ -152,7 +147,8 @@ void Sampler::Probability(){
     }
     for (int k = 0; k < m_system->getNumberofBins(); k++){
       if (fabs(r2 - m_system->getBinVector()[k]) <= tol){
-        m_system->getBinCounter()[k]++;
+        m_system->setBinCounter(m_system->getBinCounter()[k] + 1, k);
+        //printf("%f %f %d\n",r2, m_system->getBinVector()[k], m_system->getBinCounter()[k]);
       }
     }
 
@@ -183,3 +179,12 @@ void Sampler::WriteResultstoFile(ofstream& ofile, int MCcycles)
 
 
 } // end output function
+
+void Sampler::WriteOneBodyDensitytoFile(ofstream& ofile){
+  int N = m_system->getNumberOfParticles();
+  int MCcycles = m_system->getNumberOfMetropolisSteps();
+  for (int i = 0; i < m_system->getNumberofBins(); i++){
+    ofile << setw(15) << setprecision(8) <<  m_system->getBinVector()[i]; // Mean energy
+    ofile << setw(15) << setprecision(8) << m_system->getBinCounter()[i] << endl; // Variance
+  }
+}

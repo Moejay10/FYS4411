@@ -27,7 +27,9 @@ public:
     void setBinStartpoint           (double binStartpoint);
     void setBinEndpoint             (double binEndpoint);
     void setBinVector               (double binStartpoint, double binEndpoint, int numberofBins);
+    void setBinCounter              (int new_count, int index);
     void setOneBodyDensity          (bool oneBodyDensity);
+
     void setHamiltonian             (class Hamiltonian* hamiltonian);
     void setWaveFunction            (class WaveFunction* waveFunction);
     void setInitialState            (class InitialState* initialState);
@@ -43,7 +45,7 @@ public:
     double getTimeStep()                { return m_timeStep; }
     double getStepSize()                { return m_stepSize; }
     double getDiffusionCoefficient()    { return m_diffusionCoefficient; }
-    int getNumberofBins()               { return m_numberofBins; }
+    int    getNumberofBins()            { return m_numberofBins; }
     double getBinStartpoint()           { return m_binStartpoint; }
     double getBinEndpoint()             { return m_binEndpoint; }
     bool   getRepulsivePotential()      { return m_statement;}

@@ -14,6 +14,7 @@ public:
     void printOutputToTerminal();
     void computeAverages();
     void Probability();
+    void WriteOneBodyDensitytoFile(ofstream& ofile);
 
     void WriteResultstoFile(ofstream& ofile, int MCcycles);
     double getEnergy()          { return m_energy; }

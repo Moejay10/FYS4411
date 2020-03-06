@@ -161,13 +161,15 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
 
     double start_time = omp_get_wtime();
 
-    if (getImportanceSampling())
-    {
     for (int i = 1; i <= numberOfMetropolisSteps; i++) {
         // Trial position moving one particle at the time
         for (int j = 0; j < N; j++){
-
-          acceptedStep = ImportanceMetropolisStep(j);
+          if (getImportanceSampling()){
+              acceptedStep = ImportanceMetropolisStep(j);
+          }
+          else{
+              acceptedStep = metropolisStep(j);
+          }
 
           /* Here you should sample the energy (and maybe other things using
           * the m_sampler instance of the Sampler class. Make sure, though,
@@ -178,44 +180,20 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
 
         }
         //if (i >= m_equilibrationFraction*m_numberOfMetropolisSteps){
-          m_sampler->sample(acceptedStep, i);
-          m_sampler->WriteResultstoFile(ofile, i);
-        //}
-        counter += acceptedStep;
-    }
-    m_sampler->computeAverages();
-    m_sampler->printOutputToTerminal();
-    cout << "# Accepted Step = " << counter/numberOfMetropolisSteps << endl;
-  }
-
-  else
-  {
-    for (int i = 1; i <= numberOfMetropolisSteps; i++) {
-
-        // Trial position moving one particle at the time
-        for (int j = 0; j < N; j++){
-
-          acceptedStep = metropolisStep(j);
-
-          /* Here you should sample the energy (and maybe other things using
-          * the m_sampler instance of the Sampler class. Make sure, though,
-          * to only begin sampling after you have let the system equilibrate
-          * for a while. You may handle this using the fraction of steps which
-          * are equilibration steps; m_equilibrationFraction.
-          */
-
+        m_sampler->sample(acceptedStep, i);
+        if (getOneBodyDensity() != true){
+            m_sampler->WriteResultstoFile(ofile, i);
         }
-        //if (i >= m_equilibrationFraction*m_numberOfMetropolisSteps){
-          m_sampler->sample(acceptedStep, i);
-          //m_sampler->WriteResultstoFile(ofile, i);
+
         //}
         counter += acceptedStep;
     }
     m_sampler->computeAverages();
     m_sampler->printOutputToTerminal();
     cout << "# Accepted Step = " << counter/numberOfMetropolisSteps << endl;
-  }
-
+    if (getOneBodyDensity()){
+      m_sampler->WriteOneBodyDensitytoFile(ofile);
+    }
   double end_time = omp_get_wtime();
   double total_time = end_time - start_time;
   m_sampler->setTime(total_time);
@@ -269,6 +247,9 @@ void System::setBinVector(double binStartpoint, double binEndpoint, int numberof
   }
   m_binVector = binVector;
   m_binCounter = binCounter;
+}
+void System::setBinCounter(int new_count, int index){
+  m_binCounter[index] = new_count;
 }
 
 void System::setOneBodyDensity(bool oneBodyDensity){

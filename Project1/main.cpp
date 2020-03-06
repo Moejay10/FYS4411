@@ -384,9 +384,9 @@ cin >> numberOfDimensions;
     double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
     double equilibration    = 0.1;          // Amount of the total steps used
     // for equilibration.
-    int numberofBins = 100;
+    int numberofBins = 1000;
     double binStartpoint = 0;
-    double binEndpoint = 10;
+    double binEndpoint = 1;
 
   cout << "\n" << "Which parameters do you want to use?: " << endl;
 
@@ -407,10 +407,11 @@ cin >> numberOfDimensions;
   // Analyitcal Run
   cout << "-------------- \n" << " Onebody Densities \n" << "-------------- \n" << endl;
 
-  string file = "Onebody_Density.dat";
+  string file = "Python/Results/Onebody_Density.dat";
   ofile.open(file);
   ofile << setiosflags(ios::showpoint | ios::uppercase);
-  ofile << setw(15) << setprecision(8) << "Probability density "; // Variational parameter
+  ofile << setw(15) << setprecision(8) << "Bins"; // Variational parameter
+  ofile << setw(15) << setprecision(8) << "Counter" << endl; // Variational parameter
 
   System* system = new System();
   system->setHamiltonian              (new HarmonicOscillator(system, omega));
