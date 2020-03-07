@@ -257,40 +257,50 @@ if (Task == "b")
     cout << "\n" << "Write here " << endl;
     cin >> numberOfDimensions;
 
-
+/*
     string file = "Exercise_e.dat";
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
     ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
-
+*/
     // Analyitcal Run
     cout << "-------------- \n" << "Repulsive Interaction \n" << "-------------- \n" << endl;
 
     int Maxiterations = 5;
+    vec alphas(Maxiterations);
+    for (int i = 0; i < Maxiterations; i++){
+      alphas(i) = 0.3 + 0.1*i;
+    }
 
-    //#pragma omp parallel for
+    std::vector<double> vecEnergy = std::vector<double>();
+    std::vector<double> vecalpha = std::vector<double>();
+
+
+
+    #pragma omp parallel for //schedule(dynamic)
     for (int i = 0; i < Maxiterations; i++){
 
       System* system = new System();
       system->setHamiltonian              (new HarmonicOscillator(system, omega));
-      system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
+      system->setWaveFunction             (new SimpleGaussian(system, alphas(i), beta, gamma, a));
       system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
       system->setStepLength               (stepLength);
       system->setRepulsivePotential       (true);
       system->setPrintOutToTerminal       (false);
       system->runMetropolisSteps          (ofile, numberOfSteps);
 
-      ofile << "alpha =  " << alpha << endl; // Mean energy
+      vecEnergy.push_back(system->getSampler()->getEnergy());
+      vecalpha.push_back(alphas(i));
 
-
-      alpha += 0.1;
 
     }
 
+    for (int i = 0; i < Maxiterations; i++){
+      cout << "Energy = " << vecEnergy[i] << "  alpha = " << vecalpha[i] << endl;
+    }
 
 
-
-    ofile.close();
+    //ofile.close();
 
   }
 
