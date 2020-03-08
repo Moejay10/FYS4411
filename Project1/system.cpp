@@ -159,6 +159,8 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
     double counter = 0;
     bool acceptedStep;
 
+    m_sampler->setEnergies(numberOfMetropolisSteps);
+
     double start_time, end_time, total_time;
 
     start_time = omp_get_wtime();
@@ -185,6 +187,7 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
             m_sampler->WriteResultstoFile(ofile, i);
         }
 
+        m_sampler->Analysis(i);
 
     }
 

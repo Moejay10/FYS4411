@@ -3,11 +3,13 @@
 #include <fstream>
 #include <cmath>
 #include <vector>
+#include <armadillo>
 #include "sampler.h"
 #include "system.h"
 #include "particle.h"
 #include "Hamiltonians/hamiltonian.h"
 #include "WaveFunctions/wavefunction.h"
+using namespace arma;
 using std::cout;
 using std::endl;
 
@@ -19,6 +21,14 @@ Sampler::Sampler(System* system) {
 
 void Sampler::setNumberOfMetropolisSteps(int steps) {
     m_numberOfMetropolisSteps = steps;
+}
+
+
+void Sampler::setEnergies(int MCcycles) {
+  for (int i = 0; i < MCcycles; i++){
+    m_Energies.push_back(0);
+  }
+
 }
 
 
@@ -157,6 +167,20 @@ void Sampler::Probability(){
 }
 
 
+
+void Sampler::Analysis(int MCcycles)
+{
+
+  double norm = 1.0/((double) (MCcycles));  // divided by  number of cycles
+
+  double Energy = m_cumulativeEnergy * norm;
+
+  m_Energies[MCcycles-1] = Energy;
+
+
+} // end output function
+
+
 void Sampler::WriteResultstoFile(ofstream& ofile, int MCcycles)
 {
   int N = m_system->getNumberOfParticles(); // Number of Particles
@@ -171,7 +195,7 @@ void Sampler::WriteResultstoFile(ofstream& ofile, int MCcycles)
 
   //ofile << "\n";
   //ofile << setw(15) << setprecision(8) << MCcycles; // # Monte Carlo cycles (sweeps per lattice)
-  ofile << setw(15) << setprecision(8) << Energy << endl;; // Mean energy
+  ofile << setw(15) << setprecision(8) << Energy << endl; // Mean energy
   //ofile << setw(15) << setprecision(8) << m_cumulativeEnergy << endl; // Variance
   //ofile << setw(15) << setprecision(8) << STD; // # Standard deviation
 

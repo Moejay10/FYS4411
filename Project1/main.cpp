@@ -258,10 +258,10 @@ if (Task == "b")
     cin >> numberOfDimensions;
 
 /*
-    string file = "Exercise_e.dat";
-    ofile.open(file);
-    ofile << setiosflags(ios::showpoint | ios::uppercase);
-    ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
+string file = "Exercise_e.dat";
+ofile.open(file);
+ofile << setiosflags(ios::showpoint | ios::uppercase);
+ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
 */
     // Analyitcal Run
     cout << "-------------- \n" << "Repulsive Interaction \n" << "-------------- \n" << endl;
@@ -275,9 +275,11 @@ if (Task == "b")
     std::vector<double> vecEnergy = std::vector<double>();
     std::vector<double> vecalpha = std::vector<double>();
 
+    mat Energies_alphas = zeros<mat>(Maxiterations, numberOfSteps);
+    double start_time, end_time;
+    start_time = omp_get_wtime();
 
-
-    #pragma omp parallel for //schedule(dynamic)
+    #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < Maxiterations; i++){
 
       System* system = new System();
@@ -292,15 +294,35 @@ if (Task == "b")
       vecEnergy.push_back(system->getSampler()->getEnergy());
       vecalpha.push_back(alphas(i));
 
+      for (int j = 0; j < numberOfSteps; j++){
+        Energies_alphas(i,j) = system->getSampler()->getEnergies()[j];
+      }
 
     }
+
+    for (int i = 0; i < Maxiterations; i++){
+      string file = "Exercise_e" + to_string(alphas(i)) + "dat";
+      ofile.open(file);
+      ofile << setiosflags(ios::showpoint | ios::uppercase);
+      ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
+
+      for (int j = 0; j < numberOfSteps; j++){
+        ofile << setw(15) << setprecision(8) << Energies_alphas(i,j) << endl; // Mean energy
+      }
+      ofile.close();
+
+    }
+
 
     for (int i = 0; i < Maxiterations; i++){
       cout << "Energy = " << vecEnergy[i] << "  alpha = " << vecalpha[i] << endl;
     }
 
+    end_time = omp_get_wtime();
 
-    //ofile.close();
+    cout << "Time : " << end_time - start_time << endl;
+
+
 
   }
 
