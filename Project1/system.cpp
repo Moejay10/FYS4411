@@ -182,9 +182,11 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
           */
           counter += acceptedStep;
         }
-        m_sampler->sample(acceptedStep, i);
-        if (getOneBodyDensity() != true){
-            m_sampler->WriteResultstoFile(ofile, i);
+        if (i > getEquilibrationFraction()*numberOfMetropolisSteps){
+          m_sampler->sample(acceptedStep, i);
+          if (getOneBodyDensity() != true){
+              m_sampler->WriteResultstoFile(ofile, i);
+          }
         }
 
         m_sampler->Analysis(i);
@@ -251,9 +253,15 @@ void System::setBinVector(double binStartpoint, double binEndpoint, int numberof
   }
   m_binVector = binVector;
   m_binCounter = binCounter;
+  m_partclesPerBin = binCounter;
 }
+
 void System::setBinCounter(int new_count, int index){
   m_binCounter[index] = new_count;
+}
+
+void System::setParticlesPerBin(int index){
+  m_binCounter[index]++;
 }
 
 void System::setOneBodyDensity(bool oneBodyDensity){

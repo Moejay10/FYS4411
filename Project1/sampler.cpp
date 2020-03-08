@@ -52,7 +52,7 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
 
 
     else if (m_system->getOneBodyDensity()){
-        Probability();
+        computeOneBodyDensity();
 
         //write bin and binvec to file.
 
@@ -146,23 +146,26 @@ void Sampler::computeAverages() {
 
 }
 
-void Sampler::Probability(){
+void Sampler::computeOneBodyDensity(){
   int N = m_system->getNumberOfParticles(); // Number of Particles
   int Dim = m_system->getNumberOfDimensions(); // The Dimension
   double r2;
   double tol = 0.5*(m_system->getBinEndpoint()-m_system->getBinStartpoint())/(m_system->getNumberofBins());
+  double step = (m_system->getBinEndpoint() - m_system->getBinStartpoint())/m_system->getNumberofBins();
   for (int i = 0; i < N; i++){
     r2 = 0;
     for (int j = 0; j < Dim; j++){
       r2 += m_system->getParticles()[i]->getPosition()[j]*m_system->getParticles()[i]->getPosition()[j];
     }
+    r2 = sqrt(r2);
+    /*
     for (int k = 0; k < m_system->getNumberofBins(); k++){
       if (fabs(r2 - m_system->getBinVector()[k]) <= tol){
         m_system->setBinCounter(m_system->getBinCounter()[k] + 1, k);
-        //printf("%f %f %d\n",r2, m_system->getBinVector()[k], m_system->getBinCounter()[k]);
       }
     }
-
+    */
+    m_system->setParticlesPerBin(int(r2/step) + 1);
   }
 }
 
@@ -205,8 +208,12 @@ void Sampler::WriteResultstoFile(ofstream& ofile, int MCcycles)
 void Sampler::WriteOneBodyDensitytoFile(ofstream& ofile){
   int N = m_system->getNumberOfParticles();
   int MCcycles = m_system->getNumberOfMetropolisSteps();
+  double step = (m_system->getBinEndpoint() - m_system->getBinStartpoint())/m_system->getNumberofBins();
+  step = step*step*step;
+  double PI = 4*atan(1);
   for (int i = 0; i < m_system->getNumberofBins(); i++){
+    double Volume = (4*(i*(i+1) + 1/3)*PI*step);
     ofile << setw(15) << setprecision(8) <<  m_system->getBinVector()[i]; // Mean energy
-    ofile << setw(15) << setprecision(8) << m_system->getBinCounter()[i] << endl; // Variance
+    ofile << setw(15) << setprecision(8) << m_system->getParticlesPerBin()[i] << endl; // Variance
   }
 }

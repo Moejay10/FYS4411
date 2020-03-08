@@ -430,11 +430,11 @@ ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
     double timeStep         = 1.0;          // Timestep to be used in Metropolis-Hastings.
     double stepSize         = 1e-4;         // Stepsize in the numerical derivative for kinetic energy
     double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
-    double equilibration    = 0.1;          // Amount of the total steps used
+    double equilibration    = 0.4;          // Amount of the total steps used
     // for equilibration.
-    int numberofBins = 1000;
+    int numberofBins = 200;
     double binStartpoint = 0;
-    double binEndpoint = 1;
+    double binEndpoint = 2;
 
   cout << "\n" << "Which parameters do you want to use?: " << endl;
 
@@ -473,7 +473,7 @@ ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
   system->setNumberofBins             (numberofBins);
   system->setBinVector                (binStartpoint, binEndpoint, numberofBins);
   system->setOneBodyDensity           (true);
-  system->setRepulsivePotential       (true);
+  //system->setRepulsivePotential       (true);
   system->runMetropolisSteps          (ofile, numberOfSteps);
 
   ofile.close();

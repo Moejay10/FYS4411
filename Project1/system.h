@@ -29,6 +29,7 @@ public:
     void setBinEndpoint             (double binEndpoint);
     void setBinVector               (double binStartpoint, double binEndpoint, int numberofBins);
     void setBinCounter              (int new_count, int index);
+    void setParticlesPerBin         (int index);
     void setOneBodyDensity          (bool oneBodyDensity);
 
     void setHamiltonian             (class Hamiltonian* hamiltonian);
@@ -56,6 +57,8 @@ public:
     bool   getPrintToTerminal()         { return m_print_terminal;}
     std::vector<double> getBinVector()  { return m_binVector;}
     std::vector<int> getBinCounter()    { return m_binCounter;}
+    std::vector<int> getParticlesPerBin()    { return m_partclesPerBin;}
+
 
 private:
     bool                            m_statement = false;
@@ -81,4 +84,6 @@ private:
     std::vector<class Particle*>    m_particles = std::vector<class Particle*>();
     std::vector<double>             m_binVector;
     std::vector<int>                m_binCounter;
+    std::vector<int>                m_partclesPerBin;
+
 };

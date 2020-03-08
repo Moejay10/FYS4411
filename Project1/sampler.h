@@ -15,7 +15,7 @@ public:
     void sample(bool acceptedStep, int MCcycles);
     void printOutputToTerminal(double time, double acceptedStep);
     void computeAverages();
-    void Probability();
+    void computeOneBodyDensity();
     void Analysis(int MCcycles);
     void WriteOneBodyDensitytoFile(ofstream& ofile);
 
