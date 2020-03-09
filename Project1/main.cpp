@@ -430,9 +430,9 @@ ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
     double timeStep         = 1.0;          // Timestep to be used in Metropolis-Hastings.
     double stepSize         = 1e-4;         // Stepsize in the numerical derivative for kinetic energy
     double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
-    double equilibration    = 0.4;          // Amount of the total steps used
+    double equilibration    = 0.1;          // Amount of the total steps used
     // for equilibration.
-    int numberofBins = 200;
+    int numberofBins = 20;
     double binStartpoint = 0;
     double binEndpoint = 2;
 
@@ -455,7 +455,7 @@ ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
   // Analyitcal Run
   cout << "-------------- \n" << " Onebody Densities \n" << "-------------- \n" << endl;
 
-  string file = "Python/Results/Onebody_Density.dat";
+  string file = "Python/Results/RepulsiveOnebody_Density.dat";
   ofile.open(file);
   ofile << setiosflags(ios::showpoint | ios::uppercase);
   ofile << setw(15) << setprecision(8) << "Bins"; // Variational parameter
@@ -473,7 +473,7 @@ ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
   system->setNumberofBins             (numberofBins);
   system->setBinVector                (binStartpoint, binEndpoint, numberofBins);
   system->setOneBodyDensity           (true);
-  //system->setRepulsivePotential       (true);
+  system->setRepulsivePotential       (true);
   system->runMetropolisSteps          (ofile, numberOfSteps);
 
   ofile.close();

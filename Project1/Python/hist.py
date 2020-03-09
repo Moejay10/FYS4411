@@ -9,12 +9,12 @@ DATA_ID = "Results"
 def data_path(dat_id):
     return os.path.join(DATA_ID, dat_id)
 
-X = pd.read_fwf(data_path("Onebody_Density.dat"))
+X = pd.read_fwf(data_path("RepulsiveOnebody_Density.dat"))
 
 
 
 print(X)
-X["Counter"]/=1e6
+X["Counter"]/=1e5
 counts = []
 bins = []
 
@@ -24,10 +24,11 @@ for i in range(len(X["Counter"])):
     V = 4*(i*(i+1)+ 1/3)*np.pi*r**3
     y[i] = int(X["Counter"][i]/V)
 
-x = np.linspace(0, 2, 200)
+x = np.linspace(0, 2, 20)
 
 import seaborn as sns
 sns.set()
 plt.plot(x, X["Counter"])
+#plt.plot(x, y)
 plt.show()
 #

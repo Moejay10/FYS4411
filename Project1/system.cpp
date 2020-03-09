@@ -182,12 +182,13 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
           */
           counter += acceptedStep;
         }
-        if (i > getEquilibrationFraction()*numberOfMetropolisSteps){
+        
+        //if (i > getEquilibrationFraction()*numberOfMetropolisSteps){
           m_sampler->sample(acceptedStep, i);
           if (getOneBodyDensity() != true){
               m_sampler->WriteResultstoFile(ofile, i);
           }
-        }
+        //}
 
         m_sampler->Analysis(i);
 
