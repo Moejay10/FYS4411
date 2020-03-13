@@ -20,9 +20,10 @@ public:
     void WriteOneBodyDensitytoFile(ofstream& ofile);
 
     void WriteResultstoFile(ofstream& ofile, int MCcycles);
-    double getEnergy()          { return m_energy; }
-    double getEnergyDer()       { return m_EnergyDer; }
-    vector<double> getEnergies() { return m_Energies; }
+    double getSTD()               { return m_STD; }
+    double getEnergy()            { return m_energy; }
+    double getEnergyDer()         { return m_EnergyDer; }
+    vector<double> getEnergies()  { return m_Energies; }
 
 
 

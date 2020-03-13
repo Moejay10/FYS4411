@@ -27,6 +27,7 @@ using namespace arma;
 int main() {
 
 cout << "\n" << "Which Project Task do you want to run?: " << endl;
+cout << "\n" << "Project Task A - Variational Parameter Alpha: " <<  "Write a " << endl;
 cout << "\n" << "Project Task B - Analytical vs Numerical: " <<  "Write b " << endl;
 cout << "\n" << "Project Task C - Importance Sampling: " <<  "Write c " << endl;
 cout << "\n" << "Project Task D - Statistical Analysis: " <<  "Write d " << endl;
@@ -39,8 +40,77 @@ cout << "\n" << "Write here " << endl;
 string Task;
 cin >> Task;
 
+if (Task == "a")
+{
+  int numberOfSteps       = 1e6;
+  int numberOfParticles   = 1;
+  int numberOfDimensions  = 3;
+
+  double omega            = 1.0;          // Oscillator frequency.
+  double beta             = 1.0;          // Variational parameter.
+  double gamma            = 1.0;          // Variational parameter.
+  double a                = 0.0;          // Interaction parameter.
+  double stepLength       = 1.5;          // Metropolis step length.
+  double stepSize         = 1e-2;         // Stepsize in the numerical derivative for kinetic energy
+  double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
+  double equilibration    = 0.1;          // Amount of the total steps used
+  // for equilibration.
+
+
+
+
+  // Analyitcal Run
+  cout << "-------------- \n" << "Variational Parameter alpha \n" << "-------------- \n" << endl;
+
+  int Maxiterations = 10;
+  vec alphas(Maxiterations); // Variational parameters.
+  for (int i = 0; i < Maxiterations; i++){
+    alphas(i) = 0.1 + 0.1*i;
+  }
+
+  std::vector<double> vecEnergy = std::vector<double>();
+  std::vector<double> vecSTD = std::vector<double>();
+
+
+  for (int i = 0; i < Maxiterations; i++){
+
+    System* system = new System();
+    system->setHamiltonian              (new HarmonicOscillator(system, omega));
+    system->setWaveFunction             (new SimpleGaussian(system, alphas(i), beta, gamma, a));
+    system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
+    system->setStepLength               (stepLength);
+    system->setPrintOutToTerminal       (false);
+    system->runMetropolisSteps          (ofile, numberOfSteps);
+
+    vecEnergy.push_back(system->getSampler()->getEnergy());
+    vecSTD.push_back(system->getSampler()->getSTD());
+
+  }
+
+  string file = "Python/Results/Variational_parameter.dat";
+  ofile.open(file);
+  ofile << setiosflags(ios::showpoint | ios::uppercase);
+  ofile << setw(15) << setprecision(8) << "alpha "; // alpha
+  ofile << setw(15) << setprecision(8) << "Energy "; // Mean energy
+  ofile << setw(15) << setprecision(8) << "Standard deviation " << endl; // Mean energy
+
+  for (int i = 0; i < Maxiterations; i++){
+    ofile << setw(15) << setprecision(8) << alphas(i); // alpha
+    ofile << setw(15) << setprecision(8) << vecEnergy[i]; // Mean energy
+    ofile << setw(15) << setprecision(8) << vecSTD[i] << endl; // Mean energy
+
+  }
+
+  ofile.close();
+
+}
+
+
+
+
+
 if (Task == "b")
-  {
+{
   int numberOfSteps;
   int numberOfParticles;
   int numberOfDimensions;
@@ -96,7 +166,7 @@ if (Task == "b")
   system->setNumericalDerivative      (true);
   system->runMetropolisSteps          (ofile, numberOfSteps);
 
-  }
+}
 
 
   if (Task == "c")
