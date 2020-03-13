@@ -92,7 +92,7 @@ if (Task == "a")
   ofile << setiosflags(ios::showpoint | ios::uppercase);
   ofile << setw(15) << setprecision(8) << "alpha "; // alpha
   ofile << setw(15) << setprecision(8) << "Energy "; // Mean energy
-  ofile << setw(15) << setprecision(8) << "Standard deviation " << endl; // Mean energy
+  ofile << setw(15) << setprecision(8) << "STD " << endl; // Mean energy
 
   for (int i = 0; i < Maxiterations; i++){
     ofile << setw(15) << setprecision(8) << alphas(i); // alpha
@@ -175,7 +175,7 @@ if (Task == "b")
   ofile.open(file);
   ofile << setiosflags(ios::showpoint | ios::uppercase);
   ofile << setw(15) << setprecision(8) << "Energy "; // Mean energy
-  ofile << setw(15) << setprecision(8) << "Standard deviation " << endl; // STD
+  ofile << setw(15) << setprecision(8) << "STD " << endl; // STD
 
   ofile << setw(15) << setprecision(8) << analytical_Energy; // Mean energy
   ofile << setw(15) << setprecision(8) << analytical_STD << endl; // STD
