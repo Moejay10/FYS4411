@@ -182,7 +182,7 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
           */
           counter += acceptedStep;
         }
-        
+
         //if (i > getEquilibrationFraction()*numberOfMetropolisSteps){
           m_sampler->sample(acceptedStep, i);
           if (getOneBodyDensity() != true){
@@ -198,7 +198,7 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
     total_time = end_time - start_time;
     counter = counter/(numberOfMetropolisSteps*N);
 
-    m_sampler->computeAverages();
+    m_sampler->computeAverages(total_time, counter);
     m_sampler->printOutputToTerminal(total_time, counter);
 
     if (getOneBodyDensity()){

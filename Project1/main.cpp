@@ -155,6 +155,8 @@ if (Task == "b")
 
   double analytical_Energy = system->getSampler()->getEnergy();
   double analytical_STD = system->getSampler()->getSTD();
+  double analytical_Time = system->getSampler()->getTime();
+
 
   // Numerical Run
   cout << "-------------- \n" << "Numerical Run \n" << "-------------- \n" << endl;
@@ -170,18 +172,23 @@ if (Task == "b")
 
   double numerical_Energy = system->getSampler()->getEnergy();
   double numerical_STD = system->getSampler()->getSTD();
+  double numerical_Time = system->getSampler()->getTime();
+
 
   string file = "Python/Results/Taskb/" + to_string(numberOfParticles) + "_particles" + "_" + to_string(numberOfDimensions) + "_dim.dat";
   ofile.open(file);
   ofile << setiosflags(ios::showpoint | ios::uppercase);
   ofile << setw(15) << setprecision(8) << "Energy "; // Mean energy
-  ofile << setw(15) << setprecision(8) << "STD " << endl; // STD
+  ofile << setw(15) << setprecision(8) << "STD "; // STD
+  ofile << setw(15) << setprecision(8) << "Time " << endl; // Time
 
   ofile << setw(15) << setprecision(8) << analytical_Energy; // Mean energy
-  ofile << setw(15) << setprecision(8) << analytical_STD << endl; // STD
+  ofile << setw(15) << setprecision(8) << analytical_STD; // STD
+  ofile << setw(15) << setprecision(8) << analytical_Time << endl; // Time
 
   ofile << setw(15) << setprecision(8) << numerical_Energy; // Mean energy
-  ofile << setw(15) << setprecision(8) << numerical_STD << endl; // STD
+  ofile << setw(15) << setprecision(8) << numerical_STD; // STD
+  ofile << setw(15) << setprecision(8) << numerical_Time << endl; // Time
 
   ofile.close();
 

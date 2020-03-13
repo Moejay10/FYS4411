@@ -14,16 +14,18 @@ public:
     void setEnergies(int MCcycles);
     void sample(bool acceptedStep, int MCcycles);
     void printOutputToTerminal(double time, double acceptedStep);
-    void computeAverages();
+    void computeAverages(double time, double acceptedStep);
     void computeOneBodyDensity();
     void Analysis(int MCcycles);
     void WriteOneBodyDensitytoFile(ofstream& ofile);
 
     void WriteResultstoFile(ofstream& ofile, int MCcycles);
-    double getSTD()               { return m_STD; }
-    double getEnergy()            { return m_energy; }
-    double getEnergyDer()         { return m_EnergyDer; }
-    vector<double> getEnergies()  { return m_Energies; }
+    double getSTD()                   { return m_STD; }
+    double getEnergy()                { return m_energy; }
+    double getEnergyDer()             { return m_EnergyDer; }
+    double getTime()                  { return m_totalTime; }
+    double getAcceptedStep()          { return m_acceptedStep; }
+    vector<double> getEnergies()      { return m_Energies; }
 
 
 
@@ -38,6 +40,8 @@ private:
     double  m_EnergyDer  = 0;
     double  m_variance = 0;
     double  m_STD = 0;
+    double  m_totalTime = 0;
+    double  m_acceptedStep = 0;
 
     std::vector<double>  m_Energies;
 

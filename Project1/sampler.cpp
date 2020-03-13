@@ -124,7 +124,7 @@ void Sampler::printOutputToTerminal(double total_time, double acceptedStep) {
   }
 }
 
-void Sampler::computeAverages() {
+void Sampler::computeAverages(double total_time, double acceptedStep) {
     /* Compute the averages of the sampled quantities. You need to think
      * thoroughly through what is written here currently; is this correct?
      */
@@ -143,6 +143,8 @@ void Sampler::computeAverages() {
     m_DeltaPsi *= norm;
     m_EnergyDer = 2*(m_DerivativePsiE - m_DeltaPsi*m_energy);
 
+    m_totalTime = total_time;
+    m_acceptedStep = acceptedStep;
 
 }
 
