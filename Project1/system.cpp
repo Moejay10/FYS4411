@@ -164,35 +164,63 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
     double start_time, end_time, total_time;
 
     start_time = omp_get_wtime();
-    for (int i = 1; i <= numberOfMetropolisSteps; i++) {
-        // Trial position moving one particle at the time
-        for (int j = 0; j < N; j++){
-          if (getImportanceSampling()){
-              acceptedStep = ImportanceMetropolisStep(j);
+
+    if (getImportanceSampling())
+    {
+      for (int i = 1; i <= numberOfMetropolisSteps; i++) {
+          // Trial position moving one particle at the time
+          for (int j = 0; j < N; j++){
+            acceptedStep = ImportanceMetropolisStep(j);
+
+            /* Here you should sample the energy (and maybe other things using
+            * the m_sampler instance of the Sampler class. Make sure, though,
+            * to only begin sampling after you have let the system equilibrate
+            * for a while. You may handle this using the fraction of steps which
+            * are equilibration steps; m_equilibrationFraction.
+            */
+            counter += acceptedStep;
           }
-          else{
-              acceptedStep = metropolisStep(j);
-          }
 
-          /* Here you should sample the energy (and maybe other things using
-          * the m_sampler instance of the Sampler class. Make sure, though,
-          * to only begin sampling after you have let the system equilibrate
-          * for a while. You may handle this using the fraction of steps which
-          * are equilibration steps; m_equilibrationFraction.
-          */
-          counter += acceptedStep;
-        }
+          //if (i > getEquilibrationFraction()*numberOfMetropolisSteps){
+            m_sampler->sample(acceptedStep, i);
+            if (getOneBodyDensity() != true){
+                m_sampler->WriteResultstoFile(ofile, i);
+            }
+          //}
 
-        //if (i > getEquilibrationFraction()*numberOfMetropolisSteps){
-          m_sampler->sample(acceptedStep, i);
-          if (getOneBodyDensity() != true){
-              m_sampler->WriteResultstoFile(ofile, i);
-          }
-        //}
+          m_sampler->Analysis(i);
 
-        m_sampler->Analysis(i);
-
+      }
     }
+
+    else
+    {
+      for (int i = 1; i <= numberOfMetropolisSteps; i++) {
+          // Trial position moving one particle at the time
+          for (int j = 0; j < N; j++){
+            acceptedStep = metropolisStep(j);
+
+            /* Here you should sample the energy (and maybe other things using
+            * the m_sampler instance of the Sampler class. Make sure, though,
+            * to only begin sampling after you have let the system equilibrate
+            * for a while. You may handle this using the fraction of steps which
+            * are equilibration steps; m_equilibrationFraction.
+            */
+            counter += acceptedStep;
+          }
+
+          //if (i > getEquilibrationFraction()*numberOfMetropolisSteps){
+            m_sampler->sample(acceptedStep, i);
+            if (getOneBodyDensity() != true){
+                m_sampler->WriteResultstoFile(ofile, i);
+            }
+          //}
+
+          m_sampler->Analysis(i);
+
+      }
+    }
+
 
     end_time = omp_get_wtime();
     total_time = end_time - start_time;
