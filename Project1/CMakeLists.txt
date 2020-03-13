@@ -18,7 +18,7 @@ file(
     GLOB SOURCES "WaveFunctions/*.cpp"
 )
 
-set (CMAKE_CXX_FLAGS "-fopenmp")
+set (CMAKE_CXX_FLAGS "-03 -fopenmp")
 
 # Create executable called "vmc"
 add_executable(vmc ${SOURCES})
