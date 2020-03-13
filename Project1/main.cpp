@@ -153,6 +153,8 @@ if (Task == "b")
   system->setStepLength               (stepLength);
   system->runMetropolisSteps          (ofile, numberOfSteps);
 
+  double analytical_Energy = system->getSampler()->getEnergy();
+  double analytical_STD = system->getSampler()->getSTD();
 
   // Numerical Run
   cout << "-------------- \n" << "Numerical Run \n" << "-------------- \n" << endl;
@@ -165,6 +167,23 @@ if (Task == "b")
   system->setStepSize                 (stepSize);
   system->setNumericalDerivative      (true);
   system->runMetropolisSteps          (ofile, numberOfSteps);
+
+  double numerical_Energy = system->getSampler()->getEnergy();
+  double numerical_STD = system->getSampler()->getSTD();
+
+  string file = "Python/Results/Taskb/" + to_string(numberOfParticles) + "_particles" + "_" + to_string(numberOfDimensions) + "_dim.dat";
+  ofile.open(file);
+  ofile << setiosflags(ios::showpoint | ios::uppercase);
+  ofile << setw(15) << setprecision(8) << "Energy "; // Mean energy
+  ofile << setw(15) << setprecision(8) << "Standard deviation " << endl; // STD
+
+  ofile << setw(15) << setprecision(8) << analytical_Energy; // Mean energy
+  ofile << setw(15) << setprecision(8) << analytical_STD << endl; // STD
+
+  ofile << setw(15) << setprecision(8) << numerical_Energy; // Mean energy
+  ofile << setw(15) << setprecision(8) << numerical_STD << endl; // STD
+
+  ofile.close();
 
 }
 
