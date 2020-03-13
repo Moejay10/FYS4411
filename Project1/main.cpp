@@ -92,12 +92,12 @@ if (Task == "a")
   ofile << setiosflags(ios::showpoint | ios::uppercase);
   ofile << setw(15) << setprecision(8) << "alpha "; // alpha
   ofile << setw(15) << setprecision(8) << "Energy "; // Mean energy
-  ofile << setw(15) << setprecision(8) << "STD " << endl; // Mean energy
+  ofile << setw(15) << setprecision(8) << "STD " << endl; // STD
 
   for (int i = 0; i < Maxiterations; i++){
     ofile << setw(15) << setprecision(8) << alphas(i); // alpha
     ofile << setw(15) << setprecision(8) << vecEnergy[i]; // Mean energy
-    ofile << setw(15) << setprecision(8) << vecSTD[i] << endl; // Mean energy
+    ofile << setw(15) << setprecision(8) << vecSTD[i] << endl; // STD
 
   }
 
@@ -196,19 +196,17 @@ if (Task == "b")
 
 
   if (Task == "c")
-  {
+{
 
   int numberOfSteps;
   int numberOfParticles;
   int numberOfDimensions;
-  double timeStep;                        // Timestep to be used in Metropolis-Hastings.
 
   double omega            = 1.0;          // Oscillator frequency.
   double alpha            = 0.5;          // Variational parameter.
   double beta             = 1.0;          // Variational parameter.
   double gamma            = 1.0;          // Variational parameter.
   double a                = 0.0;          // Interaction parameter.
-  double stepLength       = 1.0;          // Metropolis step length.
   double stepSize         = 1e-4;         // Stepsize in the numerical derivative for kinetic energy
   double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.
   double equilibration    = 0.1;          // Amount of the total steps used
@@ -230,27 +228,111 @@ if (Task == "b")
     cout << "\n" << "Write here " << endl;
     cin >> numberOfDimensions;
 
-
-    cout << "\n" << "The Time Step in the Importance Sampling: " << endl;
-    cout << "\n" << "Write here " << endl;
-    cin >> timeStep;
-
-
     // Analyitcal Run
     // Importance Sampling
     cout << "-------------- \n" << "Importance Sampling \n" << "-------------- \n" << endl;
 
-    System* system = new System();
-    system->setHamiltonian              (new HarmonicOscillator(system, omega));
-    system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
-    system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
-    system->setStepLength               (stepLength);
-    system->setTimeStep                 (timeStep);
-    system->setDiffusionCoefficient     (diffusionCoefficient);
-    system->setImportanceSampling       (true);
-    system->runMetropolisSteps          (ofile, numberOfSteps);
+    int Maxiterations = 20;
+    vec timeStep(Maxiterations); // Timestep to be used in Metropolis-Hastings.
+    vec stepLength(Maxiterations); // Metropolis step length.
+    for (int i = 0; i < Maxiterations; i++){
+      timeStep(i) = 0.1 + 0.1*i;
+      stepLength(i) = 0.1 + 0.1*i;
+    }
 
-  }
+
+    std::vector<double> vecImportanceSampling = std::vector<double>();
+    std::vector<double> vecEnergy_IS = std::vector<double>();
+    std::vector<double> vecSTD_IS = std::vector<double>();
+    std::vector<double> vecTime_IS = std::vector<double>();
+
+
+    std::vector<double> vecBruteForce = std::vector<double>();
+    std::vector<double> vecEnergy_BF = std::vector<double>();
+    std::vector<double> vecSTD_BF = std::vector<double>();
+    std::vector<double> vecTime_BF = std::vector<double>();
+
+
+    cout << "-------------- \n" << "Brute Force Metropolis \n" << "-------------- \n" << endl;
+
+    for (int i = 0; i < Maxiterations; i++){
+
+      System* system = new System();
+      system->setHamiltonian              (new HarmonicOscillator(system, omega));
+      system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
+      system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
+      system->setStepLength               (stepLength(i));
+      system->runMetropolisSteps          (ofile, numberOfSteps);
+
+      vecBruteForce.push_back(system->getSampler()->getAcceptedStep());
+      vecEnergy_BF.push_back(system->getSampler()->getEnergy());
+      vecSTD_BF.push_back(system->getSampler()->getSTD());
+      vecTime_BF.push_back(system->getSampler()->getTime());
+    }
+
+    cout << "-------------- \n" << "Metropolis-Hastings \n" << "-------------- \n" << endl;
+
+    for (int i = 0; i < Maxiterations; i++){
+
+      System* system = new System();
+      system->setHamiltonian              (new HarmonicOscillator(system, omega));
+      system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
+      system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
+      system->setTimeStep                 (timeStep(i));
+      system->setDiffusionCoefficient     (diffusionCoefficient);
+      system->setImportanceSampling       (true);
+      system->runMetropolisSteps          (ofile, numberOfSteps);
+
+      vecImportanceSampling.push_back(system->getSampler()->getAcceptedStep());
+      vecEnergy_IS.push_back(system->getSampler()->getEnergy());
+      vecSTD_IS.push_back(system->getSampler()->getSTD());
+      vecTime_IS.push_back(system->getSampler()->getTime());
+    }
+
+
+    string file = "Python/Results/Brute_Force" + to_string(numberOfParticles) + "_particles" + "_" + to_string(numberOfDimensions) + "_dim.dat";
+    ofile.open(file);
+    ofile << setiosflags(ios::showpoint | ios::uppercase);
+    ofile << setw(15) << setprecision(8) << "StepLength "; // StepLength
+    ofile << setw(15) << setprecision(8) << "Acceptance_rate "; // acceptedStep
+    ofile << setw(15) << setprecision(8) << "Energy "; // Mean energy
+    ofile << setw(15) << setprecision(8) << "STD "; // STD
+    ofile << setw(15) << setprecision(8) << "Time " << endl; // Time
+
+
+    for (int i = 0; i < Maxiterations; i++){
+      ofile << setw(15) << setprecision(8) << stepLength(i); // stepLength
+      ofile << setw(15) << setprecision(8) << vecBruteForce[i]; // acceptedStep
+      ofile << setw(15) << setprecision(8) << vecEnergy_BF[i]; // Mean energy
+      ofile << setw(15) << setprecision(8) << vecSTD_BF[i]; // STD
+      ofile << setw(15) << setprecision(8) << vecTime_BF[i] << endl; // Time
+
+    }
+
+    ofile.close();
+
+    file = "Python/Results/Importance_Sampling" + to_string(numberOfParticles) + "_particles" + "_" + to_string(numberOfDimensions) + "_dim.dat";
+    ofile.open(file);
+    ofile << setiosflags(ios::showpoint | ios::uppercase);
+    ofile << setw(15) << setprecision(8) << "Timestep "; // timeStep
+    ofile << setw(15) << setprecision(8) << "Acceptance_rate "; // acceptedStep
+    ofile << setw(15) << setprecision(8) << "Energy "; // Mean energy
+    ofile << setw(15) << setprecision(8) << "STD "; // STD
+    ofile << setw(15) << setprecision(8) << "Time " << endl; // Time
+
+
+    for (int i = 0; i < Maxiterations; i++){
+      ofile << setw(15) << setprecision(8) << timeStep(i); // stepLength
+      ofile << setw(15) << setprecision(8) << vecImportanceSampling[i]; // acceptedStep
+      ofile << setw(15) << setprecision(8) << vecEnergy_IS[i]; // Mean energy
+      ofile << setw(15) << setprecision(8) << vecSTD_IS[i]; // STD
+      ofile << setw(15) << setprecision(8) << vecTime_IS[i] << endl; // Time
+    }
+
+    ofile.close();
+
+
+}
 
 
   if (Task == "d")
