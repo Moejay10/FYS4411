@@ -422,9 +422,11 @@ if (Task == "b")
 
     cout << "\n" << "Which parameters do you want to use?: " << endl;
 
-    cout << "\n" << "The number of Monte Carlo cycles: " << endl;
+    cout << "\n" << "The number of Monte Carlo cycles in powers of 2: " << endl;
+    cout << "\n" << "Useful information: 2^10 = 10^3 & 2^20 = 10^6" << endl;
     cout << "\n" << "Write here " << endl;
     cin >> numberOfSteps;
+    numberOfSteps = pow(2, numberOfSteps);
 
     cout << "\n" << "The number of Particles: " << endl;
     cout << "\n" << "Write here " << endl;
@@ -456,9 +458,9 @@ ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
     mat Energies_alphas = zeros<mat>(Maxiterations, numberOfSteps);
     double start_time, end_time;
     start_time = omp_get_wtime();
-
+    int i;
     #pragma omp parallel for schedule(dynamic)
-    for (int i = 0; i < Maxiterations; i++){
+    for (i = 0; i < Maxiterations; i++){
 
       System* system = new System();
       system->setHamiltonian              (new HarmonicOscillator(system, omega));
@@ -479,10 +481,12 @@ ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
     }
 
     for (int i = 0; i < Maxiterations; i++){
-      string file = "Exercise_e" + to_string(alphas(i)) + "dat";
+      string file = "Python/Results/Task_e/Gradient_Descent_" + to_string(numberOfParticles) + "particles_" + to_string(vecalpha[i]) + "alpha.dat";
       ofile.open(file);
       ofile << setiosflags(ios::showpoint | ios::uppercase);
-      ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
+      ofile << setw(15) << setprecision(8) << "Monte_Carlo_Energy "; // Mean energy
+      ofile << setw(15) << setprecision(8) << "Total_Energy =  " << vecEnergy[i] << endl; // Total energy
+
 
       for (int j = 0; j < numberOfSteps; j++){
         ofile << setw(15) << setprecision(8) << Energies_alphas(i,j) << endl; // Mean energy
@@ -502,7 +506,7 @@ ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
 
 
 
-  }
+}
 
   if (Task == "f")
   {
