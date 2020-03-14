@@ -407,8 +407,9 @@ if (Task == "b")
     int numberOfSteps;
     int numberOfParticles;
     int numberOfDimensions;
+    double alpha;                           // Variational parameter.
+
     double omega            = 1.0;          // Oscillator frequency.
-    double alpha            = 0.3;          // Variational parameter.
     double beta             = 2.82843;      // Variational parameter.
     double gamma            = beta;         // Variational parameter.
     double a                = 0.0043;       // Interaction parameter.
@@ -437,74 +438,29 @@ if (Task == "b")
     cout << "\n" << "Write here " << endl;
     cin >> numberOfDimensions;
 
-/*
-string file = "Exercise_e.dat";
-ofile.open(file);
-ofile << setiosflags(ios::showpoint | ios::uppercase);
-ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
-*/
+
+    cout << "\n" << "The value of the variational parameter alpha: " << endl;
+    cout << "\n" << "Write here " << endl;
+    cin >> alpha;
+
+
     // Analyitcal Run
     cout << "-------------- \n" << "Repulsive Interaction \n" << "-------------- \n" << endl;
 
-    int Maxiterations = 5;
-    vec alphas(Maxiterations);
-    for (int i = 0; i < Maxiterations; i++){
-      alphas(i) = 0.3 + 0.1*i;
-    }
+    //#pragma omp parallel for schedule(dynamic)
 
-    std::vector<double> vecEnergy = std::vector<double>();
-    std::vector<double> vecalpha = std::vector<double>();
+    string file = "Python/Results/Task_e/Gradient_Descent_" + to_string(numberOfParticles) + "particles_" + to_string(alpha) + "alpha.dat";
+    ofile.open(file);
+    ofile << setiosflags(ios::showpoint | ios::uppercase);
+    ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
 
-    mat Energies_alphas = zeros<mat>(Maxiterations, numberOfSteps);
-    double start_time, end_time;
-    start_time = omp_get_wtime();
-    int i;
-    #pragma omp parallel for schedule(dynamic)
-    for (i = 0; i < Maxiterations; i++){
-
-      System* system = new System();
-      system->setHamiltonian              (new HarmonicOscillator(system, omega));
-      system->setWaveFunction             (new SimpleGaussian(system, alphas(i), beta, gamma, a));
-      system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
-      system->setStepLength               (stepLength);
-      system->setRepulsivePotential       (true);
-      system->setPrintOutToTerminal       (false);
-      system->runMetropolisSteps          (ofile, numberOfSteps);
-
-      vecEnergy.push_back(system->getSampler()->getEnergy());
-      vecalpha.push_back(alphas(i));
-
-      for (int j = 0; j < numberOfSteps; j++){
-        Energies_alphas(i,j) = system->getSampler()->getEnergies()[j];
-      }
-
-    }
-
-    for (int i = 0; i < Maxiterations; i++){
-      string file = "Python/Results/Task_e/Gradient_Descent_" + to_string(numberOfParticles) + "particles_" + to_string(vecalpha[i]) + "alpha.dat";
-      ofile.open(file);
-      ofile << setiosflags(ios::showpoint | ios::uppercase);
-      ofile << setw(15) << setprecision(8) << "Monte_Carlo_Energy "; // Mean energy
-      ofile << setw(15) << setprecision(8) << "Total_Energy =  " << vecEnergy[i] << endl; // Total energy
-
-
-      for (int j = 0; j < numberOfSteps; j++){
-        ofile << setw(15) << setprecision(8) << Energies_alphas(i,j) << endl; // Mean energy
-      }
-      ofile.close();
-
-    }
-
-
-    for (int i = 0; i < Maxiterations; i++){
-      cout << "Energy = " << vecEnergy[i] << "  alpha = " << vecalpha[i] << endl;
-    }
-
-    end_time = omp_get_wtime();
-
-    cout << "Time : " << end_time - start_time << endl;
-
-
+    System* system = new System();
+    system->setHamiltonian              (new HarmonicOscillator(system, omega));
+    system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
+    system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
+    system->setStepLength               (stepLength);
+    system->setRepulsivePotential       (true);
+    system->runMetropolisSteps          (ofile, numberOfSteps);
 
 }
 
