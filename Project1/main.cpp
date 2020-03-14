@@ -408,7 +408,7 @@ if (Task == "b")
     int numberOfParticles;
     int numberOfDimensions;
     double omega            = 1.0;          // Oscillator frequency.
-    double alpha            = 0.3;          // Variational parameter.
+    double alpha            = 0.2;          // Variational parameter.
     double beta             = 2.82843;      // Variational parameter.
     double gamma            = beta;         // Variational parameter.
     double a                = 0.0043;       // Interaction parameter.
@@ -480,7 +480,7 @@ ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
     }
 
     for (int i = 0; i < Maxiterations; i++){
-      string file = "Python/Results/Task_e/Gradient_Descent_" + to_string(numberOfParticles) + "particles_" + to_string(vecalpha[i]) + "alpha.dat";
+      string file = "Python/Results/Task_e/GD_" + to_string(numberOfParticles) + "particles_" + to_string(vecalpha[i]) + "alpha.dat";
       ofile.open(file);
       ofile << setiosflags(ios::showpoint | ios::uppercase);
       ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
