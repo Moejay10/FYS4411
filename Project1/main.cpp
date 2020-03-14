@@ -548,11 +548,12 @@ ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
     std::vector<double> vecalpha = std::vector<double>();
     std::vector<double> vecdiff = std::vector<double>();
 
+    vec Energies(numberOfSteps);
 
     double tol = 1e-6;
     double diff = 1;
     double learning_rate = 1e-2;
-    int Maxiterations = 50;
+    int Maxiterations = 5;
 
 
 
@@ -576,21 +577,35 @@ ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
       vecdiff.push_back(diff);
 
 
+
       alpha -= learning_rate*vecEnergyDer[i];
 
       if (i > 0){
         diff = fabs(vecEnergy[i] - vecEnergy[i-1]);
       }
 
+
+
       i++;
 
       }
 
-      string file = "Python/Results/Task_f/Gradient_Descent" + to_string(numberOfParticles) + "particles.dat";;
+      string file = "Python/Results/Task_f/Blocking_" + to_string(numberOfParticles) + "_particles.dat";;
       ofile.open(file);
       ofile << setiosflags(ios::showpoint | ios::uppercase);
-      ofile << setw(15) << setprecision(8) << "Alpha "; // Variational parameter
-      ofile << setw(15) << setprecision(8) << "Energy "; // Energy
+      ofile << setw(15) << setprecision(8) << "Energy" << endl; // Energy
+
+      for (int k = 0; k < numberOfSteps; k++){
+        ofile << setw(15) << setprecision(8) << 0 << endl;
+      }
+      ofile.close();
+
+
+      file = "Python/Results/Task_f/Gradient_Descent_" + to_string(numberOfParticles) + "_particles.dat";;
+      ofile.open(file);
+      ofile << setiosflags(ios::showpoint | ios::uppercase);
+      ofile << setw(15) << setprecision(8) << "Alpha"; // Variational parameter
+      ofile << setw(15) << setprecision(8) << "Energy"; // Energy
       ofile << setw(15) << setprecision(8) << "Derivative" << endl;
 
       int j = 0;
@@ -604,15 +619,7 @@ ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
     }
     ofile.close();
 
-    file = "Python/Results/Task_f/Blocking" + to_string(numberOfParticles) + "particles.dat";;
-    ofile.open(file);
-    ofile << setiosflags(ios::showpoint | ios::uppercase);
-    ofile << setw(15) << setprecision(8) << "Energy" << endl; // Energy
 
-    for (int k = 0; k < numberOfSteps; k++){
-      ofile << setw(15) << setprecision(8) << system->getSampler()->getEnergies()[k];
-    }
-    ofile.close();
 
 }
 
