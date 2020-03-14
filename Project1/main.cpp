@@ -407,9 +407,8 @@ if (Task == "b")
     int numberOfSteps;
     int numberOfParticles;
     int numberOfDimensions;
-    double alpha;                           // Variational parameter.
-
     double omega            = 1.0;          // Oscillator frequency.
+    double alpha            = 0.3;          // Variational parameter.
     double beta             = 2.82843;      // Variational parameter.
     double gamma            = beta;         // Variational parameter.
     double a                = 0.0043;       // Interaction parameter.
@@ -438,34 +437,76 @@ if (Task == "b")
     cout << "\n" << "Write here " << endl;
     cin >> numberOfDimensions;
 
-
-    cout << "\n" << "The value of the variational parameter alpha: " << endl;
-    cout << "\n" << "Write here " << endl;
-    cin >> alpha;
-
-
+/*
+string file = "Exercise_e.dat";
+ofile.open(file);
+ofile << setiosflags(ios::showpoint | ios::uppercase);
+ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
+*/
     // Analyitcal Run
     cout << "-------------- \n" << "Repulsive Interaction \n" << "-------------- \n" << endl;
 
-    //#pragma omp parallel for schedule(dynamic)
+    int Maxiterations = 5;
+    vec alphas(Maxiterations);
+    for (int i = 0; i < Maxiterations; i++){
+      alphas(i) = 0.3 + 0.1*i;
+    }
 
-    string file = "Python/Results/Task_e/Gradient_Descent_" + to_string(numberOfParticles) + "particles_" + to_string(alpha) + "alpha.dat";
-    ofile.open(file);
-    ofile << setiosflags(ios::showpoint | ios::uppercase);
-    ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
+    std::vector<double> vecEnergy = std::vector<double>();
+    std::vector<double> vecalpha = std::vector<double>();
 
-    System* system = new System();
-    system->setHamiltonian              (new HarmonicOscillator(system, omega));
-    system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
-    system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
-    system->setStepLength               (stepLength);
-    system->setRepulsivePotential       (true);
-    system->runMetropolisSteps          (ofile, numberOfSteps);
+    mat Energies_alphas = zeros<mat>(Maxiterations, numberOfSteps);
+    double start_time, end_time;
+    start_time = omp_get_wtime();
+    #pragma omp parallel for schedule(dynamic) num_threads(8)
+    for (int i = 0; i < Maxiterations; i++){
+
+      System* system = new System();
+      system->setHamiltonian              (new HarmonicOscillator(system, omega));
+      system->setWaveFunction             (new SimpleGaussian(system, alphas(i), beta, gamma, a));
+      system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
+      system->setStepLength               (stepLength);
+      system->setRepulsivePotential       (true);
+      //system->setPrintOutToTerminal       (false);
+      system->runMetropolisSteps          (ofile, numberOfSteps);
+
+      vecEnergy.push_back(system->getSampler()->getEnergy());
+      vecalpha.push_back(alphas(i));
+
+      for (int j = 0; j < numberOfSteps; j++){
+        Energies_alphas(i,j) = system->getSampler()->getEnergies()[j];
+      }
+
+    }
+
+    for (int i = 0; i < Maxiterations; i++){
+      string file = "Python/Results/Task_e/Gradient_Descent_" + to_string(numberOfParticles) + "particles_" + to_string(vecalpha[i]) + "alpha.dat";
+      ofile.open(file);
+      ofile << setiosflags(ios::showpoint | ios::uppercase);
+      ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
+
+      for (int j = 0; j < numberOfSteps; j++){
+        ofile << setw(15) << setprecision(8) << Energies_alphas(i,j) << endl; // Mean energy
+      }
+      ofile.close();
+
+    }
+
+
+    for (int i = 0; i < Maxiterations; i++){
+      cout << "Energy = " << vecEnergy[i] << "  alpha = " << vecalpha[i] << endl;
+    }
+
+    end_time = omp_get_wtime();
+
+    cout << "Time : " << end_time - start_time << endl;
+
+
 
 }
 
   if (Task == "f")
-  {
+{
     int numberOfSteps;
     int numberOfParticles;
     int numberOfDimensions;
@@ -504,18 +545,16 @@ if (Task == "b")
 
     std::vector<double> vecEnergy = std::vector<double>();
     std::vector<double> vecEnergyDer = std::vector<double>();
+    std::vector<double> vecalpha = std::vector<double>();
+    std::vector<double> vecdiff = std::vector<double>();
+
 
     double tol = 1e-6;
     double diff = 1;
     double learning_rate = 1e-2;
-    int Maxiterations = 100;
+    int Maxiterations = 50;
 
-    string file = "Gradient_Descent.dat";
-    ofile.open(file);
-    ofile << setiosflags(ios::showpoint | ios::uppercase);
-    ofile << setw(15) << setprecision(8) << "Alpha "; // Variational parameter
-    ofile << setw(15) << setprecision(8) << "Energy "; // Energy
-    ofile << setw(15) << setprecision(8) << "Derivative" << endl;
+
 
     int i = 0;
     while (i < Maxiterations || diff > tol){
@@ -533,29 +572,53 @@ if (Task == "b")
 
       vecEnergy.push_back(system->getSampler()->getEnergy());
       vecEnergyDer.push_back(system->getSampler()->getEnergyDer());
+      vecalpha.push_back(alpha);
+      vecdiff.push_back(diff);
+
 
       alpha -= learning_rate*vecEnergyDer[i];
-
-      ofile << setw(15) << setprecision(8) << alpha; // Variational parameter
-      ofile << setw(15) << setprecision(8) << vecEnergy[i]; // Energy
-      ofile << setw(15) << setprecision(8) << vecEnergyDer[i] << endl; // Derivative
 
       if (i > 0){
         diff = fabs(vecEnergy[i] - vecEnergy[i-1]);
       }
 
-      //cout << "Difference in energy " << diff << endl;
-
       i++;
-    }
 
+      }
+
+      string file = "Python/Results/Task_f/Gradient_Descent" + to_string(numberOfParticles) + "particles.dat";;
+      ofile.open(file);
+      ofile << setiosflags(ios::showpoint | ios::uppercase);
+      ofile << setw(15) << setprecision(8) << "Alpha "; // Variational parameter
+      ofile << setw(15) << setprecision(8) << "Energy "; // Energy
+      ofile << setw(15) << setprecision(8) << "Derivative" << endl;
+
+      int j = 0;
+      while (j < Maxiterations || vecdiff[j] > tol){
+
+      ofile << setw(15) << setprecision(8) << vecalpha[j]; // Variational parameter
+      ofile << setw(15) << setprecision(8) << vecEnergy[j]; // Energy
+      ofile << setw(15) << setprecision(8) << vecEnergyDer[j] << endl; // Derivative
+
+      j++;
+    }
     ofile.close();
 
-  }
+    file = "Python/Results/Task_f/Blocking" + to_string(numberOfParticles) + "particles.dat";;
+    ofile.open(file);
+    ofile << setiosflags(ios::showpoint | ios::uppercase);
+    ofile << setw(15) << setprecision(8) << "Energy" << endl; // Energy
+
+    for (int k = 0; k < numberOfSteps; k++){
+      ofile << setw(15) << setprecision(8) << system->getSampler()->getEnergies()[k];
+    }
+    ofile.close();
+
+}
 
 
   if (Task == "g")
-  {
+{
     int numberOfSteps;
     int numberOfParticles;
     int numberOfDimensions;
@@ -616,7 +679,7 @@ if (Task == "b")
 
   ofile.close();
 
-  }
+}
 
     return 0;
 }
