@@ -446,10 +446,10 @@ ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
     // Analyitcal Run
     cout << "-------------- \n" << "Repulsive Interaction \n" << "-------------- \n" << endl;
 
-    int Maxiterations = 5;
+    int Maxiterations = 10;
     vec alphas(Maxiterations);
     for (int i = 0; i < Maxiterations; i++){
-      alphas(i) = 0.3 + 0.1*i;
+      alphas(i) = 0.1 + 0.1*i;
     }
 
     std::vector<double> vecEnergy = std::vector<double>();
