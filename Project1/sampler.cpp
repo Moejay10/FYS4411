@@ -160,13 +160,7 @@ void Sampler::computeOneBodyDensity(){
       r2 += m_system->getParticles()[i]->getPosition()[j]*m_system->getParticles()[i]->getPosition()[j];
     }
     r2 = sqrt(r2);
-    /*
-    for (int k = 0; k < m_system->getNumberofBins(); k++){
-      if (fabs(r2 - m_system->getBinVector()[k]) <= tol){
-        m_system->setBinCounter(m_system->getBinCounter()[k] + 1, k);
-      }
-    }
-    */
+    
     m_system->setParticlesPerBin(int(r2/step) + 1);
   }
 }

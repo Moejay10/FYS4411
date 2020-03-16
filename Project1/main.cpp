@@ -403,7 +403,7 @@ if (Task == "b")
 
 
   if (Task == "e")
-  {
+{
     int numberOfSteps;
     int numberOfParticles;
     int numberOfDimensions;
@@ -437,12 +437,7 @@ if (Task == "b")
     cout << "\n" << "Write here " << endl;
     cin >> numberOfDimensions;
 
-/*
-string file = "Exercise_e.dat";
-ofile.open(file);
-ofile << setiosflags(ios::showpoint | ios::uppercase);
-ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
-*/
+
     // Analyitcal Run
     cout << "-------------- \n" << "Repulsive Interaction \n" << "-------------- \n" << endl;
 
@@ -458,7 +453,7 @@ ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
     mat Energies_alphas = zeros<mat>(Maxiterations, numberOfSteps);
     double start_time, end_time;
     start_time = omp_get_wtime();
-    #pragma omp parallel for schedule(dynamic) num_threads(8)
+    #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < Maxiterations; i++){
 
       System* system = new System();
@@ -501,8 +496,6 @@ ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
 
     cout << "Time : " << end_time - start_time << endl;
 
-
-
 }
 
   if (Task == "f")
@@ -525,9 +518,11 @@ ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
 
     cout << "\n" << "Which parameters do you want to use?: " << endl;
 
-    cout << "\n" << "The number of Monte Carlo cycles: " << endl;
+    cout << "\n" << "The number of Monte Carlo cycles in powers of 2: " << endl;
+    cout << "\n" << "Useful information: 2^10 = 10^3 & 2^20 = 10^6" << endl;
     cout << "\n" << "Write here " << endl;
     cin >> numberOfSteps;
+    numberOfSteps = pow(2, numberOfSteps);
 
     cout << "\n" << "The number of Particles: " << endl;
     cout << "\n" << "Write here " << endl;
@@ -576,7 +571,9 @@ ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
       vecalpha.push_back(alpha);
       vecdiff.push_back(diff);
 
-
+      for (int k = 0; k < numberOfSteps; k++){
+        Energies(k) = system->getSampler()->getEnergies()[k];
+      }
 
       alpha -= learning_rate*vecEnergyDer[i];
 
@@ -584,11 +581,11 @@ ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
         diff = fabs(vecEnergy[i] - vecEnergy[i-1]);
       }
 
-
-
       i++;
 
       }
+
+
 
       string file = "Python/Results/Task_f/Blocking_" + to_string(numberOfParticles) + "_particles.dat";;
       ofile.open(file);
@@ -596,7 +593,7 @@ ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
       ofile << setw(15) << setprecision(8) << "Energy" << endl; // Energy
 
       for (int k = 0; k < numberOfSteps; k++){
-        ofile << setw(15) << setprecision(8) << 0 << endl;
+        ofile << setw(15) << setprecision(8) << Energies(k) << endl;
       }
       ofile.close();
 
@@ -618,8 +615,6 @@ ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
       j++;
     }
     ofile.close();
-
-
 
 }
 
