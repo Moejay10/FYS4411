@@ -403,7 +403,7 @@ if (Task == "b")
 
 
   if (Task == "e")
-  {
+{
     int numberOfSteps;
     int numberOfParticles;
     int numberOfDimensions;
@@ -500,8 +500,6 @@ ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
     end_time = omp_get_wtime();
 
     cout << "Time : " << end_time - start_time << endl;
-
-
 
 }
 
@@ -618,8 +616,6 @@ ofile << setw(15) << setprecision(8) << "Energy " << endl; // Mean energy
       j++;
     }
     ofile.close();
-
-
 
 }
 
