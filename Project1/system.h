@@ -10,8 +10,8 @@ using namespace std;
 
 class System {
 public:
-    bool ImportanceMetropolisStep   (int);
-    bool metropolisStep             (int);
+    bool ImportanceMetropolisStep   ();
+    bool metropolisStep             ();
     bool setRepulsivePotential      (bool);
     bool setImportanceSampling      (bool);
     bool setNumericalDerivative     (bool);
