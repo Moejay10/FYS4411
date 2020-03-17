@@ -120,7 +120,7 @@ if (Task == "b")
   double beta             = 1.0;          // Variational parameter.
   double gamma            = 1.0;          // Variational parameter.
   double a                = 0.0;          // Interaction parameter.
-  double stepLength       = 1.5;          // Metropolis step length.
+  double stepLength       = 1.0;          // Metropolis step length.
   double stepSize         = 1e-2;         // Stepsize in the numerical derivative for kinetic energy
   double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
   double equilibration    = 0.1;          // Amount of the total steps used
