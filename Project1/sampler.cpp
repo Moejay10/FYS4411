@@ -36,6 +36,9 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
     // Make sure the sampling variable(s) are initialized at the first step.
     if (m_stepNumber == 0) {
         m_cumulativeEnergy = 0;
+        m_cumulativeEnergy2 = 0;
+        m_DeltaPsi = 0;
+        m_DerivativePsiE = 0;
     }
 
     if (m_system->getNumericalDerivative()){
