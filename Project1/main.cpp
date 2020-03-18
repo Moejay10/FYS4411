@@ -290,7 +290,7 @@ if (Task == "b")
     }
 
 
-    string file = "Python/Results/Brute_Force" + to_string(numberOfParticles) + "_particles" + "_" + to_string(numberOfDimensions) + "_dim.dat";
+    string file = "Python/Results/Task_c/Brute_Force" + to_string(numberOfParticles) + "_particles" + "_" + to_string(numberOfDimensions) + "_dim.dat";
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
     ofile << setw(15) << setprecision(8) << "StepLength "; // StepLength
@@ -311,7 +311,7 @@ if (Task == "b")
 
     ofile.close();
 
-    file = "Python/Results/Importance_Sampling" + to_string(numberOfParticles) + "_particles" + "_" + to_string(numberOfDimensions) + "_dim.dat";
+    file = "Python/Results/Task_c/Importance_Sampling" + to_string(numberOfParticles) + "_particles" + "_" + to_string(numberOfDimensions) + "_dim.dat";
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
     ofile << setw(15) << setprecision(8) << "Timestep "; // timeStep
