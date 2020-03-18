@@ -441,10 +441,10 @@ if (Task == "b")
     // Analyitcal Run
     cout << "-------------- \n" << "Repulsive Interaction \n" << "-------------- \n" << endl;
 
-    int Maxiterations = 10;
+    int Maxiterations = 5;
     vec alphas(Maxiterations);
     for (int i = 0; i < Maxiterations; i++){
-      alphas(i) = 0.1 + 0.1*i;
+      alphas(i) = 0.3 + 0.1*i;
     }
 
     std::vector<double> vecEnergy = std::vector<double>();
@@ -504,7 +504,7 @@ if (Task == "b")
     int numberOfParticles;
     int numberOfDimensions;
     double omega            = 1.0;          // Oscillator frequency.
-    double alpha            = 0.1;          // Variational parameter.
+    double alpha            = 0.3;          // Variational parameter.
     double beta             = 2.82843;      // Variational parameter.
     double gamma            = beta;         // Variational parameter.
     double a                = 0.0043;       // Interaction parameter.
@@ -548,7 +548,7 @@ if (Task == "b")
     double tol = 1e-6;
     double diff = 1;
     double learning_rate = 1e-2;
-    int Maxiterations = 5;
+    int Maxiterations = 10;
 
 
 
