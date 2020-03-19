@@ -558,7 +558,7 @@ if (Task == "b")
     double learning_rate = 1e-2;
     int Maxiterations = 10;
 
-
+    double start_time, end_time;
     start_time = omp_get_wtime();
     int i = 0;
     while (i < Maxiterations || diff > tol){
