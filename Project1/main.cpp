@@ -553,7 +553,7 @@ if (Task == "b")
 
     vec Energies(numberOfSteps);
 
-    double tol = 1e-3;
+    double tol = 1e-4;
     double diff = 1;
     double learning_rate = 1e-2;
     int Maxiterations = 50;
@@ -573,7 +573,7 @@ if (Task == "b")
         system->setStepLength               (stepLength);
         system->setDiffusionCoefficient     (diffusionCoefficient);
         system->setRepulsivePotential       (true);
-        //system->setPrintOutToTerminal       (false);
+        system->setPrintOutToTerminal       (false);
         system->runMetropolisSteps          (ofile, numberOfSteps);
 
         vecEnergy.push_back(system->getSampler()->getEnergy());
@@ -589,7 +589,6 @@ if (Task == "b")
 
         if (i > 0){
           diff = fabs(vecEnergy[i] - vecEnergy[i-1]);
-          cout << "Difference : " << diff << endl;
         }
         j++;
       }
@@ -603,6 +602,8 @@ if (Task == "b")
       end_time = omp_get_wtime();
 
       cout << "Time : " << end_time - start_time << endl;
+      cout << "Iterations : " << j << endl;
+
 
 
       string file = "Python/Results/Task_f/Blocking_" + to_string(numberOfParticles) + "_particles.dat";;
