@@ -553,7 +553,7 @@ if (Task == "b")
 
     vec Energies(numberOfSteps);
 
-    double tol = 1e-1;
+    double tol = 1e-4;
     double diff = 1;
     double learning_rate = 1e-2;
     int Maxiterations = 10;
@@ -561,38 +561,41 @@ if (Task == "b")
     double start_time, end_time;
     start_time = omp_get_wtime();
     int i = 0;
-    while (i < Maxiterations || diff > tol){
-      System* system = new System();
-
-      system->setHamiltonian              (new HarmonicOscillator(system, omega));
-      system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
-      system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
-      system->setEquilibrationFraction    (equilibration);
-      system->setStepLength               (stepLength);
-      system->setDiffusionCoefficient     (diffusionCoefficient);
-      system->setRepulsivePotential       (true);
-      system->setPrintOutToTerminal       (false);
-      system->runMetropolisSteps          (ofile, numberOfSteps);
-
-      vecEnergy.push_back(system->getSampler()->getEnergy());
-      vecEnergyDer.push_back(system->getSampler()->getEnergyDer());
-      vecalpha.push_back(alpha);
-      vecdiff.push_back(diff);
-
-      for (int k = 0; k < numberOfSteps; k++){
-        Energies(k) = system->getSampler()->getEnergies()[k];
+    for (int i = 0; i < Maxiterations; i++){
+      if (diff < tol)
+      {
+        break;
       }
+      else
+      {
+        System* system = new System();
 
-      alpha -= learning_rate*vecEnergyDer[i];
+        system->setHamiltonian              (new HarmonicOscillator(system, omega));
+        system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
+        system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
+        system->setEquilibrationFraction    (equilibration);
+        system->setStepLength               (stepLength);
+        system->setDiffusionCoefficient     (diffusionCoefficient);
+        system->setRepulsivePotential       (true);
+        system->setPrintOutToTerminal       (false);
+        system->runMetropolisSteps          (ofile, numberOfSteps);
 
-      if (i > 0){
-        diff = fabs(vecEnergy[i] - vecEnergy[i-1]);
-        cout << "Difference : " << diff << endl;
+        vecEnergy.push_back(system->getSampler()->getEnergy());
+        vecEnergyDer.push_back(system->getSampler()->getEnergyDer());
+        vecalpha.push_back(alpha);
+        vecdiff.push_back(diff);
 
+        for (int k = 0; k < numberOfSteps; k++){
+          Energies(k) = system->getSampler()->getEnergies()[k];
+        }
+
+        alpha -= learning_rate*vecEnergyDer[i];
+
+        if (i > 0){
+          diff = fabs(vecEnergy[i] - vecEnergy[i-1]);
+          cout << "Difference : " << diff << endl;
+        }
       }
-
-
-      i++;
 
       }
 
