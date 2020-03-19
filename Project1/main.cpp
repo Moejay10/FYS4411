@@ -559,7 +559,7 @@ if (Task == "b")
     int Maxiterations = 10;
 
 
-
+    start_time = omp_get_wtime();
     int i = 0;
     while (i < Maxiterations || diff > tol){
       System* system = new System();
@@ -593,6 +593,9 @@ if (Task == "b")
 
       }
 
+      end_time = omp_get_wtime();
+
+      cout << "Time : " << end_time - start_time << endl;
 
 
       string file = "Python/Results/Task_f/Blocking_" + to_string(numberOfParticles) + "_particles.dat";;
