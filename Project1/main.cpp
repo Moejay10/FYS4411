@@ -553,7 +553,7 @@ if (Task == "b")
 
     vec Energies(numberOfSteps);
 
-    double tol = 1e-6;
+    double tol = 1e-1;
     double diff = 1;
     double learning_rate = 1e-2;
     int Maxiterations = 10;
@@ -587,7 +587,10 @@ if (Task == "b")
 
       if (i > 0){
         diff = fabs(vecEnergy[i] - vecEnergy[i-1]);
+        cout << "Difference : " << diff << endl;
+
       }
+
 
       i++;
 
