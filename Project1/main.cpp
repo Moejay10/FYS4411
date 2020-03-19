@@ -458,7 +458,7 @@ if (Task == "b")
 
     double start_time, end_time;
     start_time = omp_get_wtime();
-    #pragma omp parallel for schedule(dynamic)
+    #pragma omp parallel for schedule(static)
     for (int i = 0; i < Maxiterations; i++){
 
       System* system = new System();
