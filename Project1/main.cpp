@@ -474,7 +474,7 @@ if (Task == "b")
       vecalpha.push_back(system->getWaveFunction()->getParameters()[0]);
 
       for (int j = 0; j < numberOfSteps; j++){
-        if (vecalpha[i] = alphas(i)){
+        if (vecalpha[i] == alphas(i)){
           Energies_alphas(i,j) = system->getSampler()->getEnergies()[j];
         }
       }
