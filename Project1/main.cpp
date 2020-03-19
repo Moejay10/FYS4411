@@ -447,7 +447,7 @@ if (Task == "b")
     cout << "-------------- \n" << "Repulsive Interaction \n" << "-------------- \n" << endl;
 
 
-    int Maxiterations = 1;
+    int Maxiterations = 5;
     vec alphas(Maxiterations);
     for (int i = 0; i < Maxiterations; i++){
       alphas(i) = alpha + 0.1*i;
@@ -460,7 +460,7 @@ if (Task == "b")
 
     double start_time, end_time;
     start_time = omp_get_wtime();
-    //#pragma omp parallel for schedule(dynamic)
+    #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < Maxiterations; i++){
 
       System* system = new System();
@@ -476,8 +476,9 @@ if (Task == "b")
       vecalpha.push_back(system->getWaveFunction()->getParameters()[0]);
 
       for (int j = 0; j < numberOfSteps; j++){
-        Energies_alphas(i,j) = system->getSampler()->getEnergies()[j];
-
+        if (vecalpha[i] = alphas(i)){
+          Energies_alphas(i,j) = system->getSampler()->getEnergies()[j];
+        }
       }
 
     }
