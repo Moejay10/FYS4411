@@ -475,7 +475,7 @@ if (Task == "b")
 
       for (int j = 0; j < numberOfSteps; j++){
           Energies_alphas(i,j) = system->getSampler()->getEnergies()[j];
-        
+
       }
 
     }
@@ -584,6 +584,10 @@ if (Task == "b")
         }
 
         alpha -= learning_rate*vecEnergyDer[i];
+
+        if (alpha < 0){
+          alpha *= -1; 
+        }
 
         if (i > 0){
           diff = fabs(vecEnergy[i] - vecEnergy[i-1]);
