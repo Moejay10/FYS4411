@@ -175,7 +175,7 @@ if (Task == "b")
   double numerical_Time = system->getSampler()->getTime();
 
 
-  string file = "Python/Results/Taskb/" + to_string(numberOfParticles) + "_particles" + "_" + to_string(numberOfDimensions) + "_dim.dat";
+  string file = "Python/Results/Task_b/" + to_string(numberOfParticles) + "_particles" + "_" + to_string(numberOfDimensions) + "_dim.dat";
   ofile.open(file);
   ofile << setiosflags(ios::showpoint | ios::uppercase);
   ofile << setw(15) << setprecision(8) << "Energy "; // Mean energy
