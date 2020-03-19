@@ -562,11 +562,7 @@ if (Task == "b")
     start_time = omp_get_wtime();
     int i = 0;
     for (int i = 0; i < Maxiterations; i++){
-      if (diff < tol)
-      {
-        break;
-      }
-      else
+      if (diff > tol)
       {
         System* system = new System();
 
@@ -596,8 +592,12 @@ if (Task == "b")
           cout << "Difference : " << diff << endl;
         }
       }
-
+      else
+      {
+        break;
       }
+
+    }
 
       end_time = omp_get_wtime();
 
