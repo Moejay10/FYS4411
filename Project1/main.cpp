@@ -460,9 +460,8 @@ if (Task == "b")
 
     double start_time, end_time;
     start_time = omp_get_wtime();
-    int i;
-    #pragma omp parallel for schedule(dynamic) private(i)
-    for (i = 0; i < Maxiterations; i++){
+    #pragma omp parallel for schedule(dynamic)
+    for (int i = 0; i < Maxiterations; i++){
 
       System* system = new System();
       system->setHamiltonian              (new HarmonicOscillator(system, omega));
@@ -474,7 +473,7 @@ if (Task == "b")
       system->runMetropolisSteps          (ofile, numberOfSteps);
 
       vecEnergy.push_back(system->getSampler()->getEnergy());
-      vecalpha.push_back(alphas(i));
+      vecalpha.push_back(system->getWaveFunction()->getParameters()[0]);
 
       for (int j = 0; j < numberOfSteps; j++){
         Energies_alphas(i,j) = system->getSampler()->getEnergies()[j];
