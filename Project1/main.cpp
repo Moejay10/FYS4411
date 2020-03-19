@@ -553,14 +553,14 @@ if (Task == "b")
 
     vec Energies(numberOfSteps);
 
-    double tol = 1e-2;
+    double tol = 1e-3;
     double diff = 1;
     double learning_rate = 1e-2;
-    int Maxiterations = 5;
+    int Maxiterations = 50;
 
     double start_time, end_time;
     start_time = omp_get_wtime();
-    int i = 0;
+    int j = 0;
     for (int i = 0; i < Maxiterations; i++){
       if (diff > tol)
       {
@@ -591,6 +591,7 @@ if (Task == "b")
           diff = fabs(vecEnergy[i] - vecEnergy[i-1]);
           cout << "Difference : " << diff << endl;
         }
+        j++;
       }
       else
       {
@@ -622,14 +623,12 @@ if (Task == "b")
       ofile << setw(15) << setprecision(8) << "Energy"; // Energy
       ofile << setw(15) << setprecision(8) << "Derivative" << endl;
 
-      int j = 0;
-      while (j < Maxiterations || vecdiff[j] > tol){
+      for (int k = 0; k < j; k++)
+      {
 
-      ofile << setw(15) << setprecision(8) << vecalpha[j]; // Variational parameter
-      ofile << setw(15) << setprecision(8) << vecEnergy[j]; // Energy
-      ofile << setw(15) << setprecision(8) << vecEnergyDer[j] << endl; // Derivative
-
-      j++;
+      ofile << setw(15) << setprecision(8) << vecalpha[k]; // Variational parameter
+      ofile << setw(15) << setprecision(8) << vecEnergy[k]; // Energy
+      ofile << setw(15) << setprecision(8) << vecEnergyDer[k] << endl; // Derivative
     }
     ofile.close();
 
