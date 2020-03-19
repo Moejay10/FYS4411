@@ -447,7 +447,7 @@ if (Task == "b")
     cout << "-------------- \n" << "Repulsive Interaction \n" << "-------------- \n" << endl;
 
 
-    int Maxiterations = 4;
+    int Maxiterations = 5;
     vec alphas(Maxiterations);
     for (int i = 0; i < Maxiterations; i++){
       alphas(i) = alpha + 0.1*i;
