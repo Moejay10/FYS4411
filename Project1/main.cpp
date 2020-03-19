@@ -577,12 +577,12 @@ if (Task == "b")
         system->setStepLength               (stepLength);
         system->setDiffusionCoefficient     (diffusionCoefficient);
         system->setRepulsivePotential       (true);
-        system->setPrintOutToTerminal       (false);
+        //system->setPrintOutToTerminal       (false);
         system->runMetropolisSteps          (ofile, numberOfSteps);
 
         vecEnergy.push_back(system->getSampler()->getEnergy());
         vecEnergyDer.push_back(system->getSampler()->getEnergyDer());
-        vecalpha.push_back(alpha);
+        vecalpha.push_back(system->getWaveFunction()->getParameters()[0]);
         vecdiff.push_back(diff);
 
         for (int k = 0; k < numberOfSteps; k++){
