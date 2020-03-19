@@ -446,19 +446,24 @@ if (Task == "b")
     // Analyitcal Run
     cout << "-------------- \n" << "Repulsive Interaction \n" << "-------------- \n" << endl;
 
-    int Maxiterations = 5;
+
+    int Maxiterations = 1;
     vec alphas(Maxiterations);
     for (int i = 0; i < Maxiterations; i++){
-      alphas(i) = 0.3 + 0.1*i;
+      //alphas(i) = 0.3 + 0.1*i;
+      alphas(i) = alpha;
+
     }
 
     std::vector<double> vecEnergy = std::vector<double>();
     std::vector<double> vecalpha = std::vector<double>();
 
-    mat Energies_alphas = zeros<mat>(Maxiterations, numberOfSteps);
+    //mat Energies_alphas = zeros<mat>(Maxiterations, numberOfSteps);
+    mat Energies_alphas = zeros<mat>(numberOfSteps);
+
     double start_time, end_time;
     start_time = omp_get_wtime();
-    #pragma omp parallel for schedule(dynamic)
+    //#pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < Maxiterations; i++){
 
       System* system = new System();
@@ -474,7 +479,8 @@ if (Task == "b")
       vecalpha.push_back(alphas(i));
 
       for (int j = 0; j < numberOfSteps; j++){
-        Energies_alphas(i,j) = system->getSampler()->getEnergies()[j];
+        Energies_alphas(j) = system->getSampler()->getEnergies()[j];
+
       }
 
     }
@@ -486,7 +492,7 @@ if (Task == "b")
       ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
 
       for (int j = 0; j < numberOfSteps; j++){
-        ofile << setw(15) << setprecision(8) << Energies_alphas(i,j) << endl; // Mean energy
+        ofile << setw(15) << setprecision(8) << Energies_alphas(j) << endl; // Mean energy
       }
       ofile.close();
 
