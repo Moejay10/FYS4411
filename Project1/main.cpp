@@ -460,8 +460,9 @@ if (Task == "b")
 
     double start_time, end_time;
     start_time = omp_get_wtime();
-    #pragma omp parallel for schedule(dynamic)
-    for (int i = 0; i < Maxiterations; i++){
+    int i;
+    #pragma omp parallel for schedule(dynamic) private(i)
+    for (i = 0; i < Maxiterations; i++){
 
       System* system = new System();
       system->setHamiltonian              (new HarmonicOscillator(system, omega));
