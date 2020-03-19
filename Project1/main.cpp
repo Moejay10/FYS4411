@@ -450,9 +450,7 @@ if (Task == "b")
     int Maxiterations = 1;
     vec alphas(Maxiterations);
     for (int i = 0; i < Maxiterations; i++){
-      //alphas(i) = 0.3 + 0.1*i;
-      alphas(i) = alpha;
-
+      alphas(i) = alpha + 0.1*i;
     }
 
     std::vector<double> vecEnergy = std::vector<double>();
