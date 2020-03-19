@@ -553,7 +553,7 @@ if (Task == "b")
 
     vec Energies(numberOfSteps);
 
-    double tol = 1e-4;
+    double tol = 1e-2;
     double diff = 1;
     double learning_rate = 1e-2;
     int Maxiterations = 50;
