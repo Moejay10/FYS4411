@@ -236,20 +236,20 @@ if (Task == "b")
     vec timeStep(Maxiterations); // Timestep to be used in Metropolis-Hastings.
     vec stepLength(Maxiterations); // Metropolis step length.
     for (int i = 0; i < Maxiterations; i++){
-      timeStep(i) = 0.1 + 0.1*i;
-      stepLength(i) = 0.1 + 0.1*i;
+      timeStep(i) = 0.05 + 0.05*i;
+      stepLength(i) = 0.05 + 0.05*i;
     }
 
 
     std::vector<double> vecImportanceSampling = std::vector<double>();
     std::vector<double> vecEnergy_IS = std::vector<double>();
-    std::vector<double> vecSTD_IS = std::vector<double>();
+    std::vector<double> vecVAR_IS = std::vector<double>();
     std::vector<double> vecTime_IS = std::vector<double>();
 
 
     std::vector<double> vecBruteForce = std::vector<double>();
     std::vector<double> vecEnergy_BF = std::vector<double>();
-    std::vector<double> vecSTD_BF = std::vector<double>();
+    std::vector<double> vecVAR_BF = std::vector<double>();
     std::vector<double> vecTime_BF = std::vector<double>();
 
 
@@ -266,7 +266,7 @@ if (Task == "b")
 
       vecBruteForce.push_back(system->getSampler()->getAcceptedStep());
       vecEnergy_BF.push_back(system->getSampler()->getEnergy());
-      vecSTD_BF.push_back(system->getSampler()->getSTD());
+      vecVAR_BF.push_back(system->getSampler()->getVAR());
       vecTime_BF.push_back(system->getSampler()->getTime());
     }
 
@@ -285,7 +285,7 @@ if (Task == "b")
 
       vecImportanceSampling.push_back(system->getSampler()->getAcceptedStep());
       vecEnergy_IS.push_back(system->getSampler()->getEnergy());
-      vecSTD_IS.push_back(system->getSampler()->getSTD());
+      vecVAR_IS.push_back(system->getSampler()->getVAR());
       vecTime_IS.push_back(system->getSampler()->getTime());
     }
 
@@ -293,18 +293,18 @@ if (Task == "b")
     string file = "Python/Results/Task_c/Brute_Force" + to_string(numberOfParticles) + "_particles" + "_" + to_string(numberOfDimensions) + "_dim.dat";
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
-    ofile << setw(15) << setprecision(8) << "StepLength "; // StepLength
-    ofile << setw(15) << setprecision(8) << "Acceptance_rate "; // acceptedStep
-    ofile << setw(15) << setprecision(8) << "Energy "; // Mean energy
-    ofile << setw(15) << setprecision(8) << "STD "; // STD
-    ofile << setw(15) << setprecision(8) << "Time " << endl; // Time
+    ofile << setw(15) << setprecision(8) << "StepLength"; // StepLength
+    ofile << setw(15) << setprecision(8) << "Rate"; // acceptedStep
+    ofile << setw(15) << setprecision(8) << "Energy"; // Mean energy
+    ofile << setw(15) << setprecision(8) << "Variance"; // Variance
+    ofile << setw(15) << setprecision(8) << "Time" << endl; // Time
 
 
     for (int i = 0; i < Maxiterations; i++){
       ofile << setw(15) << setprecision(8) << stepLength(i); // stepLength
       ofile << setw(15) << setprecision(8) << vecBruteForce[i]; // acceptedStep
       ofile << setw(15) << setprecision(8) << vecEnergy_BF[i]; // Mean energy
-      ofile << setw(15) << setprecision(8) << vecSTD_BF[i]; // STD
+      ofile << setw(15) << setprecision(8) << vecVAR_BF[i]; // Variance
       ofile << setw(15) << setprecision(8) << vecTime_BF[i] << endl; // Time
 
     }
@@ -314,18 +314,18 @@ if (Task == "b")
     file = "Python/Results/Task_c/Importance_Sampling" + to_string(numberOfParticles) + "_particles" + "_" + to_string(numberOfDimensions) + "_dim.dat";
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
-    ofile << setw(15) << setprecision(8) << "Timestep "; // timeStep
-    ofile << setw(15) << setprecision(8) << "Acceptance_rate "; // acceptedStep
-    ofile << setw(15) << setprecision(8) << "Energy "; // Mean energy
-    ofile << setw(15) << setprecision(8) << "STD "; // STD
-    ofile << setw(15) << setprecision(8) << "Time " << endl; // Time
+    ofile << setw(15) << setprecision(8) << "Timestep"; // timeStep
+    ofile << setw(15) << setprecision(8) << "Rate"; // acceptedStep
+    ofile << setw(15) << setprecision(8) << "Energy"; // Mean energy
+    ofile << setw(15) << setprecision(8) << "Variance"; // Variance
+    ofile << setw(15) << setprecision(8) << "Time" << endl; // Time
 
 
     for (int i = 0; i < Maxiterations; i++){
       ofile << setw(15) << setprecision(8) << timeStep(i); // stepLength
       ofile << setw(15) << setprecision(8) << vecImportanceSampling[i]; // acceptedStep
       ofile << setw(15) << setprecision(8) << vecEnergy_IS[i]; // Mean energy
-      ofile << setw(15) << setprecision(8) << vecSTD_IS[i]; // STD
+      ofile << setw(15) << setprecision(8) << vecVAR_IS[i]; // Variance
       ofile << setw(15) << setprecision(8) << vecTime_IS[i] << endl; // Time
     }
 
