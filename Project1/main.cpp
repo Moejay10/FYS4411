@@ -154,7 +154,7 @@ if (Task == "b")
   system->runMetropolisSteps          (ofile, numberOfSteps);
 
   double analytical_Energy = system->getSampler()->getEnergy();
-  double analytical_STD = system->getSampler()->getSTD();
+  double analytical_VAR = system->getSampler()->getVAR();
   double analytical_Time = system->getSampler()->getTime();
 
 
@@ -171,23 +171,23 @@ if (Task == "b")
   system->runMetropolisSteps          (ofile, numberOfSteps);
 
   double numerical_Energy = system->getSampler()->getEnergy();
-  double numerical_STD = system->getSampler()->getSTD();
+  double numerical_VAR = system->getSampler()->getVAR();
   double numerical_Time = system->getSampler()->getTime();
 
 
   string file = "Python/Results/Task_b/" + to_string(numberOfParticles) + "_particles" + "_" + to_string(numberOfDimensions) + "_dim.dat";
   ofile.open(file);
   ofile << setiosflags(ios::showpoint | ios::uppercase);
-  ofile << setw(15) << setprecision(8) << "Energy "; // Mean energy
-  ofile << setw(15) << setprecision(8) << "STD "; // STD
-  ofile << setw(15) << setprecision(8) << "Time " << endl; // Time
+  ofile << setw(15) << setprecision(8) << "Energy"; // Mean energy
+  ofile << setw(15) << setprecision(8) << "Variance"; // Variance
+  ofile << setw(15) << setprecision(8) << "Time" << endl; // Time
 
   ofile << setw(15) << setprecision(8) << analytical_Energy; // Mean energy
-  ofile << setw(15) << setprecision(8) << analytical_STD; // STD
+  ofile << setw(15) << setprecision(8) << analytical_VAR; // Variance
   ofile << setw(15) << setprecision(8) << analytical_Time << endl; // Time
 
   ofile << setw(15) << setprecision(8) << numerical_Energy; // Mean energy
-  ofile << setw(15) << setprecision(8) << numerical_STD; // STD
+  ofile << setw(15) << setprecision(8) << numerical_VAR; // Variance
   ofile << setw(15) << setprecision(8) << numerical_Time << endl; // Time
 
   ofile.close();
@@ -480,16 +480,25 @@ if (Task == "b")
 
     }
 
-    for (int i = 0; i < Maxiterations; i++){
-      string file = "Python/Results/Task_e/GD_" + to_string(numberOfParticles) + "particles_" + to_string(vecalpha[i]) + "alpha.dat";
-      ofile.open(file);
-      ofile << setiosflags(ios::showpoint | ios::uppercase);
-      ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
+    for (int i = 0; i < Maxiterations; i++)
+    {
+      for (int k = 0; k < Maxiterations; k++)
+      {
 
-      for (int j = 0; j < numberOfSteps; j++){
-        ofile << setw(15) << setprecision(8) << Energies_alphas(i,j) << endl; // Mean energy
+        if (Energies_alphas(i, numberOfSteps-1) == vecEnergy[k])
+        {
+          string file = "Python/Results/Task_e/GD_" + to_string(numberOfParticles) + "particles_" + to_string(vecalpha[k]) + "alpha.dat";
+          ofile.open(file);
+          ofile << setiosflags(ios::showpoint | ios::uppercase);
+          ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
+
+          for (int j = 0; j < numberOfSteps; j++)
+          {
+            ofile << setw(15) << setprecision(8) << Energies_alphas(i,j) << endl; // Mean energy
+          }
+          ofile.close();
+        }
       }
-      ofile.close();
 
     }
 
@@ -586,7 +595,7 @@ if (Task == "b")
         alpha -= learning_rate*vecEnergyDer[i];
 
         if (alpha < 0){
-          alpha *= -1; 
+          alpha *= -1;
         }
 
         if (i > 0){

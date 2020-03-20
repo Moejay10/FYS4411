@@ -21,6 +21,7 @@ public:
 
     void WriteResultstoFile(ofstream& ofile, int MCcycles);
     double getSTD()                   { return m_STD; }
+    double getVAR()                   { return m_variance; }
     double getEnergy()                { return m_energy; }
     double getEnergyDer()             { return m_EnergyDer; }
     double getTime()                  { return m_totalTime; }
