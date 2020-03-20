@@ -594,9 +594,7 @@ if (Task == "b")
 
         alpha -= learning_rate*vecEnergyDer[i];
 
-        if (alpha < 0){
-          alpha *= -1;
-        }
+        
 
         if (i > 0){
           diff = fabs(vecEnergy[i] - vecEnergy[i-1]);
