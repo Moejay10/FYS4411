@@ -87,7 +87,7 @@ if (Task == "a")
 
   }
 
-  string file = "Python/Results/Variational_parameter.dat";
+  string file = "Python/Results/Task_a/Variational_parameter.dat";
   ofile.open(file);
   ofile << setiosflags(ios::showpoint | ios::uppercase);
   ofile << setw(15) << setprecision(8) << "alpha "; // alpha
@@ -519,7 +519,7 @@ if (Task == "b")
     int numberOfParticles;
     int numberOfDimensions;
     double omega            = 1.0;          // Oscillator frequency.
-    double alpha            = 0.3;          // Variational parameter.
+    double alpha            = 0.1;          // Variational parameter.
     double beta             = 2.82843;      // Variational parameter.
     double gamma            = beta;         // Variational parameter.
     double a                = 0.0043;       // Interaction parameter.
@@ -562,7 +562,7 @@ if (Task == "b")
 
     double tol = 1e-2;
     double diff = 1;
-    double learning_rate = 1e-2;
+    double learning_rate = 1e-3;
     int Maxiterations = 50;
 
     double start_time, end_time;
@@ -580,7 +580,7 @@ if (Task == "b")
         system->setStepLength               (stepLength);
         system->setDiffusionCoefficient     (diffusionCoefficient);
         system->setRepulsivePotential       (true);
-        system->setPrintOutToTerminal       (false);
+        //system->setPrintOutToTerminal       (false);
         system->runMetropolisSteps          (ofile, numberOfSteps);
 
         vecEnergy.push_back(system->getSampler()->getEnergy());
@@ -593,8 +593,6 @@ if (Task == "b")
         }
 
         alpha -= learning_rate*vecEnergyDer[i];
-
-        
 
         if (i > 0){
           diff = fabs(vecEnergy[i] - vecEnergy[i-1]);
@@ -611,7 +609,7 @@ if (Task == "b")
       end_time = omp_get_wtime();
 
       cout << "Time : " << end_time - start_time << endl;
-      cout << "Iterations : " << j << endl;
+      cout << "Iterations : " << j << " / " << Maxiterations << endl;
 
 
 
