@@ -562,7 +562,7 @@ if (Task == "b")
 
     double tol = 1e-2;
     double diff = 1;
-    double learning_rate = 1e-3;
+    double learning_rate = 1e-2;
     int Maxiterations = 50;
 
     double start_time, end_time;
@@ -665,9 +665,11 @@ if (Task == "b")
 
   cout << "\n" << "Which parameters do you want to use?: " << endl;
 
-  cout << "\n" << "The number of Monte Carlo cycles: " << endl;
+  cout << "\n" << "The number of Monte Carlo cycles in powers of 2: " << endl;
+  cout << "\n" << "Useful information: 2^10 = 10^3 & 2^20 = 10^6" << endl;
   cout << "\n" << "Write here " << endl;
   cin >> numberOfSteps;
+  numberOfSteps = pow(2, numberOfSteps);
 
   cout << "\n" << "The number of Particles: " << endl;
   cout << "\n" << "Write here " << endl;
@@ -682,7 +684,7 @@ if (Task == "b")
   // Analyitcal Run
   cout << "-------------- \n" << " Onebody Densities \n" << "-------------- \n" << endl;
 
-  string file = "Python/Results/RepulsiveOnebody_Density.dat";
+  string file = "Python/Results/Task_g/RepulsiveOnebody_Density.dat";
   ofile.open(file);
   ofile << setiosflags(ios::showpoint | ios::uppercase);
   ofile << setw(15) << setprecision(8) << "Bins"; // Variational parameter
