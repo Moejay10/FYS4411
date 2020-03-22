@@ -690,8 +690,8 @@ if (Task == "b")
   cout << "-------------- \n" << " Onebody Densities \n" << "-------------- \n" << endl;
 
   //string file = "Python/Results/Task_g/IdealOnebody_Density.dat";
-  string file = "Python/Results/Task_g/Onebody_Density.dat";
-  //string file = "Python/Results/Task_g/RepulsiveOnebody_Density.dat";
+  //string file = "Python/Results/Task_g/Onebody_Density.dat";
+  string file = "Python/Results/Task_g/RepulsiveOnebody_Density.dat";
   //string file = "Python/Results/Task_g/StrongRepulsiveOnebody_Density.dat";
   //string file = "Python/Results/Task_g/StrongestRepulsiveOnebody_Density.dat";
 
@@ -713,7 +713,7 @@ if (Task == "b")
   system->setNumberofBins             (numberofBins);
   system->setBinVector                (binStartpoint, binEndpoint, numberofBins);
   system->setOneBodyDensity           (true);
-  //system->setRepulsivePotential       (true);
+  system->setRepulsivePotential       (true);
   system->runMetropolisSteps          (ofile, numberOfSteps);
 
   ofile.close();
