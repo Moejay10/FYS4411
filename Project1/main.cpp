@@ -519,7 +519,7 @@ if (Task == "b")
     int numberOfParticles;
     int numberOfDimensions;
     double omega            = 1.0;          // Oscillator frequency.
-    double alpha            = 0.1;          // Variational parameter.
+    double alpha;                           // Variational parameter.
     double beta             = 2.82843;      // Variational parameter.
     double gamma            = beta;         // Variational parameter.
     double a                = 0.0043;       // Interaction parameter.
@@ -549,6 +549,13 @@ if (Task == "b")
     cin >> numberOfDimensions;
 
 
+    // Initialize the seed and call the Mersienne algo
+    std::random_device rd;
+    std::mt19937_64 gen(rd());
+    // Set up the uniform distribution for x \in [[0.3, 0.7]
+    std::uniform_real_distribution<double> RandomNumberGenerator(0.3,0.7);
+
+    alpha = RandomNumberGenerator(gen);
 
     // Analyitcal Run
     cout << "-------------- \n" << " Gradient Descent \n" << "-------------- \n" << endl;
@@ -562,7 +569,7 @@ if (Task == "b")
 
     double tol = 1e-2;
     double diff = 1;
-    double learning_rate = 1e-3;
+    double learning_rate = 1e-4;
     int Maxiterations = 50;
 
     double start_time, end_time;
