@@ -263,7 +263,6 @@ if (Task == "b")
       system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
       system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
       system->setStepLength               (stepLength(i));
-      system->setRepulsivePotential       (true);
       system->runMetropolisSteps          (ofile, numberOfSteps);
 
       vecBruteForce.push_back(system->getSampler()->getAcceptedStep());
@@ -284,7 +283,6 @@ if (Task == "b")
       system->setTimeStep                 (timeStep(i));
       system->setDiffusionCoefficient     (diffusionCoefficient);
       system->setImportanceSampling       (true);
-      system->setRepulsivePotential       (true);
       system->runMetropolisSteps          (ofile, numberOfSteps);
 
       vecImportanceSampling.push_back(system->getSampler()->getAcceptedStep());
