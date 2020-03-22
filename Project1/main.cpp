@@ -354,8 +354,7 @@ if (Task == "b")
     double beta             = 1.0;          // Variational parameter.
     double gamma            = 1.0;          // Variational parameter.
     double a                = 0.0;          // Interaction parameter.
-    double stepLength       = 1.0;          // Metropolis step length.
-    double stepSize         = 1e-4;         // Stepsize in the numerical derivative for kinetic energy
+    double timestep         = 0.5;          // Metropolis step length.
     double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
     double equilibration    = 0.1;          // Amount of the total steps used
     // for equilibration.
@@ -379,18 +378,13 @@ if (Task == "b")
   cout << "\n" << "Write here " << endl;
   cin >> numberOfDimensions;
 
-  cout << "\n" << "The Time Step in the Importance Sampling: " << endl;
-  cout << "\n" << "Write here " << endl;
-  cin >> timeStep;
 
 
-  string file = "Python/Results/Energies.dat";
+
+  string file = "Python/Results/Task_c/Blocking_Importance_Sampling" + to_string(numberOfParticles) + "_particles" + "_" + to_string(numberOfDimensions) + "_dim.dat";
   ofile.open(file);
-  //ofile << setiosflags(ios::showpoint | ios::uppercase);
-  //ofile << setw(15) << setprecision(8) << "MCcycles"; // # Monte Carlo cycles (sweeps per lattice)
+  ofile << setiosflags(ios::showpoint | ios::uppercase);
   ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
-  //ofile << setw(15) << setprecision(8) << "Variance"; // Variance
-  //ofile << setw(15) << setprecision(8) << "STD"; // # Standard deviation
 
 
       // Analyitcal Run
@@ -399,7 +393,6 @@ if (Task == "b")
       system->setHamiltonian              (new HarmonicOscillator(system, omega));
       system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
       system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
-      system->setStepLength               (stepLength);
       system->setTimeStep                 (timeStep);
       system->setDiffusionCoefficient     (diffusionCoefficient);
       system->setImportanceSampling       (true);
