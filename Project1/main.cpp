@@ -246,11 +246,15 @@ if (Task == "b")
     std::vector<double> vecVAR_IS = std::vector<double>();
     std::vector<double> vecTime_IS = std::vector<double>();
 
+    vec Energies_IS(numberOfSteps);
+
 
     std::vector<double> vecBruteForce = std::vector<double>();
     std::vector<double> vecEnergy_BF = std::vector<double>();
     std::vector<double> vecVAR_BF = std::vector<double>();
     std::vector<double> vecTime_BF = std::vector<double>();
+
+    vec Energies_BF(numberOfSteps);
 
 
     cout << "-------------- \n" << "Brute Force Metropolis \n" << "-------------- \n" << endl;
@@ -268,6 +272,14 @@ if (Task == "b")
       vecEnergy_BF.push_back(system->getSampler()->getEnergy());
       vecVAR_BF.push_back(system->getSampler()->getVAR());
       vecTime_BF.push_back(system->getSampler()->getTime());
+
+      if (i == 0)
+      {
+        for (int k = 0; k < numberOfSteps; k++){
+          Energies_BF(k) = system->getSampler()->getEnergies()[k];
+        }
+      }
+
     }
 
     cout << "-------------- \n" << "Metropolis-Hastings \n" << "-------------- \n" << endl;
@@ -287,6 +299,14 @@ if (Task == "b")
       vecEnergy_IS.push_back(system->getSampler()->getEnergy());
       vecVAR_IS.push_back(system->getSampler()->getVAR());
       vecTime_IS.push_back(system->getSampler()->getTime());
+
+      if (i == 0)
+      {
+        for (int k = 0; k < numberOfSteps; k++){
+          Energies_IS(k) = system->getSampler()->getEnergies()[k];
+        }
+      }
+
     }
 
 
@@ -311,6 +331,16 @@ if (Task == "b")
 
     ofile.close();
 
+    file = "Python/Results/Task_c/Blocking_Brute_Force_" + to_string(numberOfParticles) + "_particles.dat";;
+    ofile.open(file);
+    ofile << setiosflags(ios::showpoint | ios::uppercase);
+    ofile << setw(15) << setprecision(8) << "Energy" << endl; // Energy
+
+    for (int k = 0; k < numberOfSteps; k++){
+      ofile << setw(15) << setprecision(8) << Energies_BF(k) << endl;
+    }
+    ofile.close();
+
     file = "Python/Results/Task_c/Importance_Sampling" + to_string(numberOfParticles) + "_particles" + "_" + to_string(numberOfDimensions) + "_dim.dat";
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
@@ -329,6 +359,16 @@ if (Task == "b")
       ofile << setw(15) << setprecision(8) << vecTime_IS[i] << endl; // Time
     }
 
+    ofile.close();
+
+    file = "Python/Results/Task_c/Blocking_Importance_Sampling_" + to_string(numberOfParticles) + "_particles.dat";;
+    ofile.open(file);
+    ofile << setiosflags(ios::showpoint | ios::uppercase);
+    ofile << setw(15) << setprecision(8) << "Energy" << endl; // Energy
+
+    for (int k = 0; k < numberOfSteps; k++){
+      ofile << setw(15) << setprecision(8) << Energies_IS(k) << endl;
+    }
     ofile.close();
 
 
