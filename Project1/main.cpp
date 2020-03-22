@@ -379,7 +379,7 @@ if (Task == "b")
 
 
 
-  string file = "Python/Results/Task_c/Blocking_Importance_Sampling" + to_string(numberOfParticles) + "_particles" + "_" + to_string(numberOfDimensions) + "_dim.dat";
+  string file = "Python/Results/Task_d/Blocking_Importance_Sampling" + to_string(numberOfParticles) + "_particles" + "_" + to_string(numberOfDimensions) + "_dim.dat";
   ofile.open(file);
   ofile << setiosflags(ios::showpoint | ios::uppercase);
   ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
