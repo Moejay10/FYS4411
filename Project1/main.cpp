@@ -569,7 +569,7 @@ if (Task == "b")
 
     double tol = 1e-2;
     double diff = 1;
-    double learning_rate = 1e-4;
+    double learning_rate = 1e-3;
     int Maxiterations = 50;
 
     double start_time, end_time;
