@@ -246,15 +246,12 @@ if (Task == "b")
     std::vector<double> vecVAR_IS = std::vector<double>();
     std::vector<double> vecTime_IS = std::vector<double>();
 
-    vec Energies_IS(numberOfSteps);
 
 
     std::vector<double> vecBruteForce = std::vector<double>();
     std::vector<double> vecEnergy_BF = std::vector<double>();
     std::vector<double> vecVAR_BF = std::vector<double>();
     std::vector<double> vecTime_BF = std::vector<double>();
-
-    vec Energies_BF(numberOfSteps);
 
 
     cout << "-------------- \n" << "Brute Force Metropolis \n" << "-------------- \n" << endl;
@@ -273,16 +270,6 @@ if (Task == "b")
       vecEnergy_BF.push_back(system->getSampler()->getEnergy());
       vecVAR_BF.push_back(system->getSampler()->getVAR());
       vecTime_BF.push_back(system->getSampler()->getTime());
-
-      string file = "Python/Results/Task_c/BF_Blocking_steplength_" + to_string(i) + "_"+ to_string(numberOfParticles) + "_particles.dat";;
-      ofile.open(file);
-      ofile << setiosflags(ios::showpoint | ios::uppercase);
-      ofile << setw(15) << setprecision(8) << "Energy" << endl; // Energy
-
-      for (int k = 0; k < numberOfSteps; k++){
-        ofile << setw(15) << setprecision(8) << system->getSampler()->getEnergies()[k] << endl;
-      }
-      ofile.close();
 
     }
 
@@ -304,16 +291,6 @@ if (Task == "b")
       vecEnergy_IS.push_back(system->getSampler()->getEnergy());
       vecVAR_IS.push_back(system->getSampler()->getVAR());
       vecTime_IS.push_back(system->getSampler()->getTime());
-
-      string file = "Python/Results/Task_c/IS_Blocking_timestep_" + to_string(i) + "_"+ to_string(numberOfParticles) + "_particles.dat";;
-      ofile.open(file);
-      ofile << setiosflags(ios::showpoint | ios::uppercase);
-      ofile << setw(15) << setprecision(8) << "Energy" << endl; // Energy
-
-      for (int k = 0; k < numberOfSteps; k++){
-        ofile << setw(15) << setprecision(8) << system->getSampler()->getEnergies()[k] << endl;
-      }
-      ofile.close();
 
     }
 
@@ -696,7 +673,7 @@ if (Task == "b")
     double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
     double equilibration    = 0.1;          // Amount of the total steps used
     // for equilibration.
-    int numberofBins = 20;
+    int numberofBins = 12;
     double binStartpoint = 0;
     double binEndpoint = 2;
 
