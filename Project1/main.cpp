@@ -204,9 +204,9 @@ if (Task == "b")
 
   double omega            = 1.0;          // Oscillator frequency.
   double alpha            = 0.5;          // Variational parameter.
-  double beta             = 1.0;          // Variational parameter.
-  double gamma            = 1.0;          // Variational parameter.
-  double a                = 0.0;          // Interaction parameter.
+  double beta             = 2.82843;      // Variational parameter.
+  double gamma            = beta;         // Variational parameter.
+  double a                = 0.0043;          // Interaction parameter.
   double stepSize         = 1e-4;         // Stepsize in the numerical derivative for kinetic energy
   double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.
   double equilibration    = 0.1;          // Amount of the total steps used
