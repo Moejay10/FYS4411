@@ -657,7 +657,7 @@ if (Task == "b")
     int numberOfDimensions;
     double omega            = 1.0;          // Oscillator frequency.
     double alpha            = 0.5;          // Variational parameter.
-    double beta             = 2.82843;      // Variational parameter.
+    double beta             = 2.82843;      // Variational parameter. Elliptical case
     double gamma            = beta;         // Variational parameter.
     double a                = 0.0043;       // Interaction parameter.
     double stepLength       = 1.0;          // Metropolis step length.
@@ -691,9 +691,11 @@ if (Task == "b")
   // Analyitcal Run
   cout << "-------------- \n" << " Onebody Densities \n" << "-------------- \n" << endl;
 
-  //string file = "Python/Results/Task_g/IdealOnebody_Density.dat";
-  string file = "Python/Results/Task_g/Onebody_Density.dat";
-  //string file = "Python/Results/Task_g/RepulsiveOnebody_Density.dat";
+  //string file = "Python/Results/Task_g/Onebody_Density.dat";
+  string file = "Python/Results/Task_g/RepulsiveOnebody_Density.dat";
+  //string file = "Python/Results/Task_g/StrongRepulsiveOnebody_Density.dat";
+  //string file = "Python/Results/Task_g/StrongestRepulsiveOnebody_Density.dat";
+
 
   ofile.open(file);
   ofile << setiosflags(ios::showpoint | ios::uppercase);
@@ -712,7 +714,7 @@ if (Task == "b")
   system->setNumberofBins             (numberofBins);
   system->setBinVector                (binStartpoint, binEndpoint, numberofBins);
   system->setOneBodyDensity           (true);
-  //system->setRepulsivePotential       (true);
+  system->setRepulsivePotential       (true);
   system->runMetropolisSteps          (ofile, numberOfSteps);
 
   ofile.close();
