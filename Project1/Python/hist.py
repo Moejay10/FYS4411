@@ -33,17 +33,17 @@ for i in range(len(X1["Counter"])):
     V = 4*(i*(i+1)+ 1/3)*np.pi*r**3
     y[i] = int(X1["Counter"][i]/V)
 
-x = np.linspace(0, 2, 40)
+x = np.linspace(0, 2, 12)
 
 import seaborn as sns
 sns.set()
-#plt.plot(x, X0["Counter"])
+plt.plot(x, X0["Counter"])
 plt.plot(x, X1["Counter"])
 plt.plot(x, X2["Counter"])
-#plt.plot(x, X3["Counter"])
-#plt.plot(x, X4["Counter"])
-plt.legend(["No interaction", "a = 0.0043", "a = 0.043"])
-#plt.legend(["Ideal-Spherical", "No interaction", "a = 0.0043", "a = 0.043", "a = 0.43"])
+plt.plot(x, X3["Counter"])
+plt.plot(x, X4["Counter"])
+#plt.legend(["No interaction", "a = 0.0043", "a = 0.043"])
+plt.legend(["Ideal-Spherical", "No interaction", "a = 0.0043", "a = 0.043", "a = 0.43"])
 
 plt.show()
 #
