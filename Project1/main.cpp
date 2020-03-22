@@ -236,8 +236,8 @@ if (Task == "b")
     vec timeStep(Maxiterations); // Timestep to be used in Metropolis-Hastings.
     vec stepLength(Maxiterations); // Metropolis step length.
     for (int i = 0; i < Maxiterations; i++){
-      timeStep(i) = 0.05 + 0.05*i;
-      stepLength(i) = 0.05 + 0.05*i;
+      timeStep(i) = 0.1 + 0.1*i;
+      stepLength(i) = 0.1 + 0.1*i;
     }
 
 
@@ -266,6 +266,7 @@ if (Task == "b")
       system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
       system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
       system->setStepLength               (stepLength(i));
+      system->setRepulsivePotential       (true);
       system->runMetropolisSteps          (ofile, numberOfSteps);
 
       vecBruteForce.push_back(system->getSampler()->getAcceptedStep());
@@ -273,12 +274,15 @@ if (Task == "b")
       vecVAR_BF.push_back(system->getSampler()->getVAR());
       vecTime_BF.push_back(system->getSampler()->getTime());
 
-      if (i == 0)
-      {
-        for (int k = 0; k < numberOfSteps; k++){
-          Energies_BF(k) = system->getSampler()->getEnergies()[k];
-        }
+      string file = "Python/Results/Task_c/BF_Blocking_steplength_" + to_string(i) + "_"+ to_string(numberOfParticles) + "_particles.dat";;
+      ofile.open(file);
+      ofile << setiosflags(ios::showpoint | ios::uppercase);
+      ofile << setw(15) << setprecision(8) << "Energy" << endl; // Energy
+
+      for (int k = 0; k < numberOfSteps; k++){
+        ofile << setw(15) << setprecision(8) << system->getSampler()->getEnergies()[k] << endl;
       }
+      ofile.close();
 
     }
 
@@ -293,6 +297,7 @@ if (Task == "b")
       system->setTimeStep                 (timeStep(i));
       system->setDiffusionCoefficient     (diffusionCoefficient);
       system->setImportanceSampling       (true);
+      system->setRepulsivePotential       (true);
       system->runMetropolisSteps          (ofile, numberOfSteps);
 
       vecImportanceSampling.push_back(system->getSampler()->getAcceptedStep());
@@ -300,12 +305,15 @@ if (Task == "b")
       vecVAR_IS.push_back(system->getSampler()->getVAR());
       vecTime_IS.push_back(system->getSampler()->getTime());
 
-      if (i == 0)
-      {
-        for (int k = 0; k < numberOfSteps; k++){
-          Energies_IS(k) = system->getSampler()->getEnergies()[k];
-        }
+      string file = "Python/Results/Task_c/IS_Blocking_timestep_" + to_string(i) + "_"+ to_string(numberOfParticles) + "_particles.dat";;
+      ofile.open(file);
+      ofile << setiosflags(ios::showpoint | ios::uppercase);
+      ofile << setw(15) << setprecision(8) << "Energy" << endl; // Energy
+
+      for (int k = 0; k < numberOfSteps; k++){
+        ofile << setw(15) << setprecision(8) << system->getSampler()->getEnergies()[k] << endl;
       }
+      ofile.close();
 
     }
 
@@ -331,15 +339,7 @@ if (Task == "b")
 
     ofile.close();
 
-    file = "Python/Results/Task_c/Blocking_Brute_Force_" + to_string(numberOfParticles) + "_particles.dat";;
-    ofile.open(file);
-    ofile << setiosflags(ios::showpoint | ios::uppercase);
-    ofile << setw(15) << setprecision(8) << "Energy" << endl; // Energy
 
-    for (int k = 0; k < numberOfSteps; k++){
-      ofile << setw(15) << setprecision(8) << Energies_BF(k) << endl;
-    }
-    ofile.close();
 
     file = "Python/Results/Task_c/Importance_Sampling" + to_string(numberOfParticles) + "_particles" + "_" + to_string(numberOfDimensions) + "_dim.dat";
     ofile.open(file);
@@ -359,16 +359,6 @@ if (Task == "b")
       ofile << setw(15) << setprecision(8) << vecTime_IS[i] << endl; // Time
     }
 
-    ofile.close();
-
-    file = "Python/Results/Task_c/Blocking_Importance_Sampling_" + to_string(numberOfParticles) + "_particles.dat";;
-    ofile.open(file);
-    ofile << setiosflags(ios::showpoint | ios::uppercase);
-    ofile << setw(15) << setprecision(8) << "Energy" << endl; // Energy
-
-    for (int k = 0; k < numberOfSteps; k++){
-      ofile << setw(15) << setprecision(8) << Energies_IS(k) << endl;
-    }
     ofile.close();
 
 
@@ -703,11 +693,10 @@ if (Task == "b")
     double a                = 0.0043;       // Interaction parameter.
     double stepLength       = 1.0;          // Metropolis step length.
     double timeStep         = 1.0;          // Timestep to be used in Metropolis-Hastings.
-    double stepSize         = 1e-4;         // Stepsize in the numerical derivative for kinetic energy
     double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
     double equilibration    = 0.1;          // Amount of the total steps used
     // for equilibration.
-    int numberofBins = 40;
+    int numberofBins = 20;
     double binStartpoint = 0;
     double binEndpoint = 2;
 
@@ -733,8 +722,8 @@ if (Task == "b")
   cout << "-------------- \n" << " Onebody Densities \n" << "-------------- \n" << endl;
 
   //string file = "Python/Results/Task_g/IdealOnebody_Density.dat";
-  //string file = "Python/Results/Task_g/Onebody_Density.dat";
-  string file = "Python/Results/Task_g/RepulsiveOnebody_Density.dat";
+  string file = "Python/Results/Task_g/Onebody_Density.dat";
+  //string file = "Python/Results/Task_g/RepulsiveOnebody_Density.dat";
   //string file = "Python/Results/Task_g/StrongRepulsiveOnebody_Density.dat";
   //string file = "Python/Results/Task_g/StrongestRepulsiveOnebody_Density.dat";
 
@@ -756,7 +745,7 @@ if (Task == "b")
   system->setNumberofBins             (numberofBins);
   system->setBinVector                (binStartpoint, binEndpoint, numberofBins);
   system->setOneBodyDensity           (true);
-  system->setRepulsivePotential       (true);
+  //system->setRepulsivePotential       (true);
   system->runMetropolisSteps          (ofile, numberOfSteps);
 
   ofile.close();
