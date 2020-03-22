@@ -697,7 +697,8 @@ if (Task == "b")
     int numberOfDimensions;
     double omega            = 1.0;          // Oscillator frequency.
     double alpha            = 0.5;          // Variational parameter.
-    double beta             = 2.82843;      // Variational parameter. Elliptical case
+    //double beta             = 1.0;          // Variational parameter. Elliptical case
+    double beta             = 2.82843;      // Variational parameter. Ideal case
     double gamma            = beta;         // Variational parameter.
     double a                = 0.0043;       // Interaction parameter.
     double stepLength       = 1.0;          // Metropolis step length.
@@ -706,7 +707,7 @@ if (Task == "b")
     double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
     double equilibration    = 0.1;          // Amount of the total steps used
     // for equilibration.
-    int numberofBins = 20;
+    int numberofBins = 40;
     double binStartpoint = 0;
     double binEndpoint = 2;
 
@@ -731,6 +732,7 @@ if (Task == "b")
   // Analyitcal Run
   cout << "-------------- \n" << " Onebody Densities \n" << "-------------- \n" << endl;
 
+  //string file = "Python/Results/Task_g/IdealOnebody_Density.dat";
   //string file = "Python/Results/Task_g/Onebody_Density.dat";
   string file = "Python/Results/Task_g/RepulsiveOnebody_Density.dat";
   //string file = "Python/Results/Task_g/StrongRepulsiveOnebody_Density.dat";
