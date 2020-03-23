@@ -128,8 +128,8 @@ void Sampler::computeAverages(double total_time, double acceptedStep) {
     m_energy = m_cumulativeEnergy *norm;
     m_cumulativeEnergy2 = m_cumulativeEnergy2 *norm;
     m_cumulativeEnergy = m_cumulativeEnergy *norm;
-    m_variance = m_cumulativeEnergy2 - m_cumulativeEnergy*m_cumulativeEnergy;
-    m_STD = sqrt(m_variance*norm);
+    m_variance = (m_cumulativeEnergy2 - m_cumulativeEnergy*m_cumulativeEnergy)*norm;
+    m_STD = sqrt(m_variance);
 
     m_DerivativePsiE *= norm;
     m_DeltaPsi *= norm;
@@ -176,6 +176,7 @@ void Sampler::WriteResultstoFile(ofstream& ofile, int MCcycles)
 {
   int N = m_system->getNumberOfParticles(); // Number of Particles
   double norm = 1.0/((double) (MCcycles));  // divided by  number of cycles
+
 
   double Energy = m_cumulativeEnergy * norm;
   double CumulativeEnergy2 = m_cumulativeEnergy2 *norm;
