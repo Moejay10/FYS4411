@@ -342,17 +342,15 @@ if (Task == "b")
   if (Task == "d")
   {
     int numberOfSteps;
-    int numberOfParticles;
-    int numberOfDimensions;
-    double timeStep;                        // Timestep to be used in Metropolis-Hastings.
+    int numberOfDimensions = 3;
 
     double omega            = 1.0;          // Oscillator frequency.
     double alpha            = 0.5;          // Variational parameter.
     double beta             = 1.0;          // Variational parameter.
     double gamma            = 1.0;          // Variational parameter.
     double a                = 0.0;          // Interaction parameter.
-    double timestep         = 0.5;          // Metropolis step length.
-    double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
+    double timeStep         = 0.5;          // Metropolis step length.
+    double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.
     double equilibration    = 0.1;          // Amount of the total steps used
     // for equilibration.
 
@@ -366,36 +364,55 @@ if (Task == "b")
   numberOfSteps = pow(2, numberOfSteps);
 
 
-  cout << "\n" << "The number of Particles: " << endl;
-  cout << "\n" << "Write here " << endl;
-  cin >> numberOfParticles;
+  vec numberOfParticles(4);
+  numberOfParticles(0) = 1;
+  numberOfParticles(1) = 10;
+  numberOfParticles(2) = 100;
+  numberOfParticles(3) = 500;
 
 
-  cout << "\n" << "The number of Dimensions: " << endl;
-  cout << "\n" << "Write here " << endl;
-  cin >> numberOfDimensions;
+  std::vector<double> vecVAR = std::vector<double>();
 
 
+  // Analyitcal Run
+  cout << "-------------- \n" << "Statistical Analysis \n" << "-------------- \n" << endl;
 
+  for (int i = 0; i < 4; i++)
+  {
 
-  string file = "Python/Results/Task_d/Blocking_Importance_Sampling" + to_string(numberOfParticles) + "_particles" + "_" + to_string(numberOfDimensions) + "_dim.dat";
-  ofile.open(file);
-  ofile << setiosflags(ios::showpoint | ios::uppercase);
-  ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
+      string file = "Python/Results/Task_d/Blocking_Importance_Sampling" + to_string(numberOfParticles(i)) + "_particles" + "_" + to_string(numberOfDimensions) + "_dim.dat";
+      ofile.open(file);
+      ofile << setiosflags(ios::showpoint | ios::uppercase);
+      ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
 
-
-      // Analyitcal Run
-      cout << "-------------- \n" << "Statistical Analysis \n" << "-------------- \n" << endl;
       System* system = new System();
       system->setHamiltonian              (new HarmonicOscillator(system, omega));
       system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
-      system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
+      system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles(i)));
       system->setTimeStep                 (timeStep);
       system->setDiffusionCoefficient     (diffusionCoefficient);
       system->setImportanceSampling       (true);
       system->runMetropolisSteps          (ofile, numberOfSteps);
 
+      vecVAR.push_back(system->getSampler()->getVAR());
+
       ofile.close();
+    }
+
+    string file = "Python/Results/Task_d/Variance_Importance_Sampling.dat";
+    ofile.open(file);
+    ofile << setiosflags(ios::showpoint | ios::uppercase);
+    ofile << setw(15) << setprecision(8) << "Particles"; // numberOfParticles
+    ofile << setw(15) << setprecision(8) << "Variance" << endl; // Variance
+
+
+    for (int i = 0; i < 4; i++){
+      ofile << setw(15) << setprecision(8) << numberOfParticles(i); // numberOfParticles
+      ofile << setw(15) << setprecision(8) << vecVAR[i] << endl; // Variance
+    }
+
+    ofile.close();
+
   }
 
 
