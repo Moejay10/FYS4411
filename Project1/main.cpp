@@ -346,11 +346,10 @@ if (Task == "b")
 
     double omega            = 1.0;          // Oscillator frequency.
     double alpha            = 0.5;          // Variational parameter.
-    double beta             = 1.0;          // Variational parameter.
-    double gamma            = 1.0;          // Variational parameter.
-    double a                = 0.0;          // Interaction parameter.
-    double timeStep         = 0.5;          // Metropolis step length.
-    double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.
+    double beta             = 2.82843;      // Variational parameter.
+    double gamma            = beta;          // Variational parameter.
+    double a                = 0.0043;          // Interaction parameter.
+    double stepLength       = 1.0;          // Metropolis step length.
     double equilibration    = 0.1;          // Amount of the total steps used
     // for equilibration.
 
@@ -363,24 +362,22 @@ if (Task == "b")
   cin >> numberOfSteps;
   numberOfSteps = pow(2, numberOfSteps);
 
-
-  vec numberOfParticles(4);
-  numberOfParticles(0) = 1;
-  numberOfParticles(1) = 10;
-  numberOfParticles(2) = 100;
-  numberOfParticles(3) = 500;
-
+  std::vector<int> numberOfParticles = std::vector<int>();
+  numberOfParticles.push_back(2);
+  numberOfParticles.push_back(10);
 
   std::vector<double> vecVAR = std::vector<double>();
+  std::vector<double> vecEnergy = std::vector<double>();
+
 
 
   // Analyitcal Run
   cout << "-------------- \n" << "Statistical Analysis \n" << "-------------- \n" << endl;
 
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < 2; i++)
   {
 
-      string file = "Python/Results/Task_d/Blocking_Importance_Sampling" + to_string(numberOfParticles(i)) + "_particles" + "_" + to_string(numberOfDimensions) + "_dim.dat";
+      string file = "Python/Results/Task_d/Blocking_Importance_Sampling" + to_string(numberOfParticles[i]) + "_particles" + "_" + to_string(numberOfDimensions) + "_dim.dat";
       ofile.open(file);
       ofile << setiosflags(ios::showpoint | ios::uppercase);
       ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
@@ -388,13 +385,14 @@ if (Task == "b")
       System* system = new System();
       system->setHamiltonian              (new HarmonicOscillator(system, omega));
       system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
-      system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles(i)));
-      system->setTimeStep                 (timeStep);
-      system->setDiffusionCoefficient     (diffusionCoefficient);
-      system->setImportanceSampling       (true);
+      system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles[i]));
+      system->setStepLength               (stepLength);
+      system->setRepulsivePotential       (true);
       system->runMetropolisSteps          (ofile, numberOfSteps);
 
       vecVAR.push_back(system->getSampler()->getVAR());
+      vecEnergy.push_back(system->getSampler()->getEnergy());
+
 
       ofile.close();
     }
@@ -403,11 +401,13 @@ if (Task == "b")
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
     ofile << setw(15) << setprecision(8) << "Particles"; // numberOfParticles
+    ofile << setw(15) << setprecision(8) << "Energy"; // Mean energy
     ofile << setw(15) << setprecision(8) << "Variance" << endl; // Variance
 
 
-    for (int i = 0; i < 4; i++){
-      ofile << setw(15) << setprecision(8) << numberOfParticles(i); // numberOfParticles
+    for (int i = 0; i < 2; i++){
+      ofile << setw(15) << setprecision(8) << numberOfParticles[i]; // numberOfParticles
+      ofile << setw(15) << setprecision(8) << vecEnergy[i]; // Mean energy
       ofile << setw(15) << setprecision(8) << vecVAR[i] << endl; // Variance
     }
 
