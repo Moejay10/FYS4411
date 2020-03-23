@@ -253,65 +253,7 @@ double SimpleGaussian::computeDoubleDerivativeInteraction(std::vector<class Part
 }
 
 
-/*
-        for(int i = 0; i < N; i++){
-            sum = 0;
 
-            for(int d = 0; d < Dim; d++){
-                if(d==2){
-                    sum += beta*beta*m_system->getParticles()[i]->getPosition()[d]*m_system->getParticles()[i]->getPosition()[d] - beta/(2*alpha);
-                }
-                else{
-                    sum += m_system->getParticles()[i]->getPosition()[d]*m_system->getParticles()[i]->getPosition()[d] - 1/(2*alpha);
-                }
-            }
-
-            sum = 4*alpha*alpha*sum;
-
-            term1 = 0;
-            for(int j = N-1; j > i; j--) {
-                for(int d = 0; d < Dim; d++){
-                    r_ij(d) = m_system->getParticles()[i]->getPosition()[d] - m_system->getParticles()[j]->getPosition()[d];
-                    diff_ij += r_ij(d)*r_ij(d);
-                    if(d==2){
-                        term1 += m_system->getParticles()[i]->getPosition()[d] * r_ij(d) * beta;
-                    }
-                    else{
-                        term1 += m_system->getParticles()[i]->getPosition()[d] * r_ij(d);
-                    }
-
-
-                }
-                diff_ij = sqrt(diff_ij);
-
-                double u_der_ij = computeFirstDerivativeCorrelation(diff_ij);
-                cout << u_der_ij << endl;
-                sum -= 4*alpha*term1*u_der_ij/diff_ij;
-
-                term2 = 0;
-                for(int k = N-1; k > i; k--) {
-                    for(int d = 0; d < Dim; d++){
-                        r_ik(d) = m_system->getParticles()[i]->getPosition()[d] - m_system->getParticles()[k]->getPosition()[d];
-                        diff_ik += r_ik(d)*r_ik(d);
-                        term2 += r_ik(d)*r_ij(d);
-                    }
-                    diff_ik = sqrt(diff_ik);
-
-                    sum += term2/(diff_ij*diff_ik) *u_der_ij * computeFirstDerivativeCorrelation(diff_ik);
-                }
-
-                sum += computeDoubleDerivativeCorrelation(diff_ij) + 2*u_der_ij/diff_ik; // u''(r_ij) is nan
-                //cout << computeFirstDerivativeCorrelation(diff_ij) << endl;
-
-            }
-
-            total_sum += -0.5*sum;
-        }
-
-
-    return total_sum;
-}
-*/
 
 
 double SimpleGaussian::computeDoubleNumericalDerivative(std::vector<class Particle*> particles) {

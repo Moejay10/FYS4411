@@ -1,5 +1,6 @@
 #include "system.h"
 #include <cassert>
+#include <stdlib.h>
 #include <fstream>
 #include <iostream>
 #include <random>
@@ -15,7 +16,7 @@
 using namespace arma;
 
 
-bool System::metropolisStep(int i) {
+bool System::metropolisStep() {
     /* Perform the actual Metropolis step: Choose a particle at random and
      * change it's position by a random amount, and check if the step is
      * accepted by the Metropolis test (compare the wave function evaluated
@@ -27,6 +28,10 @@ bool System::metropolisStep(int i) {
      // Set up the uniform distribution for x \in [[0, 1]
      std::uniform_real_distribution<double> RandomNumberGenerator(0.0,1.0);
 
+     // Set up the uniform distribution for x \in [[0, N]
+     std::uniform_int_distribution<int> Particles(0,getNumberOfParticles()-1);
+
+     int Nparticle = Particles(gen);
      double a = RandomNumberGenerator(gen) - 0.5; // Random number
      double b = RandomNumberGenerator(gen) - 0.5; // Random number
      double c = RandomNumberGenerator(gen) - 0.5; // Random number
@@ -41,11 +46,11 @@ bool System::metropolisStep(int i) {
 
      // Trial position moving one particle at the time in all dimensions
 
-     m_particles[i]->adjustPosition(m_stepLength*a, 0);
+     m_particles[Nparticle]->adjustPosition(m_stepLength*a, 0);
      if (Dim>1){
-       m_particles[i]->adjustPosition(m_stepLength*b, 1);
+       m_particles[Nparticle]->adjustPosition(m_stepLength*b, 1);
        if (Dim>2){
-         m_particles[i]->adjustPosition(m_stepLength*c, 2);
+         m_particles[Nparticle]->adjustPosition(m_stepLength*c, 2);
        }
      }
 
@@ -59,11 +64,11 @@ bool System::metropolisStep(int i) {
 
   else{
 
-     m_particles[i]->adjustPosition(-m_stepLength*a, 0);
+     m_particles[Nparticle]->adjustPosition(-m_stepLength*a, 0);
      if (Dim>1){
-       m_particles[i]->adjustPosition(-m_stepLength*b, 1);
+       m_particles[Nparticle]->adjustPosition(-m_stepLength*b, 1);
        if (Dim>2){
-         m_particles[i]->adjustPosition(-m_stepLength*c, 2);
+         m_particles[Nparticle]->adjustPosition(-m_stepLength*c, 2);
        }
      }
     return false;
@@ -72,7 +77,7 @@ bool System::metropolisStep(int i) {
 }
 
 
-bool System::ImportanceMetropolisStep(int i) {
+bool System::ImportanceMetropolisStep() {
     /* Perform the actual Metropolis step: Choose a particle at random and
      * change it's position by a random amount, and check if the step is
      * accepted by the Metropolis test (compare the wave function evaluated
@@ -84,8 +89,10 @@ bool System::ImportanceMetropolisStep(int i) {
      // Set up the uniform distribution for x \in [[0, 1]
      std::normal_distribution<double> Normal(0.0,1.0);
      std::uniform_real_distribution<double> Uniform(0.0,1.0);
+     // Set up the uniform distribution for x \in [[0, N]
+     std::uniform_int_distribution<int> Particles(0,getNumberOfParticles()-1);
 
-
+     int Nparticle = Particles(gen);
      double a = Normal(gen); // Random number
      double b = Normal(gen); // Random number
      double c = Normal(gen); // Random number
@@ -96,27 +103,27 @@ bool System::ImportanceMetropolisStep(int i) {
      std::vector<double> posold, posnew, qfold, qfnew;
 
      // Initial Position
-     posold = getParticles()[i]->getPosition();
+     posold = getParticles()[Nparticle]->getPosition();
      wfold = getWaveFunction()->evaluate(m_particles);
-     qfold = getHamiltonian()->computeQuantumForce(m_particles, i);
+     qfold = getHamiltonian()->computeQuantumForce(m_particles, Nparticle);
 
 
      // Trial position moving one particle at the time in all dimensions
      poschange = a*sqrt(m_timeStep) + qfold[0]*m_timeStep*m_diffusionCoefficient;
-     m_particles[i]->adjustPosition(poschange, 0);
+     m_particles[Nparticle]->adjustPosition(poschange, 0);
      if (Dim > 1){
        poschange = b*sqrt(m_timeStep) + qfold[1]*m_timeStep*m_diffusionCoefficient;
-       m_particles[i]->adjustPosition(poschange, 1);
+       m_particles[Nparticle]->adjustPosition(poschange, 1);
        if (Dim > 2){
          poschange = c*sqrt(m_timeStep) + qfold[2]*m_timeStep*m_diffusionCoefficient;
-         m_particles[i]->adjustPosition(poschange, 2);
+         m_particles[Nparticle]->adjustPosition(poschange, 2);
        }
      }
 
 
-     posnew = getParticles()[i]->getPosition();
+     posnew = getParticles()[Nparticle]->getPosition();
      wfnew = getWaveFunction()->evaluate(m_particles);
-     qfnew = getHamiltonian()->computeQuantumForce(m_particles, i);
+     qfnew = getHamiltonian()->computeQuantumForce(m_particles, Nparticle);
 
      // Greens function
      double greensFunction = 0;
@@ -135,13 +142,13 @@ bool System::ImportanceMetropolisStep(int i) {
   else{
 
     poschange = a*sqrt(m_timeStep) + qfold[0]*m_timeStep*m_diffusionCoefficient;
-    m_particles[i]->adjustPosition(-poschange, 0);
+    m_particles[Nparticle]->adjustPosition(-poschange, 0);
     if (Dim > 1){
       poschange = b*sqrt(m_timeStep) + qfold[1]*m_timeStep*m_diffusionCoefficient;
-      m_particles[i]->adjustPosition(-poschange, 1);
+      m_particles[Nparticle]->adjustPosition(-poschange, 1);
       if (Dim > 2){
         poschange = c*sqrt(m_timeStep) + qfold[2]*m_timeStep*m_diffusionCoefficient;
-        m_particles[i]->adjustPosition(-poschange, 2);
+        m_particles[Nparticle]->adjustPosition(-poschange, 2);
       }
     }
     return false;
@@ -166,22 +173,20 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
     start_time = omp_get_wtime();
     for (int i = 1; i <= numberOfMetropolisSteps; i++) {
         // Trial position moving one particle at the time
-        for (int j = 0; j < N; j++){
-          if (getImportanceSampling()){
-              acceptedStep = ImportanceMetropolisStep(j);
-          }
-          else{
-              acceptedStep = metropolisStep(j);
-          }
-
-          /* Here you should sample the energy (and maybe other things using
-          * the m_sampler instance of the Sampler class. Make sure, though,
-          * to only begin sampling after you have let the system equilibrate
-          * for a while. You may handle this using the fraction of steps which
-          * are equilibration steps; m_equilibrationFraction.
-          */
-          counter += acceptedStep;
+        if (getImportanceSampling()){
+            acceptedStep = ImportanceMetropolisStep();
         }
+        else{
+            acceptedStep = metropolisStep();
+        }
+
+        /* Here you should sample the energy (and maybe other things using
+        * the m_sampler instance of the Sampler class. Make sure, though,
+        * to only begin sampling after you have let the system equilibrate
+        * for a while. You may handle this using the fraction of steps which
+        * are equilibration steps; m_equilibrationFraction.
+        */
+        counter += acceptedStep;
 
         //if (i > getEquilibrationFraction()*numberOfMetropolisSteps){
           m_sampler->sample(acceptedStep, i);
@@ -196,7 +201,7 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
 
     end_time = omp_get_wtime();
     total_time = end_time - start_time;
-    counter = counter/(numberOfMetropolisSteps*N);
+    counter = counter/(numberOfMetropolisSteps);
 
     m_sampler->computeAverages(total_time, counter);
     m_sampler->printOutputToTerminal(total_time, counter);
