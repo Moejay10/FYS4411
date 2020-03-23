@@ -15,11 +15,13 @@ This is to give an overview of the repository without going in-depth of the deta
     - simplegaussian.cpp (where one evaluates the wavefunction in different forms)
     - ... classes of wavefunction
   - Python
-    - Variational_Monte_Carlo.ipynb (All results used in report is stated here for easy reproducibility)
+    - Variational_Monte_Carlo.ipynb (all results used in report is stated here for easy reproducibility)
     - Results (with a lot of .PGFs and .dat files)
       - task_a
       - (to)
       - task_g
+  - report
+    - report.pdf (the report of the project.)
   - CMakeLists.txt (set flags and add executable)
   - compile_project (see how to compile project below)
   - main.cpp (main program, more details below)
@@ -35,7 +37,7 @@ This is to give an overview of the repository without going in-depth of the deta
 
 
 ## Dependencies  
-Make sure that the following packages are installed on your computer.
+Please make sure that the following packages are installed on your computer.
   - iostream
   - iomanip
   - fstream
@@ -45,7 +47,7 @@ Make sure that the following packages are installed on your computer.
   - armadillo
   - cassert
   - math.h
-  - omp.h>
+  - omp.h
   - time.h
 
 ## Compilling and running the project
