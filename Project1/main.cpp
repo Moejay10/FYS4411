@@ -350,7 +350,7 @@ if (Task == "b")
     double gamma            = beta;          // Variational parameter.
     double a                = 0.0043;          // Interaction parameter.
     double stepLength       = 1.0;          // Metropolis step length.
-    double equilibration    = 0.1;          // Amount of the total steps used
+    double equilibration    = 0.25;          // Amount of the total steps used
     // for equilibration.
 
 
