@@ -1,12 +1,12 @@
 import os
 
 # Where to save the figures and data files
-DATA_ID = "Results"
+DATA_ID = "Results/Task_d"
 
 def data_path(dat_id):
     return os.path.join(DATA_ID, dat_id)
 
-infile = open(data_path("Energies.dat"),'r')
+infile = open(data_path("Blocking_Importance_Sampling10_particles_3_dim.dat"),'r')
 infile.readline()
 
 from numpy import log2, zeros, mean, var, sum, loadtxt, arange, array, cumsum, dot, transpose, diagonal, sqrt

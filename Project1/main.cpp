@@ -366,7 +366,7 @@ if (Task == "b")
   numberOfParticles.push_back(2);
   numberOfParticles.push_back(10);
 
-  std::vector<double> vecVAR = std::vector<double>();
+  std::vector<double> vecSTD = std::vector<double>();
   std::vector<double> vecEnergy = std::vector<double>();
 
 
@@ -390,25 +390,25 @@ if (Task == "b")
       system->setRepulsivePotential       (true);
       system->runMetropolisSteps          (ofile, numberOfSteps);
 
-      vecVAR.push_back(system->getSampler()->getVAR());
+      vecSTD.push_back(system->getSampler()->getSTD());
       vecEnergy.push_back(system->getSampler()->getEnergy());
 
 
       ofile.close();
     }
 
-    string file = "Python/Results/Task_d/Variance_Importance_Sampling.dat";
+    string file = "Python/Results/Task_d/STD_Importance_Sampling.dat";
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
     ofile << setw(15) << setprecision(8) << "Particles"; // numberOfParticles
     ofile << setw(15) << setprecision(8) << "Energy"; // Mean energy
-    ofile << setw(15) << setprecision(8) << "Variance" << endl; // Variance
+    ofile << setw(15) << setprecision(8) << "STD" << endl; // Variance
 
 
     for (int i = 0; i < 2; i++){
       ofile << setw(15) << setprecision(8) << numberOfParticles[i]; // numberOfParticles
       ofile << setw(15) << setprecision(8) << vecEnergy[i]; // Mean energy
-      ofile << setw(15) << setprecision(8) << vecVAR[i] << endl; // Variance
+      ofile << setw(15) << setprecision(8) << vecSTD[i] << endl; // Variance
     }
 
     ofile.close();
