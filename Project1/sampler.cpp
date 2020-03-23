@@ -36,6 +36,9 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
     // Make sure the sampling variable(s) are initialized at the first step.
     if (m_stepNumber == 0) {
         m_cumulativeEnergy = 0;
+        m_cumulativeEnergy2 = 0;
+        m_DeltaPsi = 0;
+        m_DerivativePsiE = 0;
     }
 
     if (m_system->getNumericalDerivative()){
@@ -45,9 +48,6 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
         m_cumulativeEnergy  += localEnergy;
         m_cumulativeEnergy2  += localEnergy*localEnergy;
         m_stepNumber++;
-
-        //cout << "Numerical Derivative is true " << endl;
-
      }
 
 
@@ -55,9 +55,6 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
         computeOneBodyDensity();
 
         //write bin and binvec to file.
-
-        //cout << "getOneBodyDensity is true " << endl;
-
     }
 
 
@@ -72,8 +69,6 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
         m_cumulativeEnergy  += localEnergy;
         m_cumulativeEnergy2  += localEnergy*localEnergy;
         m_stepNumber++;
-
-    //cout << "Repulsive Interaction is true " << endl;
     }
 
 
@@ -84,9 +79,6 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
         m_cumulativeEnergy  += localEnergy;
         m_cumulativeEnergy2  += localEnergy*localEnergy;
         m_stepNumber++;
-
-        //cout << "Standard is true " << endl;
-
     }
 
 }
@@ -160,7 +152,7 @@ void Sampler::computeOneBodyDensity(){
       r2 += m_system->getParticles()[i]->getPosition()[j]*m_system->getParticles()[i]->getPosition()[j];
     }
     r2 = sqrt(r2);
-    
+
     m_system->setParticlesPerBin(int(r2/step) + 1);
   }
 }
