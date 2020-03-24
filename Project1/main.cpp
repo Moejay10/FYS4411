@@ -350,7 +350,7 @@ if (Task == "b")
     double gamma            = beta;          // Variational parameter.
     double a                = 0.0043;          // Interaction parameter.
     double stepLength       = 1.0;          // Metropolis step length.
-    double equilibration    = 0.1;          // Amount of the total steps used
+    double equilibration    = 0.25;          // Amount of the total steps used
     // for equilibration.
 
 
@@ -685,7 +685,7 @@ if (Task == "b")
     double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
     double equilibration    = 0.1;          // Amount of the total steps used
     // for equilibration.
-    int numberofBins = 12;
+    int numberofBins = 20;
     double binStartpoint = 0;
     double binEndpoint = 2;
 
@@ -710,11 +710,8 @@ if (Task == "b")
   // Analyitcal Run
   cout << "-------------- \n" << " Onebody Densities \n" << "-------------- \n" << endl;
 
-  //string file = "Python/Results/Task_g/IdealOnebody_Density.dat";
-  //string file = "Python/Results/Task_g/Onebody_Density.dat";
-  string file = "Python/Results/Task_g/RepulsiveOnebody_Density.dat";
-  //string file = "Python/Results/Task_g/StrongRepulsiveOnebody_Density.dat";
-  //string file = "Python/Results/Task_g/StrongestRepulsiveOnebody_Density.dat";
+  string file = "Python/Results/Task_g/Onebody_Density.dat";
+  //string file = "Python/Results/Task_g/RepulsiveOnebody_Density.dat";
 
 
   ofile.open(file);
