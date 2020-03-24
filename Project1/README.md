@@ -20,6 +20,7 @@ This is to give an overview of the repository without going in-depth of the deta
       - task_a
       - (to)
       - task_g
+      - statistical_tools 
   - report
     - report.pdf (the report of the project.)
   - CMakeLists.txt (set flags and add executable)
