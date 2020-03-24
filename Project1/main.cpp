@@ -350,7 +350,7 @@ if (Task == "b")
     double gamma            = beta;          // Variational parameter.
     double a                = 0.0043;          // Interaction parameter.
     double stepLength       = 1.0;          // Metropolis step length.
-    double equilibration    = 0.25;          // Amount of the total steps used
+    double equilibration    = 0.1;          // Amount of the total steps used
     // for equilibration.
 
 
@@ -366,7 +366,9 @@ if (Task == "b")
   numberOfParticles.push_back(2);
   numberOfParticles.push_back(10);
 
+
   std::vector<double> vecSTD = std::vector<double>();
+  std::vector<double> vecVAR = std::vector<double>();
   std::vector<double> vecEnergy = std::vector<double>();
 
 
@@ -391,6 +393,7 @@ if (Task == "b")
       system->runMetropolisSteps          (ofile, numberOfSteps);
 
       vecSTD.push_back(system->getSampler()->getSTD());
+      vecVAR.push_back(system->getSampler()->getVAR());
       vecEnergy.push_back(system->getSampler()->getEnergy());
 
 
@@ -402,12 +405,14 @@ if (Task == "b")
     ofile << setiosflags(ios::showpoint | ios::uppercase);
     ofile << setw(15) << setprecision(8) << "Particles"; // numberOfParticles
     ofile << setw(15) << setprecision(8) << "Energy"; // Mean energy
+    ofile << setw(15) << setprecision(8) << "Variance"; // Mean energy
     ofile << setw(15) << setprecision(8) << "STD" << endl; // Variance
 
 
     for (int i = 0; i < 2; i++){
       ofile << setw(15) << setprecision(8) << numberOfParticles[i]; // numberOfParticles
       ofile << setw(15) << setprecision(8) << vecEnergy[i]; // Mean energy
+      ofile << setw(15) << setprecision(8) << vecVAR[i]; // Mean energy
       ofile << setw(15) << setprecision(8) << vecSTD[i] << endl; // Variance
     }
 
