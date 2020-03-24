@@ -1,5 +1,5 @@
 # Simple Variational Monte Carlo solve for FYS4411
-This class structure is forked and inspired by mortele (spring 2016) (https://github.com/mortele/variational-monte-carlo-fys4411), and is the main repository  
+This class structure is forked and inspired by mortele (spring 2016) (https://github.com/mortele/variational-monte-carlo-fys4411), and is the main repository.
 
 ## Code skeleton
 This is to give an overview of the repository without going in-depth of the details, as this project is quite extensive (but that is of course debatable).
@@ -20,7 +20,7 @@ This is to give an overview of the repository without going in-depth of the deta
       - task_a
       - (to)
       - task_g
-      - statistical_tools 
+      - statistical_tools
   - report
     - report.pdf (the report of the project.)
   - CMakeLists.txt (set flags and add executable)
@@ -88,4 +88,14 @@ Run `make clean` in the top-directory to remove the executable `vmc` and the `bu
 #### Windows
 Compilation of the project using Windows is still an open question to me, but please include a pull-request if you've got an example. CMake should be OS-independent, but `make` does not work on Windows.
 
-# Last updated 23.03.2020
+## Running the program (code in main.cpp)
+
+Runnning the program will firstly make you choose which task you would like to choose, starting from b to f.
+
+Then it will ask how many Monte Carlo cycles. Pay attention to what it asks you about.
+
+After that, insert the number of particles and dimensions.
+
+And voilá, the results will be found in the Python/Results folder under their respective task, and the Jupyter Notebook will then automatically renew all the figures. This will however not update the report, and we will leave the latest updated Notebook updated with the report added. 
+
+## Last updated 24.03.2020
