@@ -25,13 +25,8 @@ SimpleGaussian::SimpleGaussian(System* system, double alpha, double beta, double
 }
 
 double SimpleGaussian::evaluate(std::vector<class Particle*> particles) {
-    /* You need to implement a Gaussian wave function here. The positions of
-     * the particles are accessible through the particle[i].getPosition()
-     * function.
-     *
-     * For the actual expression, use exp(-alpha * r^2), with alpha being the
-     * (only) variational parameter.
-     */
+     // Here we compute the wave function.
+
      int Dim = m_system->getNumberOfDimensions();
      int N = m_system->getNumberOfParticles(); // Number of Particles
      double r2;
@@ -45,19 +40,19 @@ double SimpleGaussian::evaluate(std::vector<class Particle*> particles) {
       for (int j = 0; j < Dim; j++){
         if (j == 2){
             r2 += beta*m_system->getParticles()[i]->getPosition()[j]*m_system->getParticles()[i]->getPosition()[j];
-          }
+        }
         else{
             r2 += m_system->getParticles()[i]->getPosition()[j]*m_system->getParticles()[i]->getPosition()[j];
-          }
         }
       }
+    }
     wavefunction = exp(-alpha*r2);
 
     double diff_ik = 0;
     double correlation = 1;
 
     vec r_ik(Dim);
-
+    // Jastrow factor
     if (m_system->getRepulsivePotential()){
       for (int i = 0; i < N; i++){
         for (int k = N-1; k > i; k--){
@@ -75,101 +70,80 @@ double SimpleGaussian::evaluate(std::vector<class Particle*> particles) {
         }
       }
     }
-
     return wavefunction*correlation;
 }
 
 double SimpleGaussian::derivativeWavefunction(std::vector<class Particle*> particles) {
-    /* You need to implement a Gaussian wave function here. The positions of
-     * the particles are accessible through the particle[i].getPosition()
-     * function.
-     *
-     * For the actual expression, use exp(-alpha * r^2), with alpha being the
-     * (only) variational parameter.
-     */
-     int Dim = m_system->getNumberOfDimensions();
-     int N = m_system->getNumberOfParticles(); // Number of Particles
-     double r2;
-     double alpha = m_parameters[0];
-     double beta  = m_parameters[1];
-     double derivative_wavefunction;
+    // Here we compute the derivative of the wave function
+
+    int Dim = m_system->getNumberOfDimensions();
+    int N = m_system->getNumberOfParticles(); // Number of Particles
+    double r2;
+    double alpha = m_parameters[0];
+    double beta  = m_parameters[1];
+    double derivative_wavefunction;
 
     r2 = 0;
     for (int i = 0; i < N; i++){
       for (int j = 0; j < Dim; j++){
         if (j == 2){
             r2 += beta*m_system->getParticles()[i]->getPosition()[j]*m_system->getParticles()[i]->getPosition()[j];
-          }
+        }
         else{
             r2 += m_system->getParticles()[i]->getPosition()[j]*m_system->getParticles()[i]->getPosition()[j];
-          }
         }
       }
+    }
     derivative_wavefunction = -r2;
 
     return derivative_wavefunction;
 }
 
 double SimpleGaussian::computeDoubleDerivative(std::vector<class Particle*> particles) {
-    /* All wave functions need to implement this function, so you need to
-     * find the double derivative analytically. Note that by double derivative,
-     * we actually mean the sum of the Laplacians with respect to the
-     * coordinates of each particle.
-     *
-     * This quantity is needed to compute the (local) energy (consider the
-     * Schrödinger equation to see how the two are related).
-     */
-     int Dim = m_system->getNumberOfDimensions(); // The Dimension
-     int N = m_system->getNumberOfParticles(); // Number of Particles
-     double r2;
-     double alpha = m_parameters[0];
-     double beta = m_parameters[1];
-     double nabla2;
+    // Here we compute the double derivative of the wavefunction
 
-     r2 = 0;
-     for (int i = 0; i < N; i++){
-       for (int j = 0; j < Dim; j++){
-         if (j == 2){
-             r2 += beta*beta*m_system->getParticles()[i]->getPosition()[j]*m_system->getParticles()[i]->getPosition()[j];
-           }
-         else{
-             r2 += m_system->getParticles()[i]->getPosition()[j]*m_system->getParticles()[i]->getPosition()[j];
-           }
-         }
-       }
+    int Dim = m_system->getNumberOfDimensions(); // The Dimension
+    int N = m_system->getNumberOfParticles(); // Number of Particles
+    double r2;
+    double alpha = m_parameters[0];
+    double beta = m_parameters[1];
+    double nabla2;
 
-       nabla2 = -2*alpha*alpha*r2;
+    r2 = 0;
+    for (int i = 0; i < N; i++){
+      for (int j = 0; j < Dim; j++){
+        if (j == 2){
+          r2 += beta*beta*m_system->getParticles()[i]->getPosition()[j]*m_system->getParticles()[i]->getPosition()[j];
+        }
+        else{
+          r2 += m_system->getParticles()[i]->getPosition()[j]*m_system->getParticles()[i]->getPosition()[j];
+        }
+      }
+    }
 
-       nabla2 += N*((Dim-1)+beta)*alpha;
-
-
-      return nabla2;
+    nabla2 = -2*alpha*alpha*r2;
+    nabla2 += N*((Dim-1)+beta)*alpha;
+    return nabla2;
 }
 
 
 double SimpleGaussian::computeFirstDerivativeCorrelation(double dist){
-  double a = m_parameters[3];
-  return a/(dist*dist - dist*a);
+    double a = m_parameters[3];
+    return a/(dist*dist - dist*a);
 }
 
 double SimpleGaussian::computeDoubleDerivativeCorrelation(double dist){
-  double a = m_parameters[3];
-  double denominator = a*(2*dist - a);
-  double numerator = dist*dist*(dist - a)*(dist - a);
-  double output = denominator/numerator;
-  return output;
+    double a = m_parameters[3];
+    double denominator = a*(2*dist - a);
+    double numerator = dist*dist*(dist - a)*(dist - a);
+    double output = denominator/numerator;
+    return output;
 }
 
 
 double SimpleGaussian::computeDoubleDerivativeInteraction(std::vector<class Particle*> particles) {
-    /* All wave functions need to implement this function, so you need to
-     * find the double derivative analytically. Note that by double derivative,
-     * we actually mean the sum of the Laplacians with respect to the
-     * coordinates of each particle.
-     *
-     * This quantity is needed to compute the (local) energy (consider the
-     * Schrödinger equation to see how the two are related).
-     */
+     // Here we compute the double derivative of the interaction
+
      int Dim = m_system->getNumberOfDimensions(); // The Dimension
      int N = m_system->getNumberOfParticles(); // Number of Particles
 
@@ -188,7 +162,6 @@ double SimpleGaussian::computeDoubleDerivativeInteraction(std::vector<class Part
      double diff_ij, diff_ik = 0;
      double term1, term2, term3;
      double total_sum, sum, sum1, sum2, sum3 = 0;
-
 
      for (int i = 0; i < N-1; i++){
 
@@ -244,11 +217,8 @@ double SimpleGaussian::computeDoubleDerivativeInteraction(std::vector<class Part
        }
 
        total_sum += sum1 + sum2 + sum3;
-       //cout << sum1 << " " << sum2 << " " << sum3 << " " << total_sum << endl;
      }
-    //total_sum = sum1 + sum2 + sum3;
     total_sum = -0.5*total_sum;
-
     return total_sum;
 }
 
@@ -257,14 +227,7 @@ double SimpleGaussian::computeDoubleDerivativeInteraction(std::vector<class Part
 
 
 double SimpleGaussian::computeDoubleNumericalDerivative(std::vector<class Particle*> particles) {
-    /* All wave functions need to implement this function, so you need to
-     * find the double derivative analytically. Note that by double derivative,
-     * we actually mean the sum of the Laplacians with respect to the
-     * coordinates of each particle.
-     *
-     * This quantity is needed to compute the (local) energy (consider the
-     * Schrödinger equation to see how the two are related).
-     */
+     // Here we compute the numerical scheme for the double derivative
      int Dim = m_system->getNumberOfDimensions(); // The Dimension
      int N = m_system->getNumberOfParticles(); // Number of Particles
      double alpha = m_parameters[0];

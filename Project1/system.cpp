@@ -17,72 +17,65 @@ using namespace arma;
 
 
 bool System::metropolisStep() {
-    /* Perform the actual Metropolis step: Choose a particle at random and
-     * change it's position by a random amount, and check if the step is
-     * accepted by the Metropolis test (compare the wave function evaluated
-     * at this new position with the one at the old position).
-     */
-     // Initialize the seed and call the Mersienne algo
-     std::random_device rd;
-     std::mt19937_64 gen(rd());
-     // Set up the uniform distribution for x \in [[0, 1]
-     std::uniform_real_distribution<double> RandomNumberGenerator(0.0,1.0);
+  /* Perform the actual Metropolis step: Choose a particle at random and
+   * change it's position by a random amount, and check if the step is
+   * accepted by the Metropolis test (compare the wave function evaluated
+   * at this new position with the one at the old position).
+   */
+   // Initialize the seed and call the Mersienne algo
+   std::random_device rd;
+   std::mt19937_64 gen(rd());
+   // Set up the uniform distribution for x \in [[0, 1]
+   std::uniform_real_distribution<double> RandomNumberGenerator(0.0,1.0);
 
-     // Set up the uniform distribution for x \in [[0, N]
-     std::uniform_int_distribution<int> Particles(0,getNumberOfParticles()-1);
+   // Set up the uniform distribution for x \in [[0, N]
+   std::uniform_int_distribution<int> Particles(0,getNumberOfParticles()-1);
 
-     int Nparticle = Particles(gen);
-     double a = RandomNumberGenerator(gen) - 0.5; // Random number
-     double b = RandomNumberGenerator(gen) - 0.5; // Random number
-     double c = RandomNumberGenerator(gen) - 0.5; // Random number
+   int Nparticle = Particles(gen);
+   double a = RandomNumberGenerator(gen) - 0.5; // Random number
+   double b = RandomNumberGenerator(gen) - 0.5; // Random number
+   double c = RandomNumberGenerator(gen) - 0.5; // Random number
 
-     int Dim = getNumberOfDimensions(); // The Dimensions
+   int Dim = getNumberOfDimensions(); // The Dimensions
 
-     double r, wfold, wfnew;
+   double r, wfold, wfnew;
 
-     // Initial Position
-     wfold = getWaveFunction()->evaluate(m_particles);
+   // Initial Position
+   wfold = getWaveFunction()->evaluate(m_particles);
 
-
-     // Trial position moving one particle at the time in all dimensions
-
-     m_particles[Nparticle]->adjustPosition(m_stepLength*a, 0);
-     if (Dim>1){
-       m_particles[Nparticle]->adjustPosition(m_stepLength*b, 1);
-       if (Dim>2){
-         m_particles[Nparticle]->adjustPosition(m_stepLength*c, 2);
-       }
+   // Trial position moving one particle at the time in all dimensions
+   m_particles[Nparticle]->adjustPosition(m_stepLength*a, 0);
+   if (Dim>1){
+     m_particles[Nparticle]->adjustPosition(m_stepLength*b, 1);
+     if (Dim>2){
+       m_particles[Nparticle]->adjustPosition(m_stepLength*c, 2);
      }
+   }
 
-     wfnew = getWaveFunction()->evaluate(m_particles);
+   wfnew = getWaveFunction()->evaluate(m_particles);
 
-     // Metropolis test
-	if ( RandomNumberGenerator(gen) <= wfnew*wfnew/(wfold*wfold) ){
+   // Metropolis test
+   if ( RandomNumberGenerator(gen) <= wfnew*wfnew/(wfold*wfold) ){
+      return true;
+   }
 
-    return true;
-  }
-
-  else{
-
-     m_particles[Nparticle]->adjustPosition(-m_stepLength*a, 0);
-     if (Dim>1){
-       m_particles[Nparticle]->adjustPosition(-m_stepLength*b, 1);
-       if (Dim>2){
-         m_particles[Nparticle]->adjustPosition(-m_stepLength*c, 2);
-       }
-     }
-    return false;
-  }
-
+   // return to previous value if Metropolis test is false
+   else{
+      m_particles[Nparticle]->adjustPosition(-m_stepLength*a, 0);
+      if (Dim>1){
+        m_particles[Nparticle]->adjustPosition(-m_stepLength*b, 1);
+        if (Dim>2){
+          m_particles[Nparticle]->adjustPosition(-m_stepLength*c, 2);
+        }
+      }
+      return false;
+    }
 }
 
 
 bool System::ImportanceMetropolisStep() {
-    /* Perform the actual Metropolis step: Choose a particle at random and
-     * change it's position by a random amount, and check if the step is
-     * accepted by the Metropolis test (compare the wave function evaluated
-     * at this new position with the one at the old position).
-     */
+     // Perform the Importance sampling metropolis step.
+
      // Initialize the seed and call the Mersienne algo
      std::random_device rd;
      std::mt19937_64 gen(rd());
@@ -139,8 +132,8 @@ bool System::ImportanceMetropolisStep() {
     return true;
   }
 
+  // return to previous value if Metropolis test is false
   else{
-
     poschange = a*sqrt(m_timeStep) + qfold[0]*m_timeStep*m_diffusionCoefficient;
     m_particles[Nparticle]->adjustPosition(-poschange, 0);
     if (Dim > 1){
@@ -172,7 +165,7 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
 
     start_time = omp_get_wtime();
     for (int i = 1; i <= numberOfMetropolisSteps; i++) {
-        // Trial position moving one particle at the time
+        // Choose importance samling or brute force
         if (getImportanceSampling()){
             acceptedStep = ImportanceMetropolisStep();
         }
@@ -180,23 +173,13 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
             acceptedStep = metropolisStep();
         }
 
-        /* Here you should sample the energy (and maybe other things using
-        * the m_sampler instance of the Sampler class. Make sure, though,
-        * to only begin sampling after you have let the system equilibrate
-        * for a while. You may handle this using the fraction of steps which
-        * are equilibration steps; m_equilibrationFraction.
-        */
         counter += acceptedStep;
 
-        //if (i > getEquilibrationFraction()*numberOfMetropolisSteps){
-          m_sampler->sample(acceptedStep, i);
-          if (getOneBodyDensity() != true){
-              m_sampler->WriteResultstoFile(ofile, i);
-          }
-        //}
-
+        m_sampler->sample(acceptedStep, i);
+        if (getOneBodyDensity() != true){
+            m_sampler->WriteResultstoFile(ofile, i);
+        }
         m_sampler->Analysis(i);
-
     }
 
     end_time = omp_get_wtime();
@@ -212,6 +195,7 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
 
 }
 
+// A lot of setters.
 void System::setNumberOfParticles(int numberOfParticles) {
     m_numberOfParticles = numberOfParticles;
 }

@@ -33,7 +33,7 @@ void Sampler::setEnergies(int MCcycles) {
 
 
 void Sampler::sample(bool acceptedStep, int MCcycles) {
-    // Make sure the sampling variable(s) are initialized at the first step.
+    // Making sure the sampling variable(s) are initialized at the first step.
     if (m_stepNumber == 0) {
         m_cumulativeEnergy = 0;
         m_cumulativeEnergy2 = 0;
@@ -41,6 +41,7 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
         m_DerivativePsiE = 0;
     }
 
+    // Numerical derivative
     if (m_system->getNumericalDerivative()){
         double localEnergy = m_system->getHamiltonian()->
                           computeLocalEnergyNumerical(m_system->getParticles());
@@ -53,10 +54,7 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
 
     else if (m_system->getOneBodyDensity()){
         computeOneBodyDensity();
-
-        //write bin and binvec to file.
     }
-
 
     else if (m_system->getRepulsivePotential()){
         double localEnergy = m_system->getHamiltonian()->
@@ -84,6 +82,8 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
 }
 
 void Sampler::printOutputToTerminal(double total_time, double acceptedStep) {
+
+    // Initialisers
     int     np = m_system->getNumberOfParticles();
     int     nd = m_system->getNumberOfDimensions();
     int     ms = m_system->getNumberOfMetropolisSteps();
@@ -110,15 +110,12 @@ void Sampler::printOutputToTerminal(double total_time, double acceptedStep) {
       cout << " Variance : " << m_variance << endl;
       cout << " Time : " << total_time << endl;
       cout << " # Accepted Steps : " << acceptedStep << endl;
-
-
       cout << endl;
   }
 }
 
 void Sampler::computeAverages(double total_time, double acceptedStep) {
-    /* Compute the averages of the sampled quantities. You need to think
-     * thoroughly through what is written here currently; is this correct?
+    /* Compute the averages of the sampled quantities.
      */
     int Dim = m_system->getNumberOfDimensions(); // The Dimension
     int N = m_system->getNumberOfParticles(); // Number of Particles
@@ -137,7 +134,6 @@ void Sampler::computeAverages(double total_time, double acceptedStep) {
 
     m_totalTime = total_time;
     m_acceptedStep = acceptedStep;
-
 }
 
 void Sampler::computeOneBodyDensity(){
@@ -159,24 +155,17 @@ void Sampler::computeOneBodyDensity(){
 
 
 
-void Sampler::Analysis(int MCcycles)
-{
+void Sampler::Analysis(int MCcycles){
 
   double norm = 1.0/((double) (MCcycles));  // divided by  number of cycles
-
   double Energy = m_cumulativeEnergy * norm;
-
   m_Energies[MCcycles-1] = Energy;
+}
 
 
-} // end output function
-
-
-void Sampler::WriteResultstoFile(ofstream& ofile, int MCcycles)
-{
+void Sampler::WriteResultstoFile(ofstream& ofile, int MCcycles){
   int N = m_system->getNumberOfParticles(); // Number of Particles
   double norm = 1.0/((double) (MCcycles));  // divided by  number of cycles
-
 
   double Energy = m_cumulativeEnergy * norm;
   double CumulativeEnergy2 = m_cumulativeEnergy2 *norm;
@@ -191,8 +180,7 @@ void Sampler::WriteResultstoFile(ofstream& ofile, int MCcycles)
   //ofile << setw(15) << setprecision(8) << m_cumulativeEnergy << endl; // Variance
   //ofile << setw(15) << setprecision(8) << STD; // # Standard deviation
 
-
-} // end output function
+}
 
 void Sampler::WriteOneBodyDensitytoFile(ofstream& ofile){
   int N = m_system->getNumberOfParticles();
