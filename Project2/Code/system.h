@@ -38,9 +38,13 @@ public:
     class WaveFunction*             getWaveFunction()   { return m_waveFunction; }
     class Hamiltonian*              getHamiltonian()    { return m_hamiltonian; }
     class Sampler*                  getSampler()        { return m_sampler; }
-    std::vector<class Particle*>    getParticles()      { return m_particles; }
+    class NeuralNetwork*            getNeuralNetwork()  { return m_neuralnetwork; }
+
     int getNumberOfParticles()          { return m_numberOfParticles; }
     int getNumberOfDimensions()         { return m_numberOfDimensions; }
+    int getNumberOfInputs()             { return m_numberOfDimensions*m_numberOfParticles; }
+    int getNumberOfHidden()             { return m_numberOfHidden; }
+
     int getNumberOfMetropolisSteps()    { return m_numberOfMetropolisSteps; }
     double getEquilibrationFraction()   { return m_equilibrationFraction; }
     double getStepLength()              { return m_stepLength; }
@@ -68,6 +72,7 @@ private:
     bool                            m_print_terminal = true;
     int                             m_numberOfParticles = 0;
     int                             m_numberOfDimensions = 0;
+    int                             m_numberOfHidden = 0;
     int                             m_numberOfMetropolisSteps = 0;
     double                          m_equilibrationFraction = 0.1;
     double                          m_stepLength = 0.1;
@@ -81,7 +86,7 @@ private:
     class Hamiltonian*              m_hamiltonian = nullptr;
     class InitialState*             m_initialState = nullptr;
     class Sampler*                  m_sampler = nullptr;
-    std::vector<class Particle*>    m_particles = std::vector<class Particle*>();
+    class NeuralNetwork*            m_neuralnetwork = nullptr;
     std::vector<double>             m_binVector;
     std::vector<int>                m_binCounter;
     std::vector<int>                m_partclesPerBin;
