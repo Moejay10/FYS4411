@@ -38,6 +38,7 @@ private:
     double  m_cumulativeEnergy2 = 0;
     double  m_DeltaPsi  = 0;
     double  m_DerivativePsiE  = 0;
+    double  m_agradient  = 0;
     double  m_EnergyDer  = 0;
     double  m_variance = 0;
     double  m_STD = 0;

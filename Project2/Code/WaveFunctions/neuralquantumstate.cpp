@@ -92,3 +92,39 @@ double NeuralQuantumState::computeDoubleDerivative(NeuralNetwork* neuralnetwork,
 
     return psi2;
 }
+
+void NeuralQuantumState::computeGradients(NeuralNetwork* neuralnetwork, double *agradient, double *bgradient, double **wgradient) {
+    // Here we compute the derivative of the wave function
+    double sigma = m_parameters[0];
+    double sigma2 = sigma*sigma;
+    double temp1 = 0;
+    double Q;
+    int nx = m_system->getNumberOfInputs();
+    int nh = m_system->getNumberOfHidden();
+
+    for (int m = 0; m < nx; m++){
+      temp1 = (neuralnetwork->getPositions()[m] - neuralnetwork->getBiasA()[m])/(sigma2);
+      agradient[m] = temp1;
+    }
+
+    for (int n = 0; n < nh; n++){
+      temp1 = 0;
+      for (int i = 0; i < nx; i++){
+        temp1 += (neuralnetwork->getPositions()[i] * neuralnetwork->getWeigths()[i][n]);
+      }
+      Q = exp(-neuralnetwork->getBiasB()[n] - temp1/(sigma2)) + 1;
+      bgradient[n] = 1/Q;
+    }
+
+    for (int m = 0; m < nx; m++){
+      for (int n = 0; n < nh; n++){
+        temp1 = 0;
+        for (int i = 0; i < nx; i++){
+          temp1 += (neuralnetwork->getPositions()[i] * neuralnetwork->getWeigths()[i][n]);
+        }
+        Q = exp(-neuralnetwork->getBiasB()[n] - temp1/(sigma2)) + 1;
+        wgradient[m][n] = neuralnetwork->getPositions()[m]/(sigma2*Q);
+      }
+    }
+
+}

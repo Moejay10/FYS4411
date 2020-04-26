@@ -41,44 +41,32 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
         m_DerivativePsiE = 0;
     }
 
-    // Numerical derivative
-    if (m_system->getNumericalDerivative()){
-        double localEnergy = m_system->getHamiltonian()->
-                          computeLocalEnergyNumerical(m_system->getParticles());
+    double localEnergy = m_system->getHamiltonian()->
+                     computeLocalEnergy(m_system->getNeuralNetwork());
 
-        m_cumulativeEnergy  += localEnergy;
-        m_cumulativeEnergy2  += localEnergy*localEnergy;
-        m_stepNumber++;
-     }
+    double *temp_agradient = malloc(m_system->getNumberOfInputs() * sizeof(double));
+    double * temp_bgradient = malloc(m_system->getNumberOfHidden() * sizeof(double));
 
-
-    else if (m_system->getOneBodyDensity()){
-        computeOneBodyDensity();
+    double **temp_wgradient = new double*[m_system->getNumberOfInputs()];
+    for (int i = 0; i < m_system->getNumberOfInputs(); i++){
+      temp_wgradient[i] = new double[m_system->getNumberOfHidden()];
     }
 
-    else if (m_system->getRepulsivePotential()){
-        double localEnergy = m_system->getHamiltonian()->
-                         computeLocalEnergyAnalytical(m_system->getParticles());
+    m_system->getWaveFunction()->
+              computeGradients(m_system->getNeuralNetwork(), &temp_agradient, &temp_bgradient, &temp_wgradient);
+    m_DeltaPsi += DerPsi;
+    m_DerivativePsiE += DerPsi*localEnergy;
+    m_cumulativeEnergy  += localEnergy;
+    m_cumulativeEnergy2  += localEnergy*localEnergy;
+    m_stepNumber++;
 
-        double DerPsi     = m_system->getWaveFunction()->
-                        derivativeWavefunction(m_system->getParticles());
-        m_DeltaPsi += DerPsi;
-        m_DerivativePsiE += DerPsi*localEnergy;
-        m_cumulativeEnergy  += localEnergy;
-        m_cumulativeEnergy2  += localEnergy*localEnergy;
-        m_stepNumber++;
+    free(temp_agradient);
+    free(temp_bgradient);
+
+    for (int i = 0; i < m_system->getNumberOfInputs(); i++){
+      delete [] temp_wgradient[i];
     }
-
-
-    else{
-        double localEnergy = m_system->getHamiltonian()->
-                         computeLocalEnergyAnalytical(m_system->getParticles());
-
-        m_cumulativeEnergy  += localEnergy;
-        m_cumulativeEnergy2  += localEnergy*localEnergy;
-        m_stepNumber++;
-    }
-
+    delete [] temp_wgradient;
 }
 
 void Sampler::printOutputToTerminal(double total_time, double acceptedStep) {
