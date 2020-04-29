@@ -31,6 +31,27 @@ void Sampler::setEnergies(int MCcycles) {
 
 }
 
+void Sampler::setGradients() {
+  for (int i = 0; i < m_system->getNumberOfInputs(); i++){
+    m_aDelta.push_back(0);
+    m_EaDelta.push_back(0);
+    m_agrad.push_back(0);
+  }
+
+  for (int i = 0; i < m_system->getNumberOfHidden(); i++){
+    m_bDelta.push_back(0);
+    m_EbDelta.push_back(0);
+    m_bgrad.push_back(0);
+  }
+
+  for (int i = 0; i < m_system->getNumberOfInputs()*m_system->getNumberOfHidden(); i++){
+    m_wDelta.push_back(0);
+    m_EwDelta.push_back(0);
+    m_wgrad.push_back(0);
+  }
+
+}
+
 
 void Sampler::sample(bool acceptedStep, int MCcycles) {
     // Making sure the sampling variable(s) are initialized at the first step.
@@ -39,34 +60,38 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
         m_cumulativeEnergy2 = 0;
         m_DeltaPsi = 0;
         m_DerivativePsiE = 0;
+        setGradients();
     }
+
 
     double localEnergy = m_system->getHamiltonian()->
                      computeLocalEnergy(m_system->getNeuralNetwork());
 
-    double *temp_agradient = malloc(m_system->getNumberOfInputs() * sizeof(double));
-    double * temp_bgradient = malloc(m_system->getNumberOfHidden() * sizeof(double));
+    double *temp_aDelta = malloc(m_system->getNumberOfInputs() * sizeof(double));
+    double * temp_bDelta = malloc(m_system->getNumberOfHidden() * sizeof(double));
+    double *temp_wDelta = malloc(m_system->getNumberOfInputs()*m_system->getNumberOfHidden() * sizeof(double));
 
-    double **temp_wgradient = new double*[m_system->getNumberOfInputs()];
-    for (int i = 0; i < m_system->getNumberOfInputs(); i++){
-      temp_wgradient[i] = new double[m_system->getNumberOfHidden()];
-    }
+    m_system->getNeuralNetwork()->
+              computeGradients(&temp_aDelta, &temp_bDelta, &temp_wDelta);
 
-    m_system->getWaveFunction()->
-              computeGradients(m_system->getNeuralNetwork(), &temp_agradient, &temp_bgradient, &temp_wgradient);
-    m_DeltaPsi += DerPsi;
-    m_DerivativePsiE += DerPsi*localEnergy;
     m_cumulativeEnergy  += localEnergy;
     m_cumulativeEnergy2  += localEnergy*localEnergy;
+
+    m_aDelta += temp_aDelta;
+    m_bDelta += temp_bDelta;
+    m_wDelta += temp_wDelta;
+
+    m_EaDelta += temp_aDelta*localEnergy;
+    m_EbDelta += temp_bDelta*localEnergy;
+    m_EwDelta += temp_wDelta*localEnergy;
+
     m_stepNumber++;
 
-    free(temp_agradient);
-    free(temp_bgradient);
+    free(temp_aDelta);
+    free(temp_bDelta);
+    free(temp_wDelta);
 
-    for (int i = 0; i < m_system->getNumberOfInputs(); i++){
-      delete [] temp_wgradient[i];
-    }
-    delete [] temp_wgradient;
+
 }
 
 void Sampler::printOutputToTerminal(double total_time, double acceptedStep) {
@@ -116,9 +141,21 @@ void Sampler::computeAverages(double total_time, double acceptedStep) {
     m_variance = (m_cumulativeEnergy2 - m_cumulativeEnergy*m_cumulativeEnergy)*norm;
     m_STD = sqrt(m_variance);
 
-    m_DerivativePsiE *= norm;
-    m_DeltaPsi *= norm;
-    m_EnergyDer = 2*(m_DerivativePsiE - m_DeltaPsi*m_energy);
+    m_aDelta /= MCcycles;
+    m_bDelta /= MCcycles;
+    m_wDelta /= MCcycles;
+
+    m_EaDelta /= MCcycles;
+    m_EbDelta /= MCcycles;
+    m_EwDelta /= MCcycles;
+
+    // Compute gradients
+    m_agrad = 2*(m_EaDelta - m_cumulativeEnergy*m_aDelta);
+    m_bgrad = 2*(m_EbDelta - m_cumulativeEnergy*m_bDelta);
+    m_wgrad = 2*(m_EwDelta - m_cumulativeEnergy*m_wDelta);
+
+    // Update weights and biases
+    m_system->getNeuralNetwork()->optimizeWeights(m_agrad, m_bgrad, m_wgrad);
 
     m_totalTime = total_time;
     m_acceptedStep = acceptedStep;

@@ -15,8 +15,10 @@
 #include "system.h"
 #include "particle.h"
 #include "sampler.h"
+#include "NeuralNetwork/network.h"
+#include "NeuralNetwork/neuralnetwork.h"
 #include "WaveFunctions/wavefunction.h"
-#include "WaveFunctions/simplegaussian.h"
+#include "WaveFunctions/neuralquantumstate.h"
 #include "Hamiltonians/hamiltonian.h"
 #include "Hamiltonians/harmonicoscillator.h"
 #include "InitialStates/initialstate.h"
@@ -107,11 +109,13 @@ int main() {
   if (Task == "a"){
 
       // Chosen parameters
-      int numberOfSteps       = 1e3;
+      int OptCycles           = 100;
+      int MCcycles            = 1e3;
       int numberOfParticles   = 2;
       int numberOfDimensions  = 2;
-      int numberOfHidden        = 2;            // Number of hidden units
+      int numberOfHidden        = 2;          // Number of hidden units
       double sigma            = 1.0;          // Normal distribution visibles
+      double eta              = 0.01;         // Learning rate
       double omega            = 1.0;          // Oscillator frequency.
       double stepLength       = 1.5;          // Metropolis step length.
       double stepSize         = 1e-2;         // Stepsize in the numerical derivative for kinetic energy
@@ -126,10 +130,11 @@ int main() {
         System* system = new System();
         system->setHamiltonian              (new HarmonicOscillator(system, omega));
         system->setWaveFunction             (new NeuralQuantumState(system, sigma));
+        system->setNetwork                  (new NeuralNetwork(system, eta));
         system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
         system->setStepLength               (stepLength);
         system->setPrintOutToTerminal       (false);
-        system->runMetropolisSteps          (ofile, numberOfSteps);
+        system->runOptimizer                (ofile, OptCycles, MCcycles);
     }
 
 

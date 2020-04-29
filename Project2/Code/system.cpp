@@ -29,9 +29,9 @@ bool System::metropolisStep() {
    std::uniform_real_distribution<double> RandomNumberGenerator(0.0,1.0);
 
    // Set up the uniform distribution for x \in [[0, N]
-   std::uniform_int_distribution<int> Particles(0,getNumberOfParticles()-1);
+   std::uniform_int_distribution<int> Inputs(0,getNumberOfParticles()-1);
 
-   int Nparticle = Particles(gen);
+   int input = Inputs(gen);
    double a = RandomNumberGenerator(gen) - 0.5; // Random number
    double b = RandomNumberGenerator(gen) - 0.5; // Random number
    double c = RandomNumberGenerator(gen) - 0.5; // Random number
@@ -41,18 +41,18 @@ bool System::metropolisStep() {
    double r, wfold, wfnew;
 
    // Initial Position
-   wfold = getWaveFunction()->evaluate(m_particles);
+   wfold = getWaveFunction()->evaluate(getNeuralNetwork());
 
    // Trial position moving one particle at the time in all dimensions
-   m_particles[Nparticle]->adjustPosition(m_stepLength*a, 0);
+   getNeuralNetwork()->adjustPosition(m_stepLength*a, 0, input);
    if (Dim>1){
-     m_particles[Nparticle]->adjustPosition(m_stepLength*b, 1);
+     getNeuralNetwork()->adjustPosition(m_stepLength*b, 1, input);
      if (Dim>2){
-       m_particles[Nparticle]->adjustPosition(m_stepLength*c, 2);
+       getNeuralNetwork()->adjustPosition(m_stepLength*c, 2, input);
      }
    }
 
-   wfnew = getWaveFunction()->evaluate(m_particles);
+   wfnew = getWaveFunction()->evaluate(getNeuralNetwork());
 
    // Metropolis test
    if ( RandomNumberGenerator(gen) <= wfnew*wfnew/(wfold*wfold) ){
@@ -61,13 +61,13 @@ bool System::metropolisStep() {
 
    // return to previous value if Metropolis test is false
    else{
-      m_particles[Nparticle]->adjustPosition(-m_stepLength*a, 0);
-      if (Dim>1){
-        m_particles[Nparticle]->adjustPosition(-m_stepLength*b, 1);
-        if (Dim>2){
-          m_particles[Nparticle]->adjustPosition(-m_stepLength*c, 2);
-        }
-      }
+     getNeuralNetwork()->adjustPosition(-m_stepLength*a, 0, input);
+     if (Dim>1){
+       getNeuralNetwork()->adjustPosition(-m_stepLength*b, 1, input);
+       if (Dim>2){
+         getNeuralNetwork()->adjustPosition(-m_stepLength*c, 2, input);
+       }
+     }
       return false;
     }
 }
@@ -83,21 +83,23 @@ bool System::ImportanceMetropolisStep() {
      std::normal_distribution<double> Normal(0.0,1.0);
      std::uniform_real_distribution<double> Uniform(0.0,1.0);
      // Set up the uniform distribution for x \in [[0, N]
-     std::uniform_int_distribution<int> Particles(0,getNumberOfParticles()-1);
+     std::uniform_int_distribution<int> Inputs(0,getNumberOfParticles()-1);
 
-     int Nparticle = Particles(gen);
+     int input = Inputs(gen);
      double a = Normal(gen); // Random number
      double b = Normal(gen); // Random number
      double c = Normal(gen); // Random number
 
      int Dim = getNumberOfDimensions(); // The Dimensions
+     int N   = getNumberOfParticles(); // The Particles
+
 
      double r, wfold, wfnew, poschange;
      std::vector<double> posold, posnew, qfold, qfnew;
 
      // Initial Position
-     posold = getParticles()[Nparticle]->getPosition();
-     wfold = getWaveFunction()->evaluate(m_particles);
+     posold = getNeuralNetwork()->getPosition();
+     wfold = getWaveFunction()->evaluate(getNeuralNetwork);
      qfold = getHamiltonian()->computeQuantumForce(m_particles, Nparticle);
 
 
@@ -149,11 +151,26 @@ bool System::ImportanceMetropolisStep() {
 
 }
 
+void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolisSteps) {
+  m_particles                 = m_initialState->getParticles();
+  m_sampler                   = new Sampler(this);
+  m_numberOfMetropolisSteps   = numberOfMetropolisSteps;
+  m_sampler->setNumberOfMetropolisSteps(numberOfMetropolisSteps);
+
+  for (int i = 0; i < OptCycles; i++){
+    runMetropolisSteps(ofile, numberOfMetropolisSteps);
+
+    end_time = omp_get_wtime();
+    total_time = end_time - start_time;
+    counter = counter/(numberOfMetropolisSteps);
+
+    m_sampler->computeAverages(total_time, counter);
+    m_sampler->printOutputToTerminal(total_time, counter);
+  }
+}
+
+
 void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
-    m_particles                 = m_initialState->getParticles();
-    m_sampler                   = new Sampler(this);
-    m_numberOfMetropolisSteps   = numberOfMetropolisSteps;
-    m_sampler->setNumberOfMetropolisSteps(numberOfMetropolisSteps);
 
     int N = getNumberOfParticles();
     double counter = 0;
@@ -180,17 +197,6 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
             m_sampler->WriteResultstoFile(ofile, i);
         }
         m_sampler->Analysis(i);
-    }
-
-    end_time = omp_get_wtime();
-    total_time = end_time - start_time;
-    counter = counter/(numberOfMetropolisSteps);
-
-    m_sampler->computeAverages(total_time, counter);
-    m_sampler->printOutputToTerminal(total_time, counter);
-
-    if (getOneBodyDensity()){
-      m_sampler->WriteOneBodyDensitytoFile(ofile);
     }
 
 }

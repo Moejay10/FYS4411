@@ -47,7 +47,7 @@ void RandomUniform::setupInitialState() {
   double sigma_initRBM = 0.001;
   std::normal_distribution<double> distribution_initRBM(0, sigma_initRBM);
 
-  double weights[m_numberOfInputs][m_numberOfHidden];
+  std::vector<double> weights = std::vector<double>();
 
   std::vector<double> biasA = std::vector<double>();
 
@@ -64,7 +64,7 @@ void RandomUniform::setupInitialState() {
       biasA.push_back(distribution_initRBM(m_randomEngine));
 
       for (int j=0; j < m_numberOfHidden; j++){
-          weights[i][j] = distribution_initRBM(m_randomEngine);
+          weights[i*m_numberOfInputs + j] = distribution_initRBM(m_randomEngine);
       }
 
     }

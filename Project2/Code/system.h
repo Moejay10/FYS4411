@@ -16,6 +16,7 @@ public:
     bool setImportanceSampling      (bool);
     bool setNumericalDerivative     (bool);
     bool setPrintOutToTerminal      (bool);
+    void runOptimizer               (ofstream& ofile, int OptCycles, int numberOfMetropolisSteps);
     void runMetropolisSteps         (ofstream& ofile, int numberOfMetropolisSteps);
     void setNumberOfParticles       (int numberOfParticles);
     void setNumberOfDimensions      (int numberOfDimensions);
@@ -35,12 +36,12 @@ public:
     void setHamiltonian             (class Hamiltonian* hamiltonian);
     void setWaveFunction            (class WaveFunction* waveFunction);
     void setInitialState            (class InitialState* initialState);
+    void setNetwork                 (class Network* network);
     class WaveFunction*             getWaveFunction()   { return m_waveFunction; }
     class Hamiltonian*              getHamiltonian()    { return m_hamiltonian; }
     class Sampler*                  getSampler()        { return m_sampler; }
     class NeuralNetwork*            getNeuralNetwork()  { return m_neuralnetwork; }
 
-    int getNumberOfParticles()          { return m_numberOfParticles; }
     int getNumberOfDimensions()         { return m_numberOfDimensions; }
     int getNumberOfInputs()             { return m_numberOfDimensions*m_numberOfParticles; }
     int getNumberOfHidden()             { return m_numberOfHidden; }

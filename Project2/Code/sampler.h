@@ -12,6 +12,7 @@ public:
     Sampler(class System* system);
     void setNumberOfMetropolisSteps(int steps);
     void setEnergies(int MCcycles);
+    void setGradients();
     void sample(bool acceptedStep, int MCcycles);
     void printOutputToTerminal(double time, double acceptedStep);
     void computeAverages(double time, double acceptedStep);
@@ -38,7 +39,6 @@ private:
     double  m_cumulativeEnergy2 = 0;
     double  m_DeltaPsi  = 0;
     double  m_DerivativePsiE  = 0;
-    double  m_agradient  = 0;
     double  m_EnergyDer  = 0;
     double  m_variance = 0;
     double  m_STD = 0;
@@ -46,6 +46,19 @@ private:
     double  m_acceptedStep = 0;
 
     std::vector<double>  m_Energies;
+
+    std::vector<double>  m_aDelta;
+    std::vector<double>  m_bDelta;
+    std::vector<double>  m_wDelta;
+
+    std::vector<double>  m_EaDelta;
+    std::vector<double>  m_EbDelta;
+    std::vector<double>  m_EwDelta;
+
+    std::vector<double>  m_agrad;
+    std::vector<double>  m_bgrad;
+    std::vector<double>  m_wgrad;
+
 
     class System* m_system = nullptr;
 };

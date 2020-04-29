@@ -29,7 +29,7 @@ double NeuralQuantumState::evaluate(NeuralNetwork* neuralnetwork) {
 
 
      for (int i = 0; i < nx; i++){
-       psi1 += (m_system->getNeuralNetwork()->getPositions()[i] - m_system->getNeuralNetwork()->getBiasA()[i]) * (m_system->getNeuralNetwork()->getPositions()[i] - m_system->getNeuralNetwork()->getBiasA()[i]);
+       psi1 += (neuralnetwork->getPositions()[i] - neuralnetwork->getBiasA()[i]) * (neuralnetwork->getPositions()[i] - neuralnetwork->getBiasA()[i]);
      }
      psi1 = exp(-psi1/(2*sigma2));
 
@@ -37,9 +37,9 @@ double NeuralQuantumState::evaluate(NeuralNetwork* neuralnetwork) {
      for (int j = 0; j < nh; j++){
        temp1 = 0;
        for (int i = 0; i < nx; i++){
-         temp1 += (m_system->getNeuralNetwork()->getPositions()[i] * m_system->getNeuralNetwork()->getWeigths()[i][j])/(sigma2);
+         temp1 += (neuralnetwork->getPositions()[i] * neuralnetwork->getWeigths()[i*nx +j])/(sigma2);
        }
-       psi2 *= 1 + exp(m_system->getNeuralNetwork()->getBiasB()[j] + temp1);
+       psi2 *= 1 + exp(neuralnetwork->getBiasB()[j] + temp1);
      }
 
      return psi1*psi2;
@@ -56,12 +56,12 @@ double NeuralQuantumState::computeFirstDerivative(NeuralNetwork* neuralnetwork, 
     for (int j = 0; j < nh; j++){
       temp1 = 0;
       for (int i = 0; i < nx; i++){
-        temp1 += (m_system->getNeuralNetwork()->getPositions()[i] * m_system->getNeuralNetwork()->getWeigths()[i][j]);
+        temp1 += (neuralnetwork->getPositions()[i] * neuralnetwork->getWeigths()[i*nx + j]);
       }
-      psi2 += m_system->getNeuralNetwork()->getWeigths()[m][j]/(1 + exp(-m_system->getNeuralNetwork()->getBiasB()[j] - temp1/(sigma2) ) );
+      psi2 += neuralnetwork->getWeigths()[m*nx + j]/(1 + exp(-neuralnetwork->getBiasB()[j] - temp1/(sigma2) ) );
     }
 
-    psi2 -= m_system->getNeuralNetwork()->getPositions()[m] - m_system->getNeuralNetwork()->getBiasA()[m];
+    psi2 -= neuralnetwork->getPositions()[m] - neuralnetwork->getBiasA()[m];
 
     psi2 /= sigma2;
 
@@ -79,10 +79,10 @@ double NeuralQuantumState::computeDoubleDerivative(NeuralNetwork* neuralnetwork,
     for (int j = 0; j < nh; j++){
       temp1 = 0;
       for (int i = 0; i < nx; i++){
-        temp1 += (m_system->getNeuralNetwork()->getPositions()[i] * m_system->getNeuralNetwork()->getWeigths()[i][j]);
+        temp1 += (neuralnetwork->getPositions()[i] * neuralnetwork->getWeigths()[i*nx + j]);
       }
-      double Q = exp(m_system->getNeuralNetwork()->getBiasB()[j] + temp1/(sigma2));
-      double w = m_system->getNeuralNetwork()->getWeigths()[m][j];
+      double Q = exp(neuralnetwork->getBiasB()[j] + temp1/(sigma2));
+      double w = neuralnetwork->getWeigths()[m*nx + j];
       psi2 += w*w * Q/((Q+1)*(Q+1));
     }
 
@@ -91,40 +91,4 @@ double NeuralQuantumState::computeDoubleDerivative(NeuralNetwork* neuralnetwork,
     psi2 -= 1/(sigma2);
 
     return psi2;
-}
-
-void NeuralQuantumState::computeGradients(NeuralNetwork* neuralnetwork, double *agradient, double *bgradient, double **wgradient) {
-    // Here we compute the derivative of the wave function
-    double sigma = m_parameters[0];
-    double sigma2 = sigma*sigma;
-    double temp1 = 0;
-    double Q;
-    int nx = m_system->getNumberOfInputs();
-    int nh = m_system->getNumberOfHidden();
-
-    for (int m = 0; m < nx; m++){
-      temp1 = (neuralnetwork->getPositions()[m] - neuralnetwork->getBiasA()[m])/(sigma2);
-      agradient[m] = temp1;
-    }
-
-    for (int n = 0; n < nh; n++){
-      temp1 = 0;
-      for (int i = 0; i < nx; i++){
-        temp1 += (neuralnetwork->getPositions()[i] * neuralnetwork->getWeigths()[i][n]);
-      }
-      Q = exp(-neuralnetwork->getBiasB()[n] - temp1/(sigma2)) + 1;
-      bgradient[n] = 1/Q;
-    }
-
-    for (int m = 0; m < nx; m++){
-      for (int n = 0; n < nh; n++){
-        temp1 = 0;
-        for (int i = 0; i < nx; i++){
-          temp1 += (neuralnetwork->getPositions()[i] * neuralnetwork->getWeigths()[i][n]);
-        }
-        Q = exp(-neuralnetwork->getBiasB()[n] - temp1/(sigma2)) + 1;
-        wgradient[m][n] = neuralnetwork->getPositions()[m]/(sigma2*Q);
-      }
-    }
-
 }
