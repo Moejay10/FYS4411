@@ -1,5 +1,6 @@
-#pragma once
 #include "initialstate.h"
+#include <random>
+#include <iostream>
 
 class RandomUniform : public InitialState {
 public:

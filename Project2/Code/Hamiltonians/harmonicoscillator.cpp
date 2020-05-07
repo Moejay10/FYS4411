@@ -1,8 +1,9 @@
 #include <cassert>
 #include <iostream>
 #include "../system.h"
-#include "../particle.h"
 #include "../WaveFunctions/wavefunction.h"
+#include "../NeuralNetworks/network.h"
+
 #include "harmonicoscillator.h"
 
 using std::cout;
@@ -24,18 +25,22 @@ HarmonicOscillator::HarmonicOscillator(System* system, double omega) :
 
 
 
-double HarmonicOscillator::computeLocalEnergy(NeuralNetwork* neuralnetwork) {
+double HarmonicOscillator::computeLocalEnergy(Network* neuralnetwork) {
     // Here we compute the analytical local energy
     int M = m_system->getNumberOfInputs();
-    double kineticenergy = potentialenergy = 0, totalenergy, firstder, secondder, x;
+    double kineticenergy = 0;
+    double potentialenergy = 0;
+    double totalenergy, firstder, secondder, x;
 
     for (int m = 0; m < M; m++){
       firstder = m_system->getWaveFunction()->computeFirstDerivative(neuralnetwork, m);
       secondder = m_system->getWaveFunction()->computeDoubleDerivative(neuralnetwork, m);
-      x = m_system->getNeuralNetwork()->getPositions()[m];
-      kineticenergy += (-(temp*temp) - secondder;
+      x = neuralnetwork->getPositions()[m];
+      kineticenergy += (-(firstder*firstder) - secondder);
       potentialenergy += m_omega*m_omega*x*x;
     }
 
     totalenergy = 0.5*(kineticenergy + potentialenergy);
+
+    return totalenergy;
 }

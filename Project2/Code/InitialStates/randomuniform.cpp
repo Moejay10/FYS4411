@@ -1,12 +1,13 @@
-#include "randomuniform.h"
 #include <iostream>
 #include <cassert>
 #include <random>
 #include "Math/random.h"
-#include "../particle.h"
+#include "randomuniform.h"
+
+#include "../NeuralNetworks/network.h"
 #include "../system.h"
 
-using namespace  std;
+using namespace std;
 using std::cout;
 using std::endl;
 
@@ -48,9 +49,7 @@ void RandomUniform::setupInitialState() {
   std::normal_distribution<double> distribution_initRBM(0, sigma_initRBM);
 
   std::vector<double> weights = std::vector<double>();
-
   std::vector<double> biasA = std::vector<double>();
-
   std::vector<double> biasB = std::vector<double>();
 
     for (int i=0; i < m_numberOfInputs; i++) {
@@ -69,13 +68,12 @@ void RandomUniform::setupInitialState() {
 
     }
 
-    for (int i = 0; i < numberOfHidden; i++){
+    for (int i = 0; i < m_numberOfHidden; i++){
       biasB.push_back(distribution_initRBM(m_randomEngine));
     }
 
-    m_NeuralNetwork = new NeuralNetwork();
-    m_NeuralNetwork->setPositions(positions);
-    m_NeuralNetwork->setWeights(weights);
-    m_NeuralNetwork->setBiasA(biasA);
-    m_NeuralNetwork->setBiasB(biasB);
+    m_system->getNetwork()->setPositions(positions);
+    m_system->getNetwork()->setWeights(weights);
+    m_system->getNetwork()->setBiasA(biasA);
+    m_system->getNetwork()->setBiasB(biasB);
 }

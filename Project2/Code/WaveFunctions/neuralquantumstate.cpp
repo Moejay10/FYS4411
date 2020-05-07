@@ -6,7 +6,6 @@
 #include "../particle.h"
 #include <iostream>
 using namespace std;
-using namespace arma;
 
 NeuralQuantumState::NeuralQuantumState(System* system, double sigma) :
         WaveFunction(system) {
@@ -18,7 +17,7 @@ NeuralQuantumState::NeuralQuantumState(System* system, double sigma) :
 
 }
 
-double NeuralQuantumState::evaluate(NeuralNetwork* neuralnetwork) {
+double NeuralQuantumState::evaluate(Network* neuralnetwork) {
      // Here we compute the wave function.
      double sigma = m_parameters[0];
      double sigma2 = sigma*sigma;
@@ -44,7 +43,7 @@ double NeuralQuantumState::evaluate(NeuralNetwork* neuralnetwork) {
      return psi1*psi2;
 }
 
-double NeuralQuantumState::computeFirstDerivative(NeuralNetwork* neuralnetwork, int m) {
+double NeuralQuantumState::computeFirstDerivative(Network* neuralnetwork, int m) {
     // Here we compute the derivative of the wave function
     double sigma = m_parameters[0];
     double sigma2 = sigma*sigma;
@@ -67,7 +66,7 @@ double NeuralQuantumState::computeFirstDerivative(NeuralNetwork* neuralnetwork, 
     return psi2;
 }
 
-double NeuralQuantumState::computeDoubleDerivative(NeuralNetwork* neuralnetwork, int m) {
+double NeuralQuantumState::computeDoubleDerivative(Network* neuralnetwork, int m) {
     // Here we compute the double derivative of the wavefunction
     double sigma = m_parameters[0];
     double sigma2 = sigma*sigma;

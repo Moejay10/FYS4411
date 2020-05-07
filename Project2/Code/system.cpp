@@ -230,6 +230,9 @@ void System::setEquilibrationFraction(double equilibrationFraction) {
 void System::setHamiltonian(Hamiltonian* hamiltonian) {
     m_hamiltonian = hamiltonian;
 }
+void System::setNetwork(Network* network) {
+    m_network = network;
+}
 
 void System::setWaveFunction(WaveFunction* waveFunction) {
     m_waveFunction = waveFunction;

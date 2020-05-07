@@ -13,8 +13,8 @@
 #include "system.h"
 #include "particle.h"
 #include "sampler.h"
-#include "NeuralNetwork/network.h"
-#include "NeuralNetwork/neuralnetwork.h"
+#include "NeuralNetworks/network.h"
+#include "NeuralNetworks/neuralnetwork.h"
 #include "WaveFunctions/wavefunction.h"
 #include "WaveFunctions/neuralquantumstate.h"
 #include "Hamiltonians/hamiltonian.h"
@@ -125,10 +125,10 @@ int main() {
 
         //Initialise the system.
         System* system = new System();
-        system->setHamiltonian              (new HarmonicOscillator(system, omega));
-        system->setWaveFunction             (new NeuralQuantumState(system, sigma));
         system->setNetwork                  (new NeuralNetwork(system, eta));
         system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
+        system->setHamiltonian              (new HarmonicOscillator(system, omega));
+        system->setWaveFunction             (new NeuralQuantumState(system, sigma));
         system->setStepLength               (stepLength);
         system->setPrintOutToTerminal       (false);
         system->runOptimizer                (ofile, OptCycles, MCcycles);

@@ -38,7 +38,7 @@ public:
     class WaveFunction*             getWaveFunction()   { return m_waveFunction; }
     class Hamiltonian*              getHamiltonian()    { return m_hamiltonian; }
     class Sampler*                  getSampler()        { return m_sampler; }
-    class NeuralNetwork*            getNeuralNetwork()  { return m_neuralnetwork; }
+    class Network*                  getNetwork()        { return m_network; }
 
     int getNumberOfDimensions()         { return m_numberOfDimensions; }
     int getNumberOfInputs()             { return m_numberOfDimensions*m_numberOfParticles; }
@@ -85,7 +85,7 @@ private:
     class Hamiltonian*              m_hamiltonian = nullptr;
     class InitialState*             m_initialState = nullptr;
     class Sampler*                  m_sampler = nullptr;
-    class NeuralNetwork*            m_neuralnetwork = nullptr;
+    class Network*                  m_network = nullptr;
     std::vector<double>             m_binVector;
     std::vector<int>                m_binCounter;
     std::vector<int>                m_partclesPerBin;
