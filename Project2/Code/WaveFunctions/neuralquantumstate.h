@@ -1,6 +1,5 @@
 #pragma once
 #include "wavefunction.h"
-#include <armadillo>
 
 class NeuralQuantumState : public WaveFunction {
 public:

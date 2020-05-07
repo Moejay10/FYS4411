@@ -3,7 +3,6 @@
 #include <fstream>
 #include <cmath>
 #include <vector>
-#include <armadillo>
 #include "sampler.h"
 #include "system.h"
 #include "particle.h"

@@ -1,10 +1,7 @@
-#pragma once
 #include <fstream>
 #include <iostream>
 #include <iomanip>
 #include <string>
-#include <armadillo>
-using namespace arma;
 using namespace std;
 
 class Sampler {

@@ -1,14 +1,12 @@
-#include "harmonicoscillator.h"
 #include <cassert>
 #include <iostream>
-#include <armadillo>
 #include "../system.h"
 #include "../particle.h"
 #include "../WaveFunctions/wavefunction.h"
+#include "harmonicoscillator.h"
 
 using std::cout;
 using std::endl;
-using namespace arma;
 
 HarmonicOscillator::HarmonicOscillator(System* system, double omega) :
         Hamiltonian(system) {

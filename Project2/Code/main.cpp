@@ -5,10 +5,8 @@
 #include <random>
 #include <string>
 #include <cmath>
-#include <armadillo>
 #include <math.h>
 #include <cassert>
-#include <omp.h>
 #include <time.h>
 
 // Include all header files
@@ -27,7 +25,6 @@
 
 ofstream ofile;
 using namespace std;
-using namespace arma;
 
 // #############################################################################
 // ############################### Description: ################################

@@ -5,7 +5,6 @@
 #include "../system.h"
 #include "../particle.h"
 #include <iostream>
-#include <armadillo>
 using namespace std;
 using namespace arma;
 

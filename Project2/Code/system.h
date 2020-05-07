@@ -1,11 +1,9 @@
-#pragma once
 #include <vector>
 #include <fstream>
 #include <iostream>
 #include <iomanip>
 #include <string>
 #include <time.h>
-#include <omp.h>
 using namespace std;
 
 class System {
