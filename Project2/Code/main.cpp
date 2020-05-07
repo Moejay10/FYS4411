@@ -11,7 +11,6 @@
 
 // Include all header files
 #include "system.h"
-#include "particle.h"
 #include "sampler.h"
 #include "NeuralNetworks/network.h"
 #include "NeuralNetworks/neuralnetwork.h"

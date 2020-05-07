@@ -2,8 +2,9 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <armadillo>
 
-#include "Eigen"
+using namespace arma;
 using namespace std;
 
 class Sampler {
@@ -43,17 +44,17 @@ private:
 
     std::vector<double>  m_Energies;
 
-    Eigen::VectorXd  m_aDelta;
-    Eigen::VectorXd  m_bDelta;
-    Eigen::VectorXd  m_wDelta;
+    vec m_aDelta;
+    vec m_bDelta;
+    vec m_wDelta;
 
-    Eigen::VectorXd  m_EaDelta;
-    Eigen::VectorXd  m_EbDelta;
-    Eigen::VectorXd  m_EwDelta;
+    vec m_EaDelta;
+    vec m_EbDelta;
+    vec m_EwDelta;
 
-    Eigen::VectorXd  m_agrad;
-    Eigen::VectorXd  m_bgrad;
-    Eigen::VectorXd  m_wgrad;
+    vec m_agrad;
+    vec m_bgrad;
+    vec m_wgrad;
 
 
     class System* m_system = nullptr;

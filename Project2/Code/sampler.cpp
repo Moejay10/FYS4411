@@ -3,14 +3,17 @@
 #include <fstream>
 #include <cmath>
 #include <vector>
+#include <armadillo>
 #include "sampler.h"
 #include "system.h"
 #include "particle.h"
 #include "Hamiltonians/hamiltonian.h"
 #include "WaveFunctions/wavefunction.h"
+#include "NeuralNetworks/network.h"
+
 using std::cout;
 using std::endl;
-
+using namespace arma;
 
 Sampler::Sampler(System* system) {
     m_system = system;
@@ -62,11 +65,9 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
     double localEnergy = m_system->getHamiltonian()->
                      computeLocalEnergy(m_system->getNetwork());
 
-    Eigen::VectorXd temp_aDelta = m_system->getNetwork()->computeBiasAgradients();
-    Eigen::VectorXd temp_bDelta = m_system->getNetwork()->computeBiasBgradients();
-    Eigen::VectorXd temp_wDelta = m_system->getNetwork()->computeWeightsgradients();
-
-
+    vec temp_aDelta = m_system->getNetwork()->computeBiasAgradients();
+    vec temp_bDelta = m_system->getNetwork()->computeBiasBgradients();
+    vec temp_wDelta = m_system->getNetwork()->computeWeightsgradients();
 
     m_cumulativeEnergy  += localEnergy;
     m_cumulativeEnergy2  += localEnergy*localEnergy;

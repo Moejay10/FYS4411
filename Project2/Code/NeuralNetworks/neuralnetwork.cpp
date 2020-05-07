@@ -1,15 +1,18 @@
 #include "neuralnetwork.h"
 #include <cassert>
 #include <iostream>
+#include <armadillo>
 #include "../system.h"
 #include "../WaveFunctions/wavefunction.h"
+
+using namespace arma;
 
 NeuralNetwork::NeuralNetwork(System* system, double eta) :
           Network(system){
           m_eta = eta;
 }
 
-Eigen::VectorXd NeuralNetwork::computeBiasAgradients() {
+vec NeuralNetwork::computeBiasAgradients() {
     // Here we compute the derivative of the wave function
     double sigma = m_system->getWaveFunction()->getParameters()[0];
     double sigma2 = sigma*sigma;
@@ -18,8 +21,7 @@ Eigen::VectorXd NeuralNetwork::computeBiasAgradients() {
     int nx = m_system->getNumberOfInputs();
     int nh = m_system->getNumberOfHidden();
 
-    Eigen::VectorXd agradient;
-    agradient.resize(nx);
+    vec agradient(nx);
 
     for (int m = 0; m < nx; m++){
       temp1 = (getPositions()[m] - getBiasA()[m])/(sigma2);
@@ -29,7 +31,7 @@ Eigen::VectorXd NeuralNetwork::computeBiasAgradients() {
     return agradient;
 }
 
-Eigen::VectorXd NeuralNetwork::computeBiasBgradients() {
+vec NeuralNetwork::computeBiasBgradients() {
     // Here we compute the derivative of the wave function
     double sigma = m_system->getWaveFunction()->getParameters()[0];
     double sigma2 = sigma*sigma;
@@ -38,8 +40,7 @@ Eigen::VectorXd NeuralNetwork::computeBiasBgradients() {
     int nx = m_system->getNumberOfInputs();
     int nh = m_system->getNumberOfHidden();
 
-    Eigen::Eigen::VectorXd
-    bgradient.resize(nh);
+    vec bgradient(nh);
 
     for (int n = 0; n < nh; n++){
       temp1 = 0;
@@ -55,7 +56,7 @@ Eigen::VectorXd NeuralNetwork::computeBiasBgradients() {
 }
 
 
-Eigen::VectorXd NeuralNetwork::computeWeightsgradients() {
+vec NeuralNetwork::computeWeightsgradients() {
     // Here we compute the derivative of the wave function
     double sigma = m_system->getWaveFunction()->getParameters()[0];
     double sigma2 = sigma*sigma;
@@ -64,8 +65,7 @@ Eigen::VectorXd NeuralNetwork::computeWeightsgradients() {
     int nx = m_system->getNumberOfInputs();
     int nh = m_system->getNumberOfHidden();
 
-    Eigen::VectorXd wgradient;
-    wgradient.resize(nx*nh);
+    vec wgradient(nx*nh);
 
     for (int m = 0; m < nx; m++){
       for (int n = 0; n < nh; n++){
@@ -81,7 +81,7 @@ Eigen::VectorXd NeuralNetwork::computeWeightsgradients() {
     return wgradient;
 }
 
-void NeuralNetwork::optimizeWeights(Eigen::VectorXd agrad, Eigen::VectorXd bgrad, Eigen::VectorXd wgrad){
+void NeuralNetwork::optimizeWeights(vec agrad, vec bgrad, vec wgrad){
   // Compute new parameters
   int nx = m_system->getNumberOfInputs();
   int nh = m_system->getNumberOfHidden();

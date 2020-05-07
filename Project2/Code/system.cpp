@@ -10,6 +10,7 @@
 #include "WaveFunctions/wavefunction.h"
 #include "Hamiltonians/hamiltonian.h"
 #include "InitialStates/initialstate.h"
+#include "NeuralNetworks/network.h"
 #include "Math/random.h"
 
 
@@ -38,18 +39,18 @@ bool System::metropolisStep() {
    double r, wfold, wfnew;
 
    // Initial Position
-   wfold = getWaveFunction()->evaluate(getNeuralNetwork());
+   wfold = getWaveFunction()->evaluate(getNetwork());
 
    // Trial position moving one particle at the time in all dimensions
-   getNeuralNetwork()->adjustPosition(m_stepLength*a, 0, input);
+   getNetwork()->adjustPositions(m_stepLength*a, 0, input);
    if (Dim>1){
-     getNeuralNetwork()->adjustPosition(m_stepLength*b, 1, input);
+     getNetwork()->adjustPositions(m_stepLength*b, 1, input);
      if (Dim>2){
-       getNeuralNetwork()->adjustPosition(m_stepLength*c, 2, input);
+       getNetwork()->adjustPositions(m_stepLength*c, 2, input);
      }
    }
 
-   wfnew = getWaveFunction()->evaluate(getNeuralNetwork());
+   wfnew = getWaveFunction()->evaluate(getNetwork());
 
    // Metropolis test
    if ( RandomNumberGenerator(gen) <= wfnew*wfnew/(wfold*wfold) ){
@@ -58,11 +59,11 @@ bool System::metropolisStep() {
 
    // return to previous value if Metropolis test is false
    else{
-     getNeuralNetwork()->adjustPosition(-m_stepLength*a, 0, input);
+     getNetwork()->adjustPositions(-m_stepLength*a, 0, input);
      if (Dim>1){
-       getNeuralNetwork()->adjustPosition(-m_stepLength*b, 1, input);
+       getNetwork()->adjustPositions(-m_stepLength*b, 1, input);
        if (Dim>2){
-         getNeuralNetwork()->adjustPosition(-m_stepLength*c, 2, input);
+         getNetwork()->adjustPositions(-m_stepLength*c, 2, input);
        }
      }
       return false;
@@ -95,27 +96,27 @@ bool System::ImportanceMetropolisStep() {
      std::vector<double> posold, posnew, qfold, qfnew;
 
      // Initial Position
-     posold = getNeuralNetwork()->getPosition();
-     wfold = getWaveFunction()->evaluate(getNeuralNetwork);
-     qfold = getHamiltonian()->computeQuantumForce(m_particles, Nparticle);
+     posold = getNetwork()->getPositions();
+     wfold = getWaveFunction()->evaluate(getNetwork());
+     qfold = getHamiltonian()->computeQuantumForce(getNetwork(), Nparticle);
 
 
      // Trial position moving one particle at the time in all dimensions
      poschange = a*sqrt(m_timeStep) + qfold[0]*m_timeStep*m_diffusionCoefficient;
-     m_particles[Nparticle]->adjustPosition(poschange, 0);
+     m_particles[Nparticle]->adjustPositions(poschange, 0);
      if (Dim > 1){
        poschange = b*sqrt(m_timeStep) + qfold[1]*m_timeStep*m_diffusionCoefficient;
-       m_particles[Nparticle]->adjustPosition(poschange, 1);
+       m_particles[Nparticle]->adjustPositions(poschange, 1);
        if (Dim > 2){
          poschange = c*sqrt(m_timeStep) + qfold[2]*m_timeStep*m_diffusionCoefficient;
-         m_particles[Nparticle]->adjustPosition(poschange, 2);
+         m_particles[Nparticle]->adjustPositions(poschange, 2);
        }
      }
 
 
-     posnew = getParticles()[Nparticle]->getPosition();
-     wfnew = getWaveFunction()->evaluate(m_particles);
-     qfnew = getHamiltonian()->computeQuantumForce(m_particles, Nparticle);
+     posnew = getNetwork()->getPositions();
+     wfnew = getWaveFunction()->evaluate(getNetwork());
+     qfnew = getHamiltonian()->computeQuantumForce(getNetwork(), Nparticle);
 
      // Greens function
      double greensFunction = 0;
@@ -134,13 +135,13 @@ bool System::ImportanceMetropolisStep() {
   // return to previous value if Metropolis test is false
   else{
     poschange = a*sqrt(m_timeStep) + qfold[0]*m_timeStep*m_diffusionCoefficient;
-    m_particles[Nparticle]->adjustPosition(-poschange, 0);
+    m_particles[Nparticle]->adjustPositions(-poschange, 0);
     if (Dim > 1){
       poschange = b*sqrt(m_timeStep) + qfold[1]*m_timeStep*m_diffusionCoefficient;
-      m_particles[Nparticle]->adjustPosition(-poschange, 1);
+      m_particles[Nparticle]->adjustPositions(-poschange, 1);
       if (Dim > 2){
         poschange = c*sqrt(m_timeStep) + qfold[2]*m_timeStep*m_diffusionCoefficient;
-        m_particles[Nparticle]->adjustPosition(-poschange, 2);
+        m_particles[Nparticle]->adjustPositions(-poschange, 2);
       }
     }
     return false;

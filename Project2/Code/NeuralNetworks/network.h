@@ -1,8 +1,17 @@
 #include <vector>
+#include <armadillo>
+using namespace arma;
 
 class Network {
 public:
     Network(class System* system);
+
+    vec computeBiasAgradients();
+    vec computeBiasBgradients();
+    vec computeWeightsgradients();
+
+    void optimizeWeights(vec agrad, vec bgrad, vec wgrad);
+
     void setWeights(const std::vector<double> &weights);
     void adjustWeights(double change, int dimension);
     void setBiasA(const std::vector<double> &biasA);

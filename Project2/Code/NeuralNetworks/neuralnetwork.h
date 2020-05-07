@@ -1,17 +1,18 @@
 #pragma once
 #include "network.h"
 #include <vector>
+#include <armadillo>
+using namespace arma;
 
 class NeuralNetwork : public Network {
 public:
     NeuralNetwork(class System* system, double eta);
 
-    Eigen::VectorXd computeBiasAgradients();
-    Eigen::VectorXd computeBiasBgradients();
-    Eigen::VectorXd computeWeightsgradients();
+    vec computeBiasAgradients();
+    vec computeBiasBgradients();
+    vec computeWeightsgradients();
 
-    void optimizeWeights(std::vector<double> agrad, std::vector<double> bgrad, std::vector<double> wgrad);
-
+    void optimizeWeights(vec agrad, vec bgrad, vec wgrad);
 
     void setPositions(const std::vector<double> &positions);
     void adjustPositions(double change, int dimension, int input);
