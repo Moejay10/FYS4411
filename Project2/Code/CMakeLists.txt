@@ -7,6 +7,7 @@ include_directories(
     InitialStates
     Math
     WaveFunctions
+    NeuralNetworks
 )
 
 # Add sources from all directories
@@ -16,10 +17,12 @@ file(
     GLOB SOURCES "InitialStates/*.cpp"
     GLOB SOURCES "Math/*.cpp"
     GLOB SOURCES "WaveFunctions/*.cpp"
+    GLOB SOURCES "NeuralNetworks/*.cpp"
+
 )
 
-set (CMAKE_CXX_FLAGS "-openmp -std=c++11 -Wall")
-SET (CMAKE_CXX_COMPILER "/usr/bin/clang++")
+set (CMAKE_CXX_FLAGS "-fopenmp")
+
 
 # Create executable called "vmc"
 add_executable(vmc ${SOURCES})

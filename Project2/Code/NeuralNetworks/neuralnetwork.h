@@ -2,9 +2,17 @@
 #include "network.h"
 #include <vector>
 
-class NeuralNetwork {
+class NeuralNetwork : public Network {
 public:
-    NeuralNetwork();
+    NeuralNetwork(class System* system, double eta);
+
+    Eigen::VectorXd computeBiasAgradients();
+    Eigen::VectorXd computeBiasBgradients();
+    Eigen::VectorXd computeWeightsgradients();
+
+    void optimizeWeights(std::vector<double> agrad, std::vector<double> bgrad, std::vector<double> wgrad);
+
+
     void setPositions(const std::vector<double> &positions);
     void adjustPositions(double change, int dimension, int input);
     void setWeights(std::vector<double> &weights);

@@ -2,6 +2,8 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+
+#include "Eigen"
 using namespace std;
 
 class Sampler {
@@ -13,9 +15,6 @@ public:
     void sample(bool acceptedStep, int MCcycles);
     void printOutputToTerminal(double time, double acceptedStep);
     void computeAverages(double time, double acceptedStep);
-    void computeOneBodyDensity();
-    void Analysis(int MCcycles);
-    void WriteOneBodyDensitytoFile(ofstream& ofile);
 
     void WriteResultstoFile(ofstream& ofile, int MCcycles);
     double getSTD()                   { return m_STD; }
@@ -44,17 +43,17 @@ private:
 
     std::vector<double>  m_Energies;
 
-    std::vector<double>  m_aDelta;
-    std::vector<double>  m_bDelta;
-    std::vector<double>  m_wDelta;
+    Eigen::VectorXd  m_aDelta;
+    Eigen::VectorXd  m_bDelta;
+    Eigen::VectorXd  m_wDelta;
 
-    std::vector<double>  m_EaDelta;
-    std::vector<double>  m_EbDelta;
-    std::vector<double>  m_EwDelta;
+    Eigen::VectorXd  m_EaDelta;
+    Eigen::VectorXd  m_EbDelta;
+    Eigen::VectorXd  m_EwDelta;
 
-    std::vector<double>  m_agrad;
-    std::vector<double>  m_bgrad;
-    std::vector<double>  m_wgrad;
+    Eigen::VectorXd  m_agrad;
+    Eigen::VectorXd  m_bgrad;
+    Eigen::VectorXd  m_wgrad;
 
 
     class System* m_system = nullptr;

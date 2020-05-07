@@ -17,12 +17,14 @@ public:
     std::vector<double> getBiasA() { return m_biasA; }
     std::vector<double> getBiasB() { return m_biasB; }
 
-private:
+
+
+
+protected:
   std::vector<double> m_positions = std::vector<double>();
   std::vector<double> m_biasA = std::vector<double>();
   std::vector<double> m_biasB = std::vector<double>();
   std::vector<double> m_weights = std::vector<double>();
 
-protected:
-    class System* m_system = nullptr;
+  class System* m_system = nullptr;
 };

@@ -8,7 +8,6 @@
 #include "particle.h"
 #include "Hamiltonians/hamiltonian.h"
 #include "WaveFunctions/wavefunction.h"
-using namespace arma;
 using std::cout;
 using std::endl;
 
@@ -31,23 +30,20 @@ void Sampler::setEnergies(int MCcycles) {
 }
 
 void Sampler::setGradients() {
-  for (int i = 0; i < m_system->getNumberOfInputs(); i++){
-    m_aDelta.push_back(0);
-    m_EaDelta.push_back(0);
-    m_agrad.push_back(0);
-  }
+  int nx = m_system->getNumberOfInputs();
+  int nh = m_system->getNumberOfHidden();
 
-  for (int i = 0; i < m_system->getNumberOfHidden(); i++){
-    m_bDelta.push_back(0);
-    m_EbDelta.push_back(0);
-    m_bgrad.push_back(0);
-  }
+  m_aDelta.resize(nx);
+  m_EaDelta.resize(nx);
+  m_agrad.resize(nx);
 
-  for (int i = 0; i < m_system->getNumberOfInputs()*m_system->getNumberOfHidden(); i++){
-    m_wDelta.push_back(0);
-    m_EwDelta.push_back(0);
-    m_wgrad.push_back(0);
-  }
+  m_bDelta.resize(nh);
+  m_EbDelta.resize(nh);
+  m_bgrad.resize(nh);
+
+  m_wDelta.resize(nx*nh);
+  m_EwDelta.resize(nx*nh);
+  m_wgrad.resize(nx*nh);
 
 }
 
@@ -64,14 +60,13 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
 
 
     double localEnergy = m_system->getHamiltonian()->
-                     computeLocalEnergy(m_system->getNeuralNetwork());
+                     computeLocalEnergy(m_system->getNetwork());
 
-    double *temp_aDelta = malloc(m_system->getNumberOfInputs() * sizeof(double));
-    double * temp_bDelta = malloc(m_system->getNumberOfHidden() * sizeof(double));
-    double *temp_wDelta = malloc(m_system->getNumberOfInputs()*m_system->getNumberOfHidden() * sizeof(double));
+    Eigen::VectorXd temp_aDelta = m_system->getNetwork()->computeBiasAgradients();
+    Eigen::VectorXd temp_bDelta = m_system->getNetwork()->computeBiasBgradients();
+    Eigen::VectorXd temp_wDelta = m_system->getNetwork()->computeWeightsgradients();
 
-    m_system->getNeuralNetwork()->
-              computeGradients(&temp_aDelta, &temp_bDelta, &temp_wDelta);
+
 
     m_cumulativeEnergy  += localEnergy;
     m_cumulativeEnergy2  += localEnergy*localEnergy;
@@ -85,12 +80,6 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
     m_EwDelta += temp_wDelta*localEnergy;
 
     m_stepNumber++;
-
-    free(temp_aDelta);
-    free(temp_bDelta);
-    free(temp_wDelta);
-
-
 }
 
 void Sampler::printOutputToTerminal(double total_time, double acceptedStep) {
@@ -154,37 +143,12 @@ void Sampler::computeAverages(double total_time, double acceptedStep) {
     m_wgrad = 2*(m_EwDelta - m_cumulativeEnergy*m_wDelta);
 
     // Update weights and biases
-    m_system->getNeuralNetwork()->optimizeWeights(m_agrad, m_bgrad, m_wgrad);
+    m_system->getNetwork()->optimizeWeights(m_agrad, m_bgrad, m_wgrad);
 
     m_totalTime = total_time;
     m_acceptedStep = acceptedStep;
 }
 
-void Sampler::computeOneBodyDensity(){
-  int N = m_system->getNumberOfParticles(); // Number of Particles
-  int Dim = m_system->getNumberOfDimensions(); // The Dimension
-  double r2;
-  double tol = 0.5*(m_system->getBinEndpoint()-m_system->getBinStartpoint())/(m_system->getNumberofBins());
-  double step = (m_system->getBinEndpoint() - m_system->getBinStartpoint())/m_system->getNumberofBins();
-  for (int i = 0; i < N; i++){
-    r2 = 0;
-    for (int j = 0; j < Dim; j++){
-      r2 += m_system->getParticles()[i]->getPosition()[j]*m_system->getParticles()[i]->getPosition()[j];
-    }
-    r2 = sqrt(r2);
-
-    m_system->setParticlesPerBin(int(r2/step) + 1);
-  }
-}
-
-
-
-void Sampler::Analysis(int MCcycles){
-
-  double norm = 1.0/((double) (MCcycles));  // divided by  number of cycles
-  double Energy = m_cumulativeEnergy * norm;
-  m_Energies[MCcycles-1] = Energy;
-}
 
 
 void Sampler::WriteResultstoFile(ofstream& ofile, int MCcycles){
@@ -204,17 +168,4 @@ void Sampler::WriteResultstoFile(ofstream& ofile, int MCcycles){
   //ofile << setw(15) << setprecision(8) << m_cumulativeEnergy << endl; // Variance
   //ofile << setw(15) << setprecision(8) << STD; // # Standard deviation
 
-}
-
-void Sampler::WriteOneBodyDensitytoFile(ofstream& ofile){
-  int N = m_system->getNumberOfParticles();
-  int MCcycles = m_system->getNumberOfMetropolisSteps();
-  double step = (m_system->getBinEndpoint() - m_system->getBinStartpoint())/m_system->getNumberofBins();
-  step = step*step*step;
-  double PI = 4*atan(1);
-  for (int i = 0; i < m_system->getNumberofBins(); i++){
-    double Volume = (4*(i*(i+1) + 1/3)*PI*step);
-    ofile << setw(15) << setprecision(8) <<  m_system->getBinVector()[i]; // Mean energy
-    ofile << setw(15) << setprecision(8) << m_system->getParticlesPerBin()[i] << endl; // Variance
-  }
 }

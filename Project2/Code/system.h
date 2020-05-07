@@ -40,6 +40,7 @@ public:
     class Sampler*                  getSampler()        { return m_sampler; }
     class Network*                  getNetwork()        { return m_network; }
 
+    int getNumberOfParticles()          { return m_numberOfParticles; }
     int getNumberOfDimensions()         { return m_numberOfDimensions; }
     int getNumberOfInputs()             { return m_numberOfDimensions*m_numberOfParticles; }
     int getNumberOfHidden()             { return m_numberOfHidden; }
