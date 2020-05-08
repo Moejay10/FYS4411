@@ -34,6 +34,7 @@ RandomUniform::RandomUniform(System*    system,
 
     m_system->setNumberOfDimensions(numberOfDimensions);
     m_system->setNumberOfParticles(numberOfParticles);
+    m_system->setNumberOfHidden(numberOfParticles);
     setupInitialState();
 }
 
@@ -52,18 +53,14 @@ void RandomUniform::setupInitialState() {
   std::vector<double> biasA = std::vector<double>();
   std::vector<double> biasB = std::vector<double>();
 
-    for (int i=0; i < m_numberOfInputs; i++) {
-      if (m_system->getImportanceSampling()){
-            positions.push_back(Normal(m_randomEngine) *sqrt(m_system->getTimeStep()) );
-      }
-      else{
-        positions.push_back(Uniform(m_randomEngine) - 0.5 );
-      }
+    for (int i = 0; i < m_numberOfInputs; i++) {
+
+      positions.push_back(Uniform(m_randomEngine) - 0.5 );
 
       biasA.push_back(distribution_initRBM(m_randomEngine));
 
-      for (int j=0; j < m_numberOfHidden; j++){
-          weights[i*m_numberOfInputs + j] = distribution_initRBM(m_randomEngine);
+      for (int j = 0; j < m_numberOfHidden; j++){
+          weights.push_back(distribution_initRBM(m_randomEngine));
       }
 
     }
@@ -76,4 +73,6 @@ void RandomUniform::setupInitialState() {
     m_system->getNetwork()->setWeights(weights);
     m_system->getNetwork()->setBiasA(biasA);
     m_system->getNetwork()->setBiasB(biasB);
+
+
 }

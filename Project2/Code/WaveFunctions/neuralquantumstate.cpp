@@ -26,9 +26,14 @@ double NeuralQuantumState::evaluate(Network* network) {
 
 
      for (int i = 0; i < nx; i++){
+       cout << network->getBiasA()[i] << endl;
+       cout << network->getPositions()[i] << endl;
+
        psi1 += (network->getPositions()[i] - network->getBiasA()[i]) * (network->getPositions()[i] - network->getBiasA()[i]);
+
      }
      psi1 = exp(-psi1/(2*sigma2));
+     cout << "Problem ps1?" << endl;
 
      // Can possibly implement single for loops for speedups.
      for (int j = 0; j < nh; j++){

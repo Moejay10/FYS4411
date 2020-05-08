@@ -19,6 +19,7 @@ public:
     void runMetropolisSteps         (ofstream& ofile, int numberOfMetropolisSteps);
     void setNumberOfParticles       (int numberOfParticles);
     void setNumberOfDimensions      (int numberOfDimensions);
+    void setNumberOfHidden          (int numberOfHidden);
     void setStepLength              (double stepLength);
     void setTimeStep                (double timeStep);
     void setStepSize                (double stepSize);

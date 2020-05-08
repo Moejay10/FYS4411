@@ -15,4 +15,5 @@ protected:
     int m_numberOfParticles = 0;
     int m_numberOfInputs = 0;
     int m_numberOfHidden = 0;
+
 };

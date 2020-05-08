@@ -101,26 +101,3 @@ void NeuralNetwork::optimizeWeights(vec agrad, vec bgrad, vec wgrad){
   }
 
 }
-
-
-void NeuralNetwork::setPositions(const std::vector<double> &positions) {
-    m_positions = positions;
-}
-
-void NeuralNetwork::adjustPositions(double change, int dimension, int input) {
-    int n = m_system->getNumberOfParticles();
-    m_positions[input*n + dimension] += change;
-}
-
-void NeuralNetwork::setWeights(std::vector<double> &weights) {
-    m_weights = weights;
-}
-
-
-void NeuralNetwork::setBiasA(std::vector<double> &biasA) {
-    m_biasA = biasA;
-}
-
-void NeuralNetwork::setBiasB(std::vector<double> &biasB) {
-    m_biasB = biasB;
-}

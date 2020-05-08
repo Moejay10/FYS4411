@@ -13,27 +13,22 @@ public:
 
     virtual void optimizeWeights(vec agrad, vec bgrad, vec wgrad) = 0;
 
-    virtual void setPositions(const std::vector<double> &positions) = 0;
-    virtual void adjustPositions(double change, int dimension, int input) = 0;
+    void setPositions(const std::vector<double> &positions);
+    void adjustPositions(double change, int dimension, int input);
+    void setWeights(std::vector<double> &weights);
+    void setBiasA(std::vector<double> &biasA);
+    void setBiasB(std::vector<double> &biasB);
 
-    virtual void setWeights(std::vector<double> &weights) = 0;
-    virtual void setBiasA(std::vector<double> &biasA) = 0;
-    virtual void setBiasB(std::vector<double> &biasB) = 0;
-
-
+    std::vector<double> getPositions() { return m_positions; }
     std::vector<double> getWeigths() { return m_weights; }
-    std::vector<double> getPositions() { return m_weights; }
     std::vector<double> getBiasA() { return m_biasA; }
     std::vector<double> getBiasB() { return m_biasB; }
 
-
-
-
 protected:
+  std::vector<double> m_weights = std::vector<double>();
   std::vector<double> m_positions = std::vector<double>();
   std::vector<double> m_biasA = std::vector<double>();
   std::vector<double> m_biasB = std::vector<double>();
-  std::vector<double> m_weights = std::vector<double>();
 
   class System* m_system = nullptr;
 };

@@ -28,7 +28,7 @@ bool System::metropolisStep() {
    std::uniform_real_distribution<double> RandomNumberGenerator(0.0,1.0);
 
    // Set up the uniform distribution for x \in [[0, N]
-   std::uniform_int_distribution<int> Inputs(0,getNumberOfParticles()-1);
+   std::uniform_int_distribution<int> Inputs(0, getNumberOfParticles()-1);
 
    int input = Inputs(gen);
    double a = RandomNumberGenerator(gen) - 0.5; // Random number
@@ -164,6 +164,7 @@ void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolis
 
     runMetropolisSteps(ofile, numberOfMetropolisSteps);
 
+
     end_time = omp_get_wtime();
     total_time = end_time - start_time;
 
@@ -179,6 +180,7 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
     bool acceptedStep;
 
     for (int i = 1; i <= numberOfMetropolisSteps; i++) {
+
         acceptedStep = metropolisStep();
 
         counter += acceptedStep;
@@ -196,6 +198,10 @@ void System::setNumberOfParticles(int numberOfParticles) {
 
 void System::setNumberOfDimensions(int numberOfDimensions) {
     m_numberOfDimensions = numberOfDimensions;
+}
+
+void System::setNumberOfHidden(int numberOfHidden) {
+    m_numberOfHidden = numberOfHidden;
 }
 
 void System::setStepLength(double stepLength) {
