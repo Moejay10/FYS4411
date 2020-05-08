@@ -45,7 +45,7 @@ vec NeuralNetwork::computeBiasBgradients() {
     for (int n = 0; n < nh; n++){
       temp1 = 0;
       for (int i = 0; i < nx; i++){
-        temp1 += (getPositions()[i] * getWeigths()[i*nx +n]);
+        temp1 += (getPositions()[i] * getWeigths()[i*nh +n]);
       }
       Q = exp(-getBiasB()[n] - temp1/(sigma2)) + 1;
       bgradient(n) = 1/Q;
@@ -71,10 +71,10 @@ vec NeuralNetwork::computeWeightsgradients() {
       for (int n = 0; n < nh; n++){
         temp1 = 0;
         for (int i = 0; i < nx; i++){
-          temp1 += (getPositions()[i] * getWeigths()[i*nx +n]);
+          temp1 += (getPositions()[i] * getWeigths()[i*nh +n]);
         }
         Q = exp(-getBiasB()[n] - temp1/(sigma2)) + 1;
-        wgradient(m*nx + n) = getPositions()[m]/(sigma2*Q);
+        wgradient(m*nh + n) = getPositions()[m]/(sigma2*Q);
       }
     }
 
@@ -87,41 +87,41 @@ void NeuralNetwork::optimizeWeights(vec agrad, vec bgrad, vec wgrad){
   int nh = m_system->getNumberOfHidden();
 
   for (int i = 0; i < nx; i++){
-      m_biasA[i] = m_biasA[i] - m_eta*agrad(i);
+      m_biasA(i) = m_biasA(i) - m_eta*agrad(i);
   }
 
   for (int j = 0; j < nh; j++){
-      m_biasB[j] = m_biasB[j] - m_eta*bgrad(j);
+      m_biasB(j) = m_biasB(j) - m_eta*bgrad(j);
   }
 
   for (int i = 0; i < nx; i++){
       for (int j = 0; j < nh; j++){
-          m_weights[i*nx + j] = m_weights[i*nx + j] - m_eta*wgrad(i*nx + j);
+          m_weights(i*nh + j) = m_weights(i*nh + j) - m_eta*wgrad(i*nh + j);
       }
   }
 
 }
 
 
-void NeuralNetwork::setPositions(const std::vector<double> &positions) {
+void NeuralNetwork::setPositions(const vec &positions) {
     assert(positions.size() == m_system->getNumberOfInputs());
     m_positions = positions;
 }
 
 void NeuralNetwork::adjustPositions(double change, int dimension, int input) {
     int n = m_system->getNumberOfParticles();
-    m_positions.at(input*n + dimension) += change;
+    m_positions(input*n + dimension) += change;
 }
 
-void NeuralNetwork::setWeights(std::vector<double> &weights) {
+void NeuralNetwork::setWeights(vec &weights) {
     m_weights = weights;
 }
 
 
-void NeuralNetwork::setBiasA(std::vector<double> &biasA) {
+void NeuralNetwork::setBiasA(vec &biasA) {
     m_biasA = biasA;
 }
 
-void NeuralNetwork::setBiasB(std::vector<double> &biasB) {
+void NeuralNetwork::setBiasB(vec &biasB) {
     m_biasB = biasB;
 }

@@ -26,22 +26,18 @@ double NeuralQuantumState::evaluate(Network* network) {
 
 
      for (int i = 0; i < nx; i++){
-       cout << network->getBiasA()[i] << endl;
-       cout << network->getPositions()[i] << endl;
-
-       psi1 += (network->getPositions()[i] - network->getBiasA()[i]) * (network->getPositions()[i] - network->getBiasA()[i]);
+       psi1 += (network->getPositions()(i) - network->getBiasA()(i)) * (network->getPositions()(i) - network->getBiasA()(i));
 
      }
      psi1 = exp(-psi1/(2*sigma2));
-     cout << "Problem ps1?" << endl;
 
      // Can possibly implement single for loops for speedups.
      for (int j = 0; j < nh; j++){
        temp1 = 0;
        for (int i = 0; i < nx; i++){
-         temp1 += (network->getPositions()[i] * network->getWeigths()[i*nx +j])/(sigma2);
+         temp1 += (network->getPositions()(i) * network->getWeigths()(i*nh +j))/(sigma2);
        }
-       psi2 *= 1 + exp(network->getBiasB()[j] + temp1);
+       psi2 *= 1 + exp(network->getBiasB()(j) + temp1);
      }
 
      return psi1*psi2;
@@ -58,12 +54,12 @@ double NeuralQuantumState::computeFirstDerivative(Network* network, int m) {
     for (int j = 0; j < nh; j++){
       temp1 = 0;
       for (int i = 0; i < nx; i++){
-        temp1 += (network->getPositions()[i] * network->getWeigths()[i*nx + j]);
+        temp1 += (network->getPositions()(i) * network->getWeigths()(i*nh + j));
       }
-      psi2 += network->getWeigths()[m*nx + j]/(1 + exp(-network->getBiasB()[j] - temp1/(sigma2) ) );
+      psi2 += network->getWeigths()(m*nh + j)/(1 + exp(-network->getBiasB()(j) - temp1/(sigma2) ) );
     }
 
-    psi2 -= network->getPositions()[m] - network->getBiasA()[m];
+    psi2 -= network->getPositions()(m) - network->getBiasA()(m);
 
     psi2 /= sigma2;
 
@@ -81,10 +77,10 @@ double NeuralQuantumState::computeDoubleDerivative(Network* network, int m) {
     for (int j = 0; j < nh; j++){
       temp1 = 0;
       for (int i = 0; i < nx; i++){
-        temp1 += (network->getPositions()[i] * network->getWeigths()[i*nx + j]);
+        temp1 += (network->getPositions()(i) * network->getWeigths()(i*nh + j));
       }
-      double Q = exp(network->getBiasB()[j] + temp1/(sigma2));
-      double w = network->getWeigths()[m*nx + j];
+      double Q = exp(network->getBiasB()(j) + temp1/(sigma2));
+      double w = network->getWeigths()(m*nh + j);
       psi2 += w*w * Q/((Q+1)*(Q+1));
     }
 

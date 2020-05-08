@@ -44,29 +44,30 @@ void RandomUniform::setupInitialState() {
   std::uniform_real_distribution<double> Uniform(0.0,1.0);
   std::normal_distribution<double> Normal(0.0,1.0);
 
-  std::vector<double> positions = std::vector<double>();
+  vec positions(m_numberOfInputs);
 
   double sigma_initRBM = 0.001;
   std::normal_distribution<double> distribution_initRBM(0, sigma_initRBM);
 
-  std::vector<double> weights = std::vector<double>();
-  std::vector<double> biasA = std::vector<double>();
-  std::vector<double> biasB = std::vector<double>();
+  vec weights(m_numberOfInputs*m_numberOfHidden);
+  vec biasA(m_numberOfInputs) ;
+  vec biasB(m_numberOfHidden) ;
 
     for (int i = 0; i < m_numberOfInputs; i++) {
 
-      positions.push_back(Uniform(m_randomEngine) - 0.5 );
+      positions(i) = (Uniform(m_randomEngine) - 0.5 );
 
-      biasA.push_back(distribution_initRBM(m_randomEngine));
+      biasA(i)=distribution_initRBM(m_randomEngine);
 
       for (int j = 0; j < m_numberOfHidden; j++){
-          weights.push_back(distribution_initRBM(m_randomEngine));
+          weights(i*m_numberOfHidden + j)= (distribution_initRBM(m_randomEngine));
+
       }
 
     }
 
     for (int i = 0; i < m_numberOfHidden; i++){
-      biasB.push_back(distribution_initRBM(m_randomEngine));
+      biasB(i) =(distribution_initRBM(m_randomEngine));
     }
 
     m_system->getNetwork()->setPositions(positions);

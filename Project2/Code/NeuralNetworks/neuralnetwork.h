@@ -14,22 +14,22 @@ public:
 
     void optimizeWeights(vec agrad, vec bgrad, vec wgrad);
 
-    void setPositions(const std::vector<double> &positions);
+    void setPositions(const vec &positions);
     void adjustPositions(double change, int dimension, int input);
-    void setWeights(std::vector<double> &weights);
-    void setBiasA(std::vector<double> &biasA);
-    void setBiasB(std::vector<double> &biasB);
+    void setWeights(vec &weights);
+    void setBiasA(vec &biasA);
+    void setBiasB(vec &biasB);
 
-    std::vector<double> getPositions() { return m_positions; }
-    std::vector<double> getWeigths() { return m_weights; }
-    std::vector<double> getBiasA() { return m_biasA; }
-    std::vector<double> getBiasB() { return m_biasB; }
+    vec getPositions() { return m_positions; }
+    vec getWeigths() { return m_weights; }
+    vec getBiasA() { return m_biasA; }
+    vec getBiasB() { return m_biasB; }
 
 private:
     double     m_eta = 0;
 
-    std::vector<double> m_weights = std::vector<double>();
-    std::vector<double> m_positions = std::vector<double>();
-    std::vector<double> m_biasA = std::vector<double>();
-    std::vector<double> m_biasB = std::vector<double>();
+    vec m_weights;
+    vec m_positions;
+    vec m_biasA;
+    vec m_biasB;
 };

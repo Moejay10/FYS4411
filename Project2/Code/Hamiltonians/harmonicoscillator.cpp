@@ -35,7 +35,7 @@ double HarmonicOscillator::computeLocalEnergy(Network* network) {
     for (int m = 0; m < M; m++){
       firstder = m_system->getWaveFunction()->computeFirstDerivative(network, m);
       secondder = m_system->getWaveFunction()->computeDoubleDerivative(network, m);
-      x = network->getPositions()[m];
+      x = network->getPositions()(m);
       kineticenergy += (-(firstder*firstder) - secondder);
       potentialenergy += m_omega*m_omega*x*x;
     }

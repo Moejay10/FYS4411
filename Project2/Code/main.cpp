@@ -106,8 +106,8 @@ int main() {
   if (Task == "a"){
 
       // Chosen parameters
-      int OptCycles           = 100;
-      int MCcycles            = 1e3;
+      int OptCycles           = 10;
+      int MCcycles            = 1e5;
       int numberOfParticles   = 2;
       int numberOfDimensions  = 2;
       int numberOfHidden        = 2;          // Number of hidden units
@@ -126,12 +126,18 @@ int main() {
         //Initialise the system.
         System* system = new System();
         system->setNetwork                  (new NeuralNetwork(system, eta));
+
         system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
+
         system->setHamiltonian              (new HarmonicOscillator(system, omega));
+
         system->setWaveFunction             (new NeuralQuantumState(system, sigma));
+
         system->setStepLength               (stepLength);
-        system->setPrintOutToTerminal       (false);
+        system->setPrintOutToTerminal       (true);
+
         system->runOptimizer                (ofile, OptCycles, MCcycles);
+
     }
 
 

@@ -35,17 +35,17 @@ void Sampler::setGradients() {
   int nx = m_system->getNumberOfInputs();
   int nh = m_system->getNumberOfHidden();
 
-  m_aDelta.resize(nx);
-  m_EaDelta.resize(nx);
-  m_agrad.resize(nx);
+  m_aDelta.zeros(nx);
+  m_EaDelta.zeros(nx);
+  m_agrad.zeros(nx);
 
-  m_bDelta.resize(nh);
-  m_EbDelta.resize(nh);
-  m_bgrad.resize(nh);
+  m_bDelta.zeros(nh);
+  m_EbDelta.zeros(nh);
+  m_bgrad.zeros(nh);
 
-  m_wDelta.resize(nx*nh);
-  m_EwDelta.resize(nx*nh);
-  m_wgrad.resize(nx*nh);
+  m_wDelta.zeros(nx*nh);
+  m_EwDelta.zeros(nx*nh);
+  m_wgrad.zeros(nx*nh);
 
 }
 
@@ -78,6 +78,8 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
     m_EaDelta += temp_aDelta*localEnergy;
     m_EbDelta += temp_bDelta*localEnergy;
     m_EwDelta += temp_wDelta*localEnergy;
+
+
 
     m_stepNumber++;
 }
