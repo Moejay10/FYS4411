@@ -13,11 +13,11 @@ public:
 
     virtual void optimizeWeights(vec agrad, vec bgrad, vec wgrad) = 0;
 
-    void setPositions(const std::vector<double> &positions);
-    void adjustPositions(double change, int dimension, int input);
-    void setWeights(std::vector<double> &weights);
-    void setBiasA(std::vector<double> &biasA);
-    void setBiasB(std::vector<double> &biasB);
+    virtual void setPositions(const std::vector<double> &positions) = 0;
+    virtual void adjustPositions(double change, int dimension, int input) = 0;
+    virtual void setWeights(std::vector<double> &weights) = 0;
+    virtual void setBiasA(std::vector<double> &biasA) = 0;
+    virtual void setBiasB(std::vector<double> &biasB) = 0;
 
     std::vector<double> getPositions() { return m_positions; }
     std::vector<double> getWeigths() { return m_weights; }
