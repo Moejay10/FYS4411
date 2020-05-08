@@ -22,6 +22,7 @@ file(
 )
 
 set (CMAKE_CXX_FLAGS "-fopenmp")
+#set (CMAKE_CXX_FLAGS "-Wall")
 
 
 # Create executable called "vmc"

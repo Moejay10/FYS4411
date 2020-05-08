@@ -1,3 +1,4 @@
+#pragma once
 #include <vector>
 #include <armadillo>
 using namespace arma;
@@ -6,20 +7,19 @@ class Network {
 public:
     Network(class System* system);
 
-    vec computeBiasAgradients();
-    vec computeBiasBgradients();
-    vec computeWeightsgradients();
+    virtual vec computeBiasAgradients() = 0;
+    virtual vec computeBiasBgradients() = 0;
+    virtual vec computeWeightsgradients() = 0;
 
-    void optimizeWeights(vec agrad, vec bgrad, vec wgrad);
+    virtual void optimizeWeights(vec agrad, vec bgrad, vec wgrad) = 0;
 
-    void setWeights(const std::vector<double> &weights);
-    void adjustWeights(double change, int dimension);
-    void setBiasA(const std::vector<double> &biasA);
-    void adjustBiasA(double change, int dimension);
-    void setBiasB(const std::vector<double> &biasB);
-    void adjustBiasB(double change, int dimension);
-    void setPositions(const std::vector<double> &positions);
-    void adjustPositions(double change, int dimension, int input);
+    virtual void setPositions(const std::vector<double> &positions) = 0;
+    virtual void adjustPositions(double change, int dimension, int input) = 0;
+
+    virtual void setWeights(std::vector<double> &weights) = 0;
+    virtual void setBiasA(std::vector<double> &biasA) = 0;
+    virtual void setBiasB(std::vector<double> &biasB) = 0;
+
 
     std::vector<double> getWeigths() { return m_weights; }
     std::vector<double> getPositions() { return m_weights; }

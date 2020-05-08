@@ -1,9 +1,8 @@
-#include "NeuralQuantumState.h"
+#include "neuralquantumstate.h"
 #include <cmath>
 #include <cassert>
 #include "wavefunction.h"
 #include "../system.h"
-#include "../particle.h"
 #include <iostream>
 using namespace std;
 
@@ -17,7 +16,7 @@ NeuralQuantumState::NeuralQuantumState(System* system, double sigma) :
 
 }
 
-double NeuralQuantumState::evaluate(Network* neuralnetwork) {
+double NeuralQuantumState::evaluate(Network* network) {
      // Here we compute the wave function.
      double sigma = m_parameters[0];
      double sigma2 = sigma*sigma;
@@ -27,7 +26,7 @@ double NeuralQuantumState::evaluate(Network* neuralnetwork) {
 
 
      for (int i = 0; i < nx; i++){
-       psi1 += (neuralnetwork->getPositions()[i] - neuralnetwork->getBiasA()[i]) * (neuralnetwork->getPositions()[i] - neuralnetwork->getBiasA()[i]);
+       psi1 += (network->getPositions()[i] - network->getBiasA()[i]) * (network->getPositions()[i] - network->getBiasA()[i]);
      }
      psi1 = exp(-psi1/(2*sigma2));
 
@@ -35,15 +34,15 @@ double NeuralQuantumState::evaluate(Network* neuralnetwork) {
      for (int j = 0; j < nh; j++){
        temp1 = 0;
        for (int i = 0; i < nx; i++){
-         temp1 += (neuralnetwork->getPositions()[i] * neuralnetwork->getWeigths()[i*nx +j])/(sigma2);
+         temp1 += (network->getPositions()[i] * network->getWeigths()[i*nx +j])/(sigma2);
        }
-       psi2 *= 1 + exp(neuralnetwork->getBiasB()[j] + temp1);
+       psi2 *= 1 + exp(network->getBiasB()[j] + temp1);
      }
 
      return psi1*psi2;
 }
 
-double NeuralQuantumState::computeFirstDerivative(Network* neuralnetwork, int m) {
+double NeuralQuantumState::computeFirstDerivative(Network* network, int m) {
     // Here we compute the derivative of the wave function
     double sigma = m_parameters[0];
     double sigma2 = sigma*sigma;
@@ -54,19 +53,19 @@ double NeuralQuantumState::computeFirstDerivative(Network* neuralnetwork, int m)
     for (int j = 0; j < nh; j++){
       temp1 = 0;
       for (int i = 0; i < nx; i++){
-        temp1 += (neuralnetwork->getPositions()[i] * neuralnetwork->getWeigths()[i*nx + j]);
+        temp1 += (network->getPositions()[i] * network->getWeigths()[i*nx + j]);
       }
-      psi2 += neuralnetwork->getWeigths()[m*nx + j]/(1 + exp(-neuralnetwork->getBiasB()[j] - temp1/(sigma2) ) );
+      psi2 += network->getWeigths()[m*nx + j]/(1 + exp(-network->getBiasB()[j] - temp1/(sigma2) ) );
     }
 
-    psi2 -= neuralnetwork->getPositions()[m] - neuralnetwork->getBiasA()[m];
+    psi2 -= network->getPositions()[m] - network->getBiasA()[m];
 
     psi2 /= sigma2;
 
     return psi2;
 }
 
-double NeuralQuantumState::computeDoubleDerivative(Network* neuralnetwork, int m) {
+double NeuralQuantumState::computeDoubleDerivative(Network* network, int m) {
     // Here we compute the double derivative of the wavefunction
     double sigma = m_parameters[0];
     double sigma2 = sigma*sigma;
@@ -77,10 +76,10 @@ double NeuralQuantumState::computeDoubleDerivative(Network* neuralnetwork, int m
     for (int j = 0; j < nh; j++){
       temp1 = 0;
       for (int i = 0; i < nx; i++){
-        temp1 += (neuralnetwork->getPositions()[i] * neuralnetwork->getWeigths()[i*nx + j]);
+        temp1 += (network->getPositions()[i] * network->getWeigths()[i*nx + j]);
       }
-      double Q = exp(neuralnetwork->getBiasB()[j] + temp1/(sigma2));
-      double w = neuralnetwork->getWeigths()[m*nx + j];
+      double Q = exp(network->getBiasB()[j] + temp1/(sigma2));
+      double w = network->getWeigths()[m*nx + j];
       psi2 += w*w * Q/((Q+1)*(Q+1));
     }
 

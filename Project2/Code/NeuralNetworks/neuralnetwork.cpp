@@ -45,7 +45,7 @@ vec NeuralNetwork::computeBiasBgradients() {
     for (int n = 0; n < nh; n++){
       temp1 = 0;
       for (int i = 0; i < nx; i++){
-        temp1 += (getPositions()[i] * getWeigths()[i][n]);
+        temp1 += (getPositions()[i] * getWeigths()[i*nx +n]);
       }
       Q = exp(-getBiasB()[n] - temp1/(sigma2)) + 1;
       bgradient(n) = 1/Q;
@@ -71,7 +71,7 @@ vec NeuralNetwork::computeWeightsgradients() {
       for (int n = 0; n < nh; n++){
         temp1 = 0;
         for (int i = 0; i < nx; i++){
-          temp1 += (getPositions()[i] * getWeigths()[i][n]);
+          temp1 += (getPositions()[i] * getWeigths()[i*nx +n]);
         }
         Q = exp(-getBiasB()[n] - temp1/(sigma2)) + 1;
         wgradient(m*nx + n) = getPositions()[m]/(sigma2*Q);
@@ -103,7 +103,7 @@ void NeuralNetwork::optimizeWeights(vec agrad, vec bgrad, vec wgrad){
 }
 
 
-void NeuralNetwork::setPositons(const std::vector<double> &positions) {
+void NeuralNetwork::setPositions(const std::vector<double> &positions) {
     m_positions = positions;
 }
 

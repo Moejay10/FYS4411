@@ -8,6 +8,7 @@
 #include <math.h>
 #include <cassert>
 #include <time.h>
+#include <armadillo>
 
 // Include all header files
 #include "system.h"

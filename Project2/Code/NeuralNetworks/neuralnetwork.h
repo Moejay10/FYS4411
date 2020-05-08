@@ -19,6 +19,7 @@ public:
     void setWeights(std::vector<double> &weights);
     void setBiasA(std::vector<double> &biasA);
     void setBiasB(std::vector<double> &biasB);
+    
     std::vector<double> getPositions() { return m_positions; }
     std::vector<double> getWeigths() { return m_weights; }
     std::vector<double> getBiasA() { return m_biasA; }

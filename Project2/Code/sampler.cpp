@@ -6,7 +6,6 @@
 #include <armadillo>
 #include "sampler.h"
 #include "system.h"
-#include "particle.h"
 #include "Hamiltonians/hamiltonian.h"
 #include "WaveFunctions/wavefunction.h"
 #include "NeuralNetworks/network.h"

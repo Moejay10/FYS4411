@@ -4,6 +4,7 @@
 #include <iostream>
 #include <random>
 #include <time.h>
+#include <omp.h>
 #include "system.h"
 #include "sampler.h"
 #include "particle.h"
@@ -36,10 +37,10 @@ bool System::metropolisStep() {
 
    int Dim = getNumberOfDimensions(); // The Dimensions
 
-   double r, wfold, wfnew;
+   double wfold, wfnew;
 
    // Initial Position
-   wfold = getWaveFunction()->evaluate(getNetwork());
+   wfold = getWaveFunction()->evaluate(m_network);
 
    // Trial position moving one particle at the time in all dimensions
    getNetwork()->adjustPositions(m_stepLength*a, 0, input);
@@ -50,7 +51,7 @@ bool System::metropolisStep() {
      }
    }
 
-   wfnew = getWaveFunction()->evaluate(getNetwork());
+   wfnew = getWaveFunction()->evaluate(m_network);
 
    // Metropolis test
    if ( RandomNumberGenerator(gen) <= wfnew*wfnew/(wfold*wfold) ){
@@ -70,7 +71,7 @@ bool System::metropolisStep() {
     }
 }
 
-
+/*
 bool System::ImportanceMetropolisStep() {
      // Perform the Importance sampling metropolis step.
 
@@ -148,19 +149,23 @@ bool System::ImportanceMetropolisStep() {
   }
 
 }
+*/
 
 void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolisSteps) {
-  m_particles                 = m_initialState->getParticles();
   m_sampler                   = new Sampler(this);
   m_numberOfMetropolisSteps   = numberOfMetropolisSteps;
   m_sampler->setNumberOfMetropolisSteps(numberOfMetropolisSteps);
 
+  double start_time, end_time, total_time;
+  double counter = 0;
+
   for (int i = 0; i < OptCycles; i++){
+    start_time = omp_get_wtime();
+
     runMetropolisSteps(ofile, numberOfMetropolisSteps);
 
     end_time = omp_get_wtime();
     total_time = end_time - start_time;
-    counter = counter/(numberOfMetropolisSteps);
 
     m_sampler->computeAverages(total_time, counter);
     m_sampler->printOutputToTerminal(total_time, counter);
@@ -170,31 +175,16 @@ void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolis
 
 void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
 
-    int N = getNumberOfParticles();
     double counter = 0;
     bool acceptedStep;
 
-    m_sampler->setEnergies(numberOfMetropolisSteps);
-
-    double start_time, end_time, total_time;
-
-    start_time = omp_get_wtime();
     for (int i = 1; i <= numberOfMetropolisSteps; i++) {
-        // Choose importance samling or brute force
-        if (getImportanceSampling()){
-            acceptedStep = ImportanceMetropolisStep();
-        }
-        else{
-            acceptedStep = metropolisStep();
-        }
+        acceptedStep = metropolisStep();
 
         counter += acceptedStep;
 
         m_sampler->sample(acceptedStep, i);
-        if (getOneBodyDensity() != true){
-            m_sampler->WriteResultstoFile(ofile, i);
-        }
-        m_sampler->Analysis(i);
+
     }
 
 }

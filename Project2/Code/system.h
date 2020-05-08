@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <string>
 #include <time.h>
+#include <omp.h>
 using namespace std;
 
 class System {
