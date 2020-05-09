@@ -40,7 +40,7 @@ bool System::metropolisStep() {
    double wfold, wfnew;
 
    // Initial Position
-   wfold = getWaveFunction()->evaluate(m_network);
+   wfold = getWaveFunction()->evaluate();
 
    // Trial position moving one particle at the time in all dimensions
    getNetwork()->adjustPositions(m_stepLength*a, 0, input);
@@ -51,7 +51,7 @@ bool System::metropolisStep() {
      }
    }
 
-   wfnew = getWaveFunction()->evaluate(m_network);
+   wfnew = getWaveFunction()->evaluate();
 
    // Metropolis test
    if ( RandomNumberGenerator(gen) <= wfnew*wfnew/(wfold*wfold) ){

@@ -9,6 +9,7 @@
 #include <cassert>
 #include <time.h>
 #include <armadillo>
+#include <omp.h>
 
 // Include all header files
 #include "system.h"
@@ -24,6 +25,7 @@
 #include "Math/random.h"
 
 ofstream ofile;
+using namespace arma;
 using namespace std;
 
 // #############################################################################

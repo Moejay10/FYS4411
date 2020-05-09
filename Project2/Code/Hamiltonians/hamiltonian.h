@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <armadillo>
 #include "../NeuralNetworks/network.h"
 
 class Hamiltonian {

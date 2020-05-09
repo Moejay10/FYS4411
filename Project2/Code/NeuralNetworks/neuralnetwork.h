@@ -16,19 +16,19 @@ public:
 
     void setPositions(const vec &positions);
     void adjustPositions(double change, int dimension, int input);
-    void setWeights(vec &weights);
+    void setWeights(mat &weights);
     void setBiasA(vec &biasA);
     void setBiasB(vec &biasB);
 
     vec getPositions() { return m_positions; }
-    vec getWeigths() { return m_weights; }
+    mat getWeigths() { return m_weights; }
     vec getBiasA() { return m_biasA; }
     vec getBiasB() { return m_biasB; }
 
 private:
     double     m_eta = 0;
 
-    vec m_weights;
+    mat m_weights;
     vec m_positions;
     vec m_biasA;
     vec m_biasB;

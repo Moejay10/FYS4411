@@ -1,16 +1,17 @@
 #pragma once
+#include <armadillo>
 #include <vector>
 #include "../NeuralNetworks/network.h"
-
+using namespace arma;
 
 class WaveFunction {
 public:
     WaveFunction(class System* system);
     int     getNumberOfParameters() { return m_numberOfParameters; }
     std::vector<double> getParameters() { return m_parameters; }
-    virtual double evaluate(Network* network) = 0;
-    virtual double computeDoubleDerivative(Network* network, int m) = 0;
-    virtual double computeFirstDerivative(Network* network, int m) = 0;
+    virtual double evaluate() = 0;
+    virtual vec computeDoubleDerivative() = 0;
+    virtual vec computeFirstDerivative() = 0;
 
 
 

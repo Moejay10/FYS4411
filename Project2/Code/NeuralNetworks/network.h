@@ -15,12 +15,12 @@ public:
 
     virtual void setPositions(const vec &positions) = 0;
     virtual void adjustPositions(double change, int dimension, int input) = 0;
-    virtual void setWeights(vec &weights) = 0;
+    virtual void setWeights(mat &weights) = 0;
     virtual void setBiasA(vec &biasA) = 0;
     virtual void setBiasB(vec &biasB) = 0;
 
     virtual vec getPositions() = 0;
-    virtual vec getWeigths() = 0;
+    virtual mat getWeigths() = 0;
     virtual vec getBiasA() = 0;
     virtual vec getBiasB() = 0;
 

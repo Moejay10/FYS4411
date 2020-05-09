@@ -1,11 +1,13 @@
 #include <cassert>
 #include <iostream>
+#include <armadillo>
 #include "../system.h"
 #include "../WaveFunctions/wavefunction.h"
 #include "../NeuralNetworks/network.h"
 
 #include "harmonicoscillator.h"
 
+using namespace arma;
 using std::cout;
 using std::endl;
 
@@ -23,21 +25,20 @@ HarmonicOscillator::HarmonicOscillator(System* system, double omega) :
  */
 
 
-
-
 double HarmonicOscillator::computeLocalEnergy(Network* network) {
     // Here we compute the analytical local energy
-    int M = m_system->getNumberOfInputs();
+    int nx = m_system->getNumberOfInputs();
     double kineticenergy = 0;
     double potentialenergy = 0;
-    double totalenergy, firstder, secondder, x;
+    double totalenergy;
 
-    for (int m = 0; m < M; m++){
-      firstder = m_system->getWaveFunction()->computeFirstDerivative(network, m);
-      secondder = m_system->getWaveFunction()->computeDoubleDerivative(network, m);
-      x = network->getPositions()(m);
-      kineticenergy += (-(firstder*firstder) - secondder);
-      potentialenergy += m_omega*m_omega*x*x;
+    vec firstder = m_system->getWaveFunction()->computeFirstDerivative();
+    vec secondder = m_system->getWaveFunction()->computeDoubleDerivative();
+
+    // Loop over the visibles (n_particles*n_coordinates) for the Laplacian
+    for (int i = 0; i < nx; i++){
+      kineticenergy += -firstder(i)*firstder(i) - secondder(i);
+      potentialenergy += m_omega*m_omega*network->getPositions()(i)*m_system->getNetwork()->getPositions()(i);
     }
 
     totalenergy = 0.5*(kineticenergy + potentialenergy);
