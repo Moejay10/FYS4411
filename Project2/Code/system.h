@@ -10,9 +10,11 @@ using namespace std;
 class System {
 public:
     bool ImportanceMetropolisStep   ();
+    void Gibbs                      ();
     bool metropolisStep             ();
     bool setRepulsivePotential      (bool);
     bool setImportanceSampling      (bool);
+    bool setGibbsSampling           (bool);
     bool setNumericalDerivative     (bool);
     bool setPrintOutToTerminal      (bool);
     void runOptimizer               (ofstream& ofile, int OptCycles, int numberOfMetropolisSteps);
@@ -58,6 +60,7 @@ public:
     double getBinEndpoint()             { return m_binEndpoint; }
     bool   getRepulsivePotential()      { return m_statement;}
     bool   getImportanceSampling()      { return m_importance_sampling;}
+    bool   getGibbsSampling()           { return m_gibbs_sampling;}
     bool   getOneBodyDensity()          { return m_oneBodyDensity;}
     bool   getNumericalDerivative()     { return m_numerical_dericative;}
     bool   getPrintToTerminal()         { return m_print_terminal;}
@@ -69,6 +72,7 @@ public:
 private:
     bool                            m_statement = false;
     bool                            m_importance_sampling = false;
+    bool                            m_gibbs_sampling = false;
     bool                            m_oneBodyDensity = false;
     bool                            m_numerical_dericative = false;
     bool                            m_print_terminal = true;

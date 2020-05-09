@@ -151,6 +151,56 @@ bool System::ImportanceMetropolisStep() {
 
 }
 
+void System::Gibbs() {
+  // Set new hidden variables given positions, according to the logistic sigmoid function
+  // (implemented by comparing the sigmoid probability to a uniform random variable)
+
+  // Initialize the seed and call the Mersienne algo
+  std::random_device rd;
+  std::mt19937_64 gen(rd());
+  // Set up the uniform distribution for x \in [[0, 1]
+  std::normal_distribution<double> Normal(0.0,1.0);
+  std::uniform_real_distribution<double> Uniform(0.0,1.0);
+  // Set up the uniform distribution for x \in [[0, N]
+  std::uniform_int_distribution<int> Inputs(0,getNumberOfParticles()-1);
+
+  int nx = getNumberOfInputs();
+  int nh = getNumberOfHidden();
+
+  double sigma = getWaveFunction()->getParameters()[0];
+  double sigma2 = sigma*sigma;
+
+  vec x = getNetwork()->getPositions();
+  vec a = getNetwork()->getBiasA();
+  vec b = getNetwork()->getBiasB();
+  mat w = getNetwork()->getWeigths();
+
+  vec xw = (x.t()*w).t();
+  vec h(nh);
+  vec new_positions(nx);
+
+  double z, logisticSigmoid;
+  for (int j = 0; j < nh; j++) {
+    z = b(j) + (xw(j))/(sigma2);
+    logisticSigmoid = 1.0/(1+exp(-z));
+    h(j) = Uniform(gen) < logisticSigmoid;
+  }
+
+  vec wh = w*h;
+  // Set new positions (visibles) given hidden, according to normal distribution
+  std::normal_distribution<double> distributionX;
+  double xMean;
+  for (int i = 0; i < nx; i++) {
+      xMean = a(i) + wh(i);
+      distributionX = std::normal_distribution<double>(xMean, sigma);
+      new_positions(i) = distributionX(gen);
+  }
+
+  getNetwork()->setPositions(new_positions);
+}
+
+
+
 
 void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolisSteps) {
   m_sampler                   = new Sampler(this);
@@ -169,8 +219,6 @@ void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolis
 
     end_time = omp_get_wtime();
     total_time = end_time - start_time;
-
-    cout << counter << endl;
 
     m_sampler->computeAverages(total_time);
     m_sampler->printOutputToTerminal(total_time);
@@ -191,6 +239,11 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
     if (getImportanceSampling()){
         acceptedStep = ImportanceMetropolisStep();
     }
+
+    else if (getGibbsSampling()){
+      Gibbs();
+    }
+
     else{
         acceptedStep = metropolisStep();
     }
@@ -303,6 +356,10 @@ bool System::setRepulsivePotential(bool statement){
 
 bool System::setImportanceSampling(bool importance_sampling){
   m_importance_sampling = importance_sampling;
+}
+
+bool System::setGibbsSampling(bool gibbs_sampling){
+  m_gibbs_sampling = gibbs_sampling;
 }
 
 bool System::setNumericalDerivative(bool numerical_derivative){

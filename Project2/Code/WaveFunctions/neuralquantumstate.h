@@ -8,7 +8,7 @@ using namespace arma;
 
 class NeuralQuantumState : public WaveFunction {
 public:
-    NeuralQuantumState(class System* system, double sigma);
+    NeuralQuantumState(class System* system, double sigma, double gibbs);
     double evaluate();
     vec computeFirstDerivative();
     vec computeDoubleDerivative();

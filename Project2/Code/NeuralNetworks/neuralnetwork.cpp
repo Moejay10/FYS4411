@@ -16,13 +16,14 @@ vec NeuralNetwork::computeBiasAgradients() {
     // Here we compute the derivative of the wave function
     double sigma = m_system->getWaveFunction()->getParameters()[0];
     double sigma2 = sigma*sigma;
+    double gibbs = m_system->getWaveFunction()->getParameters()[1];
     double temp1 = 0;
     int nx = m_system->getNumberOfInputs();
 
     vec agradient(nx);
 
     for (int m = 0; m < nx; m++){
-      temp1 = (getPositions()(m) - getBiasA()(m))/(sigma2);
+      temp1 = (getPositions()(m) - getBiasA()(m))/(gibbs*sigma2);
       agradient(m) = temp1;
     }
 
@@ -33,13 +34,14 @@ vec NeuralNetwork::computeBiasBgradients() {
     // Here we compute the derivative of the wave function
     double sigma = m_system->getWaveFunction()->getParameters()[0];
     double sigma2 = sigma*sigma;
+    double gibbs = m_system->getWaveFunction()->getParameters()[1];
     int nh = m_system->getNumberOfHidden();
 
     vec Q = getBiasB() + (1.0/sigma2)*(getPositions().t()*getWeigths()).t();
     vec bgradient(nh);
 
     for (int j = 0; j < nh; j++) {
-        bgradient(j) = 1.0/(1.0+exp(-Q(j)));
+        bgradient(j) = 1.0/(gibbs*(1.0+exp(-Q(j))));
     }
 
     return bgradient;
@@ -50,6 +52,7 @@ vec NeuralNetwork::computeWeightsgradients() {
     // Here we compute the derivative of the wave function
     double sigma = m_system->getWaveFunction()->getParameters()[0];
     double sigma2 = sigma*sigma;
+    double gibbs = m_system->getWaveFunction()->getParameters()[1];
     int nx = m_system->getNumberOfInputs();
     int nh = m_system->getNumberOfHidden();
 
@@ -58,7 +61,7 @@ vec NeuralNetwork::computeWeightsgradients() {
 
     for (int i = 0; i < nx; i++) {
       for (int j = 0; j < nh; j++) {
-          wgradient(i*nh + j) = getPositions()(i)/(sigma2*(1.0+exp(-Q(j))));
+          wgradient(i*nh + j) = getPositions()(i)/(gibbs*sigma2*(1.0+exp(-Q(j))));
       }
     }
 

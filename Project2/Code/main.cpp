@@ -91,9 +91,9 @@ using namespace std;
 int main() {
 
   cout << "\n" << "Which Project Task do you want to run?: " << endl;
-  cout << "\n" << "Project Task B - Initial Code: " <<  "Write b " << endl;
-  cout << "\n" << "Project Task C - Importance Sampling: " <<  "Write c " << endl;
-  cout << "\n" << "Project Task D - Statistical Analysis: " <<  "Write d " << endl;
+  cout << "\n" << "Project Task B -  Initial Code: " <<  "Write b " << endl;
+  cout << "\n" << "Project Task C -  Importance Sampling: " <<  "Write c " << endl;
+  cout << "\n" << "Project Task D -  Statistical Analysis: " <<  "Write d " << endl;
   cout << "\n" << "Project Task F  - Gibbs sampling: " <<  "Write e " << endl;
   cout << "\n" << "Project Task G  - Interaction: " <<  "Write g " << endl;
 
@@ -104,11 +104,12 @@ int main() {
   int MCcycles            = 1e4;
   int numberOfParticles   = 2;
   int numberOfDimensions  = 2;
-  int numberOfHidden        = 2;          // Number of hidden units
+  int numberOfHidden      = 2;            // Number of hidden units
   double sigma            = 1.0;          // Normal distribution visibles
-  double eta              = 0.01;        // Learning rate
+  double gibbs            = 2.0;          // Gibbs parameter to change the wavefunction
+  double eta              = 0.01;         // Learning rate
   double omega            = 1.0;          // Oscillator frequency.
-  double stepLength       = 1.5;          // Metropolis step length.
+  double stepLength       = 0.45;         // Metropolis step length.
   double timeStep         = 1.0;          // Timestep to be used in Metropolis-Hastings
   double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.
   double equilibration    = 0.1;          // Amount of the total steps used
@@ -130,7 +131,7 @@ int main() {
       system->setNetwork                  (new NeuralNetwork(system, eta));
       system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
       system->setHamiltonian              (new HarmonicOscillator(system, omega));
-      system->setWaveFunction             (new NeuralQuantumState(system, sigma));
+      system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
       system->setStepLength               (stepLength);
       system->setPrintOutToTerminal       (true);
       system->runOptimizer                (ofile, OptCycles, MCcycles);
@@ -146,7 +147,7 @@ int main() {
     system->setNetwork                  (new NeuralNetwork(system, eta));
     system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
     system->setHamiltonian              (new HarmonicOscillator(system, omega));
-    system->setWaveFunction             (new NeuralQuantumState(system, sigma));
+    system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
     system->setTimeStep                 (timeStep);
     system->setDiffusionCoefficient     (diffusionCoefficient);
     system->setImportanceSampling       (true);
@@ -174,7 +175,7 @@ int main() {
     system->setNetwork                  (new NeuralNetwork(system, eta));
     system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
     system->setHamiltonian              (new HarmonicOscillator(system, omega));
-    system->setWaveFunction             (new NeuralQuantumState(system, sigma));
+    system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
     system->setTimeStep                 (timeStep);
     system->setDiffusionCoefficient     (diffusionCoefficient);
     system->setImportanceSampling       (true);
@@ -184,6 +185,45 @@ int main() {
     ofile.close();
 
   }
+
+
+  if (Task == "f"){
+
+    // Analytical Run
+    cout << "-------------- \n" << "Gibbs sampling \n" << "-------------- \n" << endl;
+    gibbs = 2;
+
+    //Initialise the system.
+    System* system = new System();
+    system->setNetwork                  (new NeuralNetwork(system, eta));
+    system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
+    system->setHamiltonian              (new HarmonicOscillator(system, omega));
+    system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
+    system->setGibbsSampling            (true);
+    system->setPrintOutToTerminal       (true);
+    system->runOptimizer                (ofile, OptCycles, MCcycles);
+
+  }
+
+
+  if (Task == "g"){
+
+    // Analytical Run
+    cout << "-------------- \n" << "Interaction \n" << "-------------- \n" << endl;
+
+      //Initialise the system.
+      System* system = new System();
+      system->setNetwork                  (new NeuralNetwork(system, eta));
+      system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
+      system->setHamiltonian              (new HarmonicOscillator(system, omega));
+      system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
+      system->setStepLength               (stepLength);
+      system->setRepulsivePotential       (true);
+      system->setPrintOutToTerminal       (true);
+      system->runOptimizer                (ofile, OptCycles, MCcycles);
+
+  }
+
 
 
 

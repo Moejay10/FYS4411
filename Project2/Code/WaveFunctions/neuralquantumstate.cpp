@@ -10,19 +10,23 @@
 using namespace arma;
 using namespace std;
 
-NeuralQuantumState::NeuralQuantumState(System* system, double sigma) :
+NeuralQuantumState::NeuralQuantumState(System* system, double sigma, double gibbs) :
         WaveFunction(system) {
     assert(sigma >= 0);
-    m_numberOfParameters = 1;
-    m_parameters.reserve(1);
+    assert(gibbs >= 0);
+    m_numberOfParameters = 2;
+    m_parameters.reserve(2);
     m_parameters.push_back(sigma);
+    m_parameters.push_back(gibbs);
 }
 
 double NeuralQuantumState::evaluate() {
     // Here we compute the wave function.
     double sigma = m_parameters[0];
     double sigma2 = sigma*sigma;
+    double gibbs = m_parameters[1];
     double psi1 = 0, psi2 = 1;
+    double psi;
     int nx = m_system->getNumberOfInputs();
     int nh = m_system->getNumberOfHidden();
 
@@ -38,7 +42,14 @@ double NeuralQuantumState::evaluate() {
         psi2 *= (1 + exp(Q(j)));
     }
 
-    return psi1*psi2;
+    if (gibbs == 2){
+      psi = sqrt(psi1*psi2);
+    }
+    else{
+      psi = psi1*psi2;
+    }
+
+    return psi;
 }
 
 vec NeuralQuantumState::computeFirstDerivative() {
@@ -47,6 +58,7 @@ vec NeuralQuantumState::computeFirstDerivative() {
 
     double sigma = m_parameters[0];
     double sigma2 = sigma*sigma;
+    double gibbs = m_parameters[1];
     double temp;
     int nx = m_system->getNumberOfInputs();
     int nh = m_system->getNumberOfHidden();
@@ -59,7 +71,7 @@ vec NeuralQuantumState::computeFirstDerivative() {
       for (int j = 0; j < nh; j++){
         temp += m_system->getNetwork()->getWeigths()(i,j)/(1.0+exp(-Q(j)));
       }
-      psi1(i) = -(m_system->getNetwork()->getPositions()(i) - m_system->getNetwork()->getBiasA()(i))/sigma2 + temp/sigma2;
+      psi1(i) = -(m_system->getNetwork()->getPositions()(i) - m_system->getNetwork()->getBiasA()(i))/(gibbs*sigma2) + temp/(gibbs*sigma2);
 
     }
 
@@ -70,6 +82,7 @@ vec NeuralQuantumState::computeDoubleDerivative() {
     // Here we compute the double derivative of the wavefunction
     double sigma = m_parameters[0];
     double sigma2 = sigma*sigma;
+    double gibbs = m_parameters[1];
     double temp;
     int nx = m_system->getNumberOfInputs();
     int nh = m_system->getNumberOfHidden();
@@ -82,7 +95,7 @@ vec NeuralQuantumState::computeDoubleDerivative() {
       for (int j = 0; j < nh; j++){
         temp += m_system->getNetwork()->getWeigths()(i,j)*m_system->getNetwork()->getWeigths()(i,j)*exp(-Q(j))/(1.0+exp(-Q(j)))*(1.0+exp(-Q(j)));
       }
-      psi2(i) = -1.0/sigma2 + temp/(sigma2*sigma2);
+      psi2(i) = -1.0/(gibbs*sigma2) + temp/(gibbs*sigma2*sigma2);
 
     }
 

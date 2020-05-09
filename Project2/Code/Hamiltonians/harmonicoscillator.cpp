@@ -43,5 +43,34 @@ double HarmonicOscillator::computeLocalEnergy(Network* network) {
 
     totalenergy = 0.5*(kineticenergy + potentialenergy);
 
+    // With interaction:
+    if (m_system->getRepulsivePotential()) {
+        totalenergy += Interaction();
+    }
+
     return totalenergy;
+}
+
+double HarmonicOscillator::Interaction() {
+
+  double interactionTerm = 0;
+  double rDistance;
+  int nx = m_system->getNumberOfInputs();
+  int dim = m_system->getNumberOfDimensions();
+
+  vec x = m_system->getNetwork()->getPositions();
+
+  // Loop over each particle
+  for (int r = 0; r < nx - dim; r += dim) {
+      // Loop over each particle s that particle r hasn't been paired with
+      for (int s = (r+dim); s < nx; s += dim) {
+          rDistance = 0;
+          // Loop over each dimension
+          for (int i = 0; i < dim; i++) {
+              rDistance += (x(r+i) - x(s+i))*(x(r+i) - x(s+i));
+          }
+          interactionTerm += 1.0/sqrt(rDistance);
+      }
+  }
+  return interactionTerm;
 }
