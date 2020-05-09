@@ -175,23 +175,21 @@ void System::Gibbs() {
   vec b = getNetwork()->getBiasB();
   mat w = getNetwork()->getWeigths();
 
-  vec xw = (x.t()*w).t();
   vec h(nh);
   vec new_positions(nx);
 
   double z, logisticSigmoid;
   for (int j = 0; j < nh; j++) {
-    z = b(j) + (xw(j))/(sigma2);
+    z = b(j) + (dot(x, w.col(j)))/(sigma2);
     logisticSigmoid = 1.0/(1+exp(-z));
     h(j) = Uniform(gen) < logisticSigmoid;
   }
 
-  vec wh = w*h;
   // Set new positions (visibles) given hidden, according to normal distribution
   std::normal_distribution<double> distributionX;
   double xMean;
   for (int i = 0; i < nx; i++) {
-      xMean = a(i) + wh(i);
+      xMean = a(i) + dot(h, w.col(i));
       distributionX = std::normal_distribution<double>(xMean, sigma);
       new_positions(i) = distributionX(gen);
   }
@@ -362,8 +360,8 @@ bool System::setGibbsSampling(bool gibbs_sampling){
   m_gibbs_sampling = gibbs_sampling;
 }
 
-bool System::setNumericalDerivative(bool numerical_derivative){
-  m_numerical_dericative = numerical_derivative;
+bool System::setOptimizer(bool optimizer){
+  m_optimizer = optimizer;
 }
 
 bool System::setPrintOutToTerminal(bool print_terminal){

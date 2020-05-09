@@ -148,8 +148,14 @@ void Sampler::computeAverages(double total_time) {
     m_bgrad = 2*(m_EbDelta - m_cumulativeEnergy*m_bDelta);
     m_wgrad = 2*(m_EwDelta - m_cumulativeEnergy*m_wDelta);
 
-    // Update weights and biases
-    m_system->getNetwork()->optimizeWeights(m_agrad, m_bgrad, m_wgrad);
+    // Optimizer parameters (choose either stochastic gradient descent (SGD) or adaptive SGD (ASGD))
+    if (m_system->getOptimizer()){
+      m_system->getNetwork()->StochasticGradientDescent(m_agrad, m_bgrad, m_wgrad);
+    }
+    
+    else{
+      m_system->getNetwork()->GradientDescent(m_agrad, m_bgrad, m_wgrad);
+    }
 
     m_totalTime = total_time;
     m_acceptedStep *= norm;

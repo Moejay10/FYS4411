@@ -11,7 +11,8 @@ public:
     virtual vec computeBiasBgradients() = 0;
     virtual vec computeWeightsgradients() = 0;
 
-    virtual void optimizeWeights(vec agrad, vec bgrad, vec wgrad) = 0;
+    virtual void GradientDescent(vec agrad, vec bgrad, vec wgrad) = 0;
+    virtual void StochasticGradientDescent(vec agrad, vec bgrad, vec wgrad) = 0;
 
     virtual void setPositions(const vec &positions) = 0;
     virtual void adjustPositions(double change, int dimension, int input) = 0;
