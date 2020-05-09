@@ -23,11 +23,13 @@ void Sampler::setNumberOfMetropolisSteps(int steps) {
     m_numberOfMetropolisSteps = steps;
 }
 
+void Sampler::setacceptedStep(int counter) {
+    m_acceptedStep = counter;
+}
+
 
 void Sampler::setEnergies(int MCcycles) {
-  for (int i = 0; i < MCcycles; i++){
-    m_Energies.push_back(0);
-  }
+  m_Energies.zeros(MCcycles);
 
 }
 
@@ -84,15 +86,17 @@ void Sampler::sample(bool acceptedStep, int MCcycles) {
     m_stepNumber++;
 }
 
-void Sampler::printOutputToTerminal(double total_time, double acceptedStep) {
+void Sampler::printOutputToTerminal(double total_time) {
 
     // Initialisers
+    int     nx = m_system->getNumberOfInputs();
+    int     nh = m_system->getNumberOfHidden();
     int     np = m_system->getNumberOfParticles();
     int     nd = m_system->getNumberOfDimensions();
     int     ms = m_system->getNumberOfMetropolisSteps();
-    int     p  = m_system->getWaveFunction()->getNumberOfParameters();
+    int     p  = 3;
     double  ef = m_system->getEquilibrationFraction();
-    std::vector<double> pa = m_system->getWaveFunction()->getParameters();
+    vec pam(3); pam(0) = nx; pam(1) = nh; pam(2) = nx*nh;
 
     if (m_system->getPrintToTerminal()){
       cout << endl;
@@ -105,19 +109,19 @@ void Sampler::printOutputToTerminal(double total_time, double acceptedStep) {
       cout << "  -- Wave function parameters -- " << endl;
       cout << " Number of parameters : " << p << endl;
       for (int i=0; i < p; i++) {
-          cout << " Parameter " << i+1 << " : " << pa.at(i) << endl;
+          cout << " Parameter " << i+1 << " : " << pam(i) << endl;
       }
       cout << endl;
       cout << "  -- Results -- " << endl;
       cout << " Energy : " << m_energy << endl;
       cout << " Variance : " << m_variance << endl;
       cout << " Time : " << total_time << endl;
-      cout << " # Accepted Steps : " << acceptedStep << endl;
+      cout << " # Accepted Steps : " << m_acceptedStep << endl;
       cout << endl;
   }
 }
 
-void Sampler::computeAverages(double total_time, double acceptedStep) {
+void Sampler::computeAverages(double total_time) {
     /* Compute the averages of the sampled quantities.
      */
     int Dim = m_system->getNumberOfDimensions(); // The Dimension
@@ -148,26 +152,22 @@ void Sampler::computeAverages(double total_time, double acceptedStep) {
     m_system->getNetwork()->optimizeWeights(m_agrad, m_bgrad, m_wgrad);
 
     m_totalTime = total_time;
-    m_acceptedStep = acceptedStep;
+    m_acceptedStep *= norm;
 }
 
 
+void Sampler::Analysis(int MCcycles){
 
-void Sampler::WriteResultstoFile(ofstream& ofile, int MCcycles){
-  int N = m_system->getNumberOfParticles(); // Number of Particles
   double norm = 1.0/((double) (MCcycles));  // divided by  number of cycles
-
   double Energy = m_cumulativeEnergy * norm;
-  double CumulativeEnergy2 = m_cumulativeEnergy2 *norm;
-  double CumulativeEnergy = m_cumulativeEnergy *norm;
-  double Variance = CumulativeEnergy2 - CumulativeEnergy*CumulativeEnergy;
-  double STD = sqrt(Variance*norm);
+  m_Energies(MCcycles-1) = Energy;
+}
 
 
-  //ofile << "\n";
-  //ofile << setw(15) << setprecision(8) << MCcycles; // # Monte Carlo cycles (sweeps per lattice)
-  ofile << setw(15) << setprecision(8) << Energy << endl; // Mean energy
-  //ofile << setw(15) << setprecision(8) << m_cumulativeEnergy << endl; // Variance
-  //ofile << setw(15) << setprecision(8) << STD; // # Standard deviation
+void Sampler::WriteBlockingtoFile(ofstream& ofile, int MCcycles){
+
+  for (int i = 0; i < MCcycles; i++){
+    ofile << setw(15) << setprecision(8) << m_Energies(i) << endl; // Mean energy
+  }
 
 }

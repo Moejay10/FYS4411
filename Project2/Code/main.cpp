@@ -71,7 +71,7 @@ using namespace std;
 //     system->setStepLength               (stepLength);
 //     system->setDiffusionCoefficient     (diffusionCoefficient);
 //     system->setPrintOutToTerminal       (true); // true or false
-//     system->runMetropolisSteps          (ofile, numberOfSteps);
+//     system->runMetropolisSteps          (ofile, MCcycles);
 // #############################################################################
 //  - The optional initialiser:
 // #############################################################################
@@ -91,13 +91,28 @@ using namespace std;
 int main() {
 
   cout << "\n" << "Which Project Task do you want to run?: " << endl;
-  cout << "\n" << "Project Task A - Variational Parameter Alpha: " <<  "Write a " << endl;
-  cout << "\n" << "Project Task B - Analytical vs Numerical: " <<  "Write b " << endl;
+  cout << "\n" << "Project Task B - Initial Code: " <<  "Write b " << endl;
   cout << "\n" << "Project Task C - Importance Sampling: " <<  "Write c " << endl;
   cout << "\n" << "Project Task D - Statistical Analysis: " <<  "Write d " << endl;
-  cout << "\n" << "Project Task E  - Repulsive Interaction: " <<  "Write e " << endl;
-  cout << "\n" << "Project Task F  - Gradient Descent: " <<  "Write f " << endl;
-  cout << "\n" << "Project Task G  - Onebody Densities: " <<  "Write g " << endl;
+  cout << "\n" << "Project Task F  - Gibbs sampling: " <<  "Write e " << endl;
+  cout << "\n" << "Project Task G  - Interaction: " <<  "Write g " << endl;
+
+
+
+  // Chosen parameters
+  int OptCycles           = 50;
+  int MCcycles            = 1e4;
+  int numberOfParticles   = 2;
+  int numberOfDimensions  = 2;
+  int numberOfHidden        = 2;          // Number of hidden units
+  double sigma            = 1.0;          // Normal distribution visibles
+  double eta              = 0.01;        // Learning rate
+  double omega            = 1.0;          // Oscillator frequency.
+  double stepLength       = 1.5;          // Metropolis step length.
+  double timeStep         = 1.0;          // Timestep to be used in Metropolis-Hastings
+  double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.
+  double equilibration    = 0.1;          // Amount of the total steps used
+  // for equilibration.
 
 
   cout << "\n" << "Write here " << endl;
@@ -105,42 +120,70 @@ int main() {
   cin >> Task;
 
   //Benchmark task a.
-  if (Task == "a"){
+  if (Task == "b"){
 
-      // Chosen parameters
-      int OptCycles           = 10;
-      int MCcycles            = 1e5;
-      int numberOfParticles   = 2;
-      int numberOfDimensions  = 2;
-      int numberOfHidden        = 2;          // Number of hidden units
-      double sigma            = 1.0;          // Normal distribution visibles
-      double eta              = 0.01;         // Learning rate
-      double omega            = 1.0;          // Oscillator frequency.
-      double stepLength       = 1.5;          // Metropolis step length.
-      double stepSize         = 1e-2;         // Stepsize in the numerical derivative for kinetic energy
-      double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
-      double equilibration    = 0.1;          // Amount of the total steps used
-      // for equilibration.
+    // Analytical Run
+    cout << "-------------- \n" << "Initial Code \n" << "-------------- \n" << endl;
 
-      // Analytical Run
-      cout << "-------------- \n" << "Variational Parameter alpha \n" << "-------------- \n" << endl;
+      //Initialise the system.
+      System* system = new System();
+      system->setNetwork                  (new NeuralNetwork(system, eta));
+      system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
+      system->setHamiltonian              (new HarmonicOscillator(system, omega));
+      system->setWaveFunction             (new NeuralQuantumState(system, sigma));
+      system->setStepLength               (stepLength);
+      system->setPrintOutToTerminal       (true);
+      system->runOptimizer                (ofile, OptCycles, MCcycles);
 
-        //Initialise the system.
-        System* system = new System();
-        system->setNetwork                  (new NeuralNetwork(system, eta));
+  }
 
-        system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
+  if (Task == "c"){
 
-        system->setHamiltonian              (new HarmonicOscillator(system, omega));
+    cout << "-------------- \n" << "Importance Sampling \n" << "-------------- \n" << endl;
 
-        system->setWaveFunction             (new NeuralQuantumState(system, sigma));
+    //Initialise the system.
+    System* system = new System();
+    system->setNetwork                  (new NeuralNetwork(system, eta));
+    system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
+    system->setHamiltonian              (new HarmonicOscillator(system, omega));
+    system->setWaveFunction             (new NeuralQuantumState(system, sigma));
+    system->setTimeStep                 (timeStep);
+    system->setDiffusionCoefficient     (diffusionCoefficient);
+    system->setImportanceSampling       (true);
+    system->setPrintOutToTerminal       (true);
+    system->runOptimizer                (ofile, OptCycles, MCcycles);
 
-        system->setStepLength               (stepLength);
-        system->setPrintOutToTerminal       (true);
+  }
 
-        system->runOptimizer                (ofile, OptCycles, MCcycles);
 
-    }
+  if (Task == "d"){
+
+    cout << "-------------- \n" << "Statistical Analysis \n" << "-------------- \n" << endl;
+
+    MCcycles = 15;
+    MCcycles = pow(2, MCcycles);
+
+    // Choose which file to write to
+    string file = "Python/Results/Task_d/Blocking.dat";
+    ofile.open(file);
+    ofile << setiosflags(ios::showpoint | ios::uppercase);
+    ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
+
+    //Initialise the system.
+    System* system = new System();
+    system->setNetwork                  (new NeuralNetwork(system, eta));
+    system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
+    system->setHamiltonian              (new HarmonicOscillator(system, omega));
+    system->setWaveFunction             (new NeuralQuantumState(system, sigma));
+    system->setTimeStep                 (timeStep);
+    system->setDiffusionCoefficient     (diffusionCoefficient);
+    system->setImportanceSampling       (true);
+    system->setPrintOutToTerminal       (true);
+    system->runOptimizer                (ofile, OptCycles, MCcycles);
+
+    ofile.close();
+
+  }
 
 
 

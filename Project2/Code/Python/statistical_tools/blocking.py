@@ -3,7 +3,7 @@ import pandas as pd
 from pandas import DataFrame
 import numpy as np
 # Where to save the figures and data files
-DATA_ID = "Results/Task_d"
+DATA_ID = "../Results/Task_d"
 
 def data_path(dat_id):
     return os.path.join(DATA_ID, dat_id)
@@ -50,25 +50,25 @@ def use_blocking_importance():
     mean_list = []
     std_list = []
     var_list = []
-    for i in [2, 10]:
-        infile =  open(data_path("Blocking_Importance_Sampling"+str(i)+"_particles_3_dim.dat"),'r')
-        infile.readline()
-        data = np.loadtxt(infile)
-        data = data[0:]
-        (mean, var) = block(data[int(len(data)/4):])
-        std = np.sqrt(var)
-        mean_list.append(mean)
-        std_list.append(std)
-        var_list.append(var)
-    frame['Particles'] = [2, 10]
+    infile = open(data_path("Blocking.dat"),'r')
+    infile.readline()
+    data = np.loadtxt(infile)
+    data = data[0:]
+    (mean, var) = block(data)
+    std = np.sqrt(var)
+    mean_list.append(mean)
+    std_list.append(std)
+    var_list.append(var)
+    frame['Particles'] = 2
     frame['Mean block'] = mean_list
     frame['Variance block'] = var_list
     frame['STD block'] = std_list
     frame = pd.DataFrame(frame)
+
     return frame
 
 frameblocking = use_blocking_importance()
-frame = pd.read_fwf(data_path("STD_Importance_Sampling.dat"))
+#frame = pd.read_fwf(data_path("STD_Importance_Sampling.dat"))
 
-print(frame)
+#print(frame)
 print(frameblocking)

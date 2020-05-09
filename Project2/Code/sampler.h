@@ -11,20 +11,22 @@ class Sampler {
 public:
     Sampler(class System* system);
     void setNumberOfMetropolisSteps(int steps);
+    void setacceptedStep(int counter);
     void setEnergies(int MCcycles);
     void setGradients();
     void sample(bool acceptedStep, int MCcycles);
-    void printOutputToTerminal(double time, double acceptedStep);
-    void computeAverages(double time, double acceptedStep);
+    void printOutputToTerminal(double time);
+    void computeAverages(double time);
+    void Analysis(int MCcycles);
+    void WriteBlockingtoFile(ofstream& ofile, int MCcycles);
 
-    void WriteResultstoFile(ofstream& ofile, int MCcycles);
     double getSTD()                   { return m_STD; }
     double getVAR()                   { return m_variance; }
     double getEnergy()                { return m_energy; }
     double getEnergyDer()             { return m_EnergyDer; }
     double getTime()                  { return m_totalTime; }
     double getAcceptedStep()          { return m_acceptedStep; }
-    vector<double> getEnergies()      { return m_Energies; }
+    vec getEnergies()                 { return m_Energies; }
 
 
 
@@ -42,7 +44,7 @@ private:
     double  m_totalTime = 0;
     double  m_acceptedStep = 0;
 
-    std::vector<double>  m_Energies;
+    vec m_Energies;
 
     vec m_aDelta;
     vec m_bDelta;

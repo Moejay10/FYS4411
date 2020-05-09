@@ -71,7 +71,7 @@ bool System::metropolisStep() {
     }
 }
 
-/*
+
 bool System::ImportanceMetropolisStep() {
      // Perform the Importance sampling metropolis step.
 
@@ -94,36 +94,36 @@ bool System::ImportanceMetropolisStep() {
 
 
      double r, wfold, wfnew, poschange;
-     std::vector<double> posold, posnew, qfold, qfnew;
 
      // Initial Position
-     posold = getNetwork()->getPositions();
-     wfold = getWaveFunction()->evaluate(getNetwork());
-     qfold = getHamiltonian()->computeQuantumForce(getNetwork(), Nparticle);
+     vec posold = getNetwork()->getPositions();
+     wfold = getWaveFunction()->evaluate();
+     vec qfold = 2*(getWaveFunction()->computeFirstDerivative());
+
 
 
      // Trial position moving one particle at the time in all dimensions
-     poschange = a*sqrt(m_timeStep) + qfold[0]*m_timeStep*m_diffusionCoefficient;
-     m_particles[Nparticle]->adjustPositions(poschange, 0);
+     poschange = a*sqrt(m_timeStep) + qfold(input*N + 0)*m_timeStep*m_diffusionCoefficient;
+     getNetwork()->adjustPositions(poschange, 0, input);
      if (Dim > 1){
-       poschange = b*sqrt(m_timeStep) + qfold[1]*m_timeStep*m_diffusionCoefficient;
-       m_particles[Nparticle]->adjustPositions(poschange, 1);
+       poschange = b*sqrt(m_timeStep) + qfold(input*N + 1)*m_timeStep*m_diffusionCoefficient;
+       getNetwork()->adjustPositions(poschange, 1, input);
        if (Dim > 2){
-         poschange = c*sqrt(m_timeStep) + qfold[2]*m_timeStep*m_diffusionCoefficient;
-         m_particles[Nparticle]->adjustPositions(poschange, 2);
+         poschange = c*sqrt(m_timeStep) + qfold(input*N + 2)*m_timeStep*m_diffusionCoefficient;
+         getNetwork()->adjustPositions(poschange, 2, input);
        }
      }
 
 
-     posnew = getNetwork()->getPositions();
-     wfnew = getWaveFunction()->evaluate(getNetwork());
-     qfnew = getHamiltonian()->computeQuantumForce(getNetwork(), Nparticle);
+     vec posnew = getNetwork()->getPositions();
+     wfnew = getWaveFunction()->evaluate();
+     vec qfnew = 2*(getWaveFunction()->computeFirstDerivative());
 
      // Greens function
      double greensFunction = 0;
      for (int k = 0; k < Dim; k++)
      {
-       greensFunction += 0.5*(qfold[k] + qfnew[k])*(m_diffusionCoefficient*m_timeStep*0.5*(qfold[k] - qfnew[k]) - posnew[k] + posold[k]);
+       greensFunction += 0.5*(qfold(input*N + k) + qfnew(input*N + k))*(m_diffusionCoefficient*m_timeStep*0.5*(qfold(input*N + k) - qfnew(input*N + k)) - posnew(input*N + k) + posold(input*N + k));
      }
      greensFunction = exp(greensFunction);
 
@@ -135,21 +135,22 @@ bool System::ImportanceMetropolisStep() {
 
   // return to previous value if Metropolis test is false
   else{
-    poschange = a*sqrt(m_timeStep) + qfold[0]*m_timeStep*m_diffusionCoefficient;
-    m_particles[Nparticle]->adjustPositions(-poschange, 0);
+    poschange = a*sqrt(m_timeStep) + qfold(input*N + 0)*m_timeStep*m_diffusionCoefficient;
+    getNetwork()->adjustPositions(-poschange, 0, input);
     if (Dim > 1){
-      poschange = b*sqrt(m_timeStep) + qfold[1]*m_timeStep*m_diffusionCoefficient;
-      m_particles[Nparticle]->adjustPositions(-poschange, 1);
+      poschange = b*sqrt(m_timeStep) + qfold(input*N + 1)*m_timeStep*m_diffusionCoefficient;
+      getNetwork()->adjustPositions(-poschange, 1, input);
       if (Dim > 2){
-        poschange = c*sqrt(m_timeStep) + qfold[2]*m_timeStep*m_diffusionCoefficient;
-        m_particles[Nparticle]->adjustPositions(-poschange, 2);
+        poschange = c*sqrt(m_timeStep) + qfold(input*N + 2)*m_timeStep*m_diffusionCoefficient;
+        getNetwork()->adjustPositions(-poschange, 2, input);
+        }
       }
-    }
+
     return false;
   }
 
 }
-*/
+
 
 void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolisSteps) {
   m_sampler                   = new Sampler(this);
@@ -157,37 +158,51 @@ void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolis
   m_sampler->setNumberOfMetropolisSteps(numberOfMetropolisSteps);
 
   double start_time, end_time, total_time;
-  double counter = 0;
+  double counter;
+
+  m_sampler->setEnergies(m_numberOfMetropolisSteps);
 
   for (int i = 0; i < OptCycles; i++){
     start_time = omp_get_wtime();
 
     runMetropolisSteps(ofile, numberOfMetropolisSteps);
 
-
     end_time = omp_get_wtime();
     total_time = end_time - start_time;
 
-    m_sampler->computeAverages(total_time, counter);
-    m_sampler->printOutputToTerminal(total_time, counter);
+    cout << counter << endl;
+
+    m_sampler->computeAverages(total_time);
+    m_sampler->printOutputToTerminal(total_time);
   }
+
+  m_sampler->WriteBlockingtoFile(ofile, m_numberOfMetropolisSteps);
 }
 
 
 void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
 
-    double counter = 0;
-    bool acceptedStep;
+  double counter = 0;
+  bool acceptedStep;
 
-    for (int i = 1; i <= numberOfMetropolisSteps; i++) {
+  for (int i = 1; i <= numberOfMetropolisSteps; i++) {
 
-        acceptedStep = metropolisStep();
-
-        counter += acceptedStep;
-
-        m_sampler->sample(acceptedStep, i);
-
+    // Choose importance samling or brute force
+    if (getImportanceSampling()){
+        acceptedStep = ImportanceMetropolisStep();
     }
+    else{
+        acceptedStep = metropolisStep();
+    }
+
+    counter += acceptedStep;
+
+    m_sampler->sample(acceptedStep, i);
+
+    m_sampler->Analysis(i);
+
+  }
+  m_sampler->setacceptedStep(counter);
 
 }
 
