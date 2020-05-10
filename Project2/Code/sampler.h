@@ -11,10 +11,11 @@ class Sampler {
 public:
     Sampler(class System* system);
     void setNumberOfMetropolisSteps(int steps);
+    void setMCcyles(int effectiveSamplings);
     void setacceptedStep(int counter);
     void setEnergies(int MCcycles);
     void setGradients();
-    void sample(bool acceptedStep, int MCcycles);
+    void sample();
     void printOutputToTerminal(double time);
     void computeAverages(double time);
     void Analysis(int MCcycles);
@@ -32,6 +33,7 @@ public:
 
 private:
     int     m_numberOfMetropolisSteps = 0;
+    int     m_MCcycles = 0;
     int     m_stepNumber = 0;
     double  m_energy = 0;
     double  m_cumulativeEnergy = 0;

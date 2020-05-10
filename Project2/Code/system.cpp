@@ -183,7 +183,6 @@ void System::Gibbs() {
     z = b(j) + (dot(x, w.col(j)))/(sigma2);
     logisticSigmoid = 1.0/(1+exp(-z));
     h(j) = Uniform(gen) < logisticSigmoid;
-    cout << h(j) << endl;
   }
 
   // Set new positions (visibles) given hidden, according to normal distribution
@@ -207,7 +206,6 @@ void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolis
   m_sampler->setNumberOfMetropolisSteps(numberOfMetropolisSteps);
 
   double start_time, end_time, total_time;
-  double counter;
 
   m_sampler->setEnergies(m_numberOfMetropolisSteps);
 
@@ -229,6 +227,7 @@ void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolis
 
 void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
 
+  double effectiveSamplings = 0;
   double counter = 0;
   bool acceptedStep;
 
@@ -247,13 +246,18 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
         acceptedStep = metropolisStep();
     }
 
-    counter += acceptedStep;
+    if (getEquilibrationFraction()){
+      effectiveSamplings++;
+      counter += acceptedStep;
 
-    m_sampler->sample(acceptedStep, i);
+      m_sampler->sample();
 
-    m_sampler->Analysis(i);
+      m_sampler->Analysis(effectiveSamplings);
+    }
+
 
   }
+  m_sampler->setMCcyles(effectiveSamplings);
   m_sampler->setacceptedStep(counter);
 
 }

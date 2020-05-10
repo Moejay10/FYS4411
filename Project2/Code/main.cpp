@@ -91,7 +91,7 @@ using namespace std;
 int main() {
 
   cout << "\n" << "Which Project Task do you want to run?: " << endl;
-  cout << "\n" << "Project Task B -  Initial Code: " <<  "Write b " << endl;
+  cout << "\n" << "Project Task B -  Brute Force: " <<  "Write b " << endl;
   cout << "\n" << "Project Task C -  Importance Sampling: " <<  "Write c " << endl;
   cout << "\n" << "Project Task D -  Statistical Analysis: " <<  "Write d " << endl;
   cout << "\n" << "Project Task F  - Gibbs sampling: " <<  "Write e " << endl;
@@ -100,18 +100,18 @@ int main() {
 
 
   // Chosen parameters
-  int OptCycles           = 100;
-  int MCcycles            = 1e4;
-  int numberOfParticles   = 1;
-  int numberOfDimensions  = 1;
+  int OptCycles           = 200;
+  int MCcycles            = pow(2, 20);
+  int numberOfParticles   = 2;
+  int numberOfDimensions  = 2;
   int numberOfInputs      = numberOfParticles*numberOfDimensions;  // Number of visible units
   int numberOfHidden      = 2;            // Number of hidden units
   double sigma            = 1.0;          // Normal distribution visibles
-  double gibbs            = 2.0;          // Gibbs parameter to change the wavefunction
+  double gibbs            = 1.0;          // Gibbs parameter to change the wavefunction
   double eta              = 0.01;         // Learning rate
   double omega            = 1.0;          // Oscillator frequency.
-  double stepLength       = 0.45;         // Metropolis step length.
-  double timeStep         = 1.0;          // Timestep to be used in Metropolis-Hastings
+  double stepLength       = 1.0;         // Metropolis step length.
+  double timeStep         = 0.01;         // Timestep to be used in Metropolis-Hastings
   double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.
   double equilibration    = 0.1;          // Amount of the total steps used
   // for equilibration.
@@ -136,7 +136,7 @@ int main() {
   if (Task == "b"){
 
     // Analytical Run
-    cout << "-------------- \n" << "Initial Code \n" << "-------------- \n" << endl;
+    cout << "-------------- \n" << "Brute Force \n" << "-------------- \n" << endl;
 
       //Initialise the system.
       System* system = new System();
@@ -175,8 +175,6 @@ int main() {
 
     cout << "-------------- \n" << "Statistical Analysis \n" << "-------------- \n" << endl;
 
-    MCcycles = 15;
-    MCcycles = pow(2, MCcycles);
 
     // Choose which file to write to
     string file = "Python/Results/Task_d/Blocking.dat";
@@ -226,18 +224,25 @@ int main() {
 
     // Analytical Run
     cout << "-------------- \n" << "Interaction \n" << "-------------- \n" << endl;
+    //gibbs = 2;
 
-      //Initialise the system.
-      System* system = new System();
-      system->setNetwork                  (new NeuralNetwork(system, eta, a, A, asgdOmega, fmax, fmin, t0, t1, numberOfInputs, numberOfHidden));
-      system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
-      system->setHamiltonian              (new HarmonicOscillator(system, omega));
-      system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
-      system->setStepLength               (stepLength);
-      system->setRepulsivePotential       (true);
-      //system->setOptimizer                (true);
-      system->setPrintOutToTerminal       (true);
-      system->runOptimizer                (ofile, OptCycles, MCcycles);
+    //Initialise the system.
+    System* system = new System();
+    system->setNetwork                  (new NeuralNetwork(system, eta, a, A, asgdOmega, fmax, fmin, t0, t1, numberOfInputs, numberOfHidden));
+    system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
+    system->setHamiltonian              (new HarmonicOscillator(system, omega));
+    system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
+    system->setStepLength               (stepLength);
+    system->setTimeStep                 (timeStep);
+    system->setDiffusionCoefficient     (diffusionCoefficient);
+
+    //system->setImportanceSampling       (true);
+    //system->setGibbsSampling            (true);
+
+    //system->setOptimizer                (true);
+    system->setRepulsivePotential       (true);
+    system->setPrintOutToTerminal       (true);
+    system->runOptimizer                (ofile, OptCycles, MCcycles);
 
   }
 

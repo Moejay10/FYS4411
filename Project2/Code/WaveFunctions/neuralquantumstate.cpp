@@ -30,10 +30,15 @@ double NeuralQuantumState::evaluate() {
     int nx = m_system->getNumberOfInputs();
     int nh = m_system->getNumberOfHidden();
 
-    vec Q = m_system->getNetwork()->getBiasB() + (1.0/sigma2)*(m_system->getNetwork()->getPositions().t()*m_system->getNetwork()->getWeigths()).t();
+    vec x = m_system->getNetwork()->getPositions();
+    vec a = m_system->getNetwork()->getBiasA();
+    vec b = m_system->getNetwork()->getBiasB();
+    mat W = m_system->getNetwork()->getWeigths();
+
+    vec Q = b + (1.0/sigma2)*(x.t()*W).t();
 
     for (int i = 0; i < nx; i++){
-       psi1 += (m_system->getNetwork()->getPositions()(i) - m_system->getNetwork()->getBiasA()(i)) * (m_system->getNetwork()->getPositions()(i) - m_system->getNetwork()->getBiasA()(i));
+       psi1 += (x(i) - a(i)) * (x(i) - a(i));
 
     }
      psi1 = exp(-psi1/(2*sigma2));
@@ -64,14 +69,20 @@ vec NeuralQuantumState::computeFirstDerivative() {
     int nh = m_system->getNumberOfHidden();
 
     vec psi1(nx);
-    vec Q = m_system->getNetwork()->getBiasB() + (1.0/sigma2)*(m_system->getNetwork()->getPositions().t()*m_system->getNetwork()->getWeigths()).t();
+
+    vec x = m_system->getNetwork()->getPositions();
+    vec a = m_system->getNetwork()->getBiasA();
+    vec b = m_system->getNetwork()->getBiasB();
+    mat W = m_system->getNetwork()->getWeigths();
+
+    vec Q = b + (1.0/sigma2)*(x.t()*W).t();
 
     for (int i = 0; i < nx; i++){
       temp = 0;
       for (int j = 0; j < nh; j++){
-        temp += m_system->getNetwork()->getWeigths()(i,j)/(1.0+exp(-Q(j)));
+        temp += W(i,j)/(1.0+exp(-Q(j)));
       }
-      psi1(i) = -(m_system->getNetwork()->getPositions()(i) - m_system->getNetwork()->getBiasA()(i))/(gibbs*sigma2) + temp/(gibbs*sigma2);
+      psi1(i) = -(x(i) - a(i))/(gibbs*sigma2) + temp/(gibbs*sigma2);
 
     }
 
@@ -88,12 +99,16 @@ vec NeuralQuantumState::computeDoubleDerivative() {
     int nh = m_system->getNumberOfHidden();
 
     vec psi2(nx);
-    vec Q = m_system->getNetwork()->getBiasB() + (1.0/sigma2)*(m_system->getNetwork()->getPositions().t()*m_system->getNetwork()->getWeigths()).t();
+    vec x = m_system->getNetwork()->getPositions();
+    vec b = m_system->getNetwork()->getBiasB();
+    mat W = m_system->getNetwork()->getWeigths();
+
+    vec Q = b + (1.0/sigma2)*(x.t()*W).t();
 
     for (int i = 0; i < nx; i++){
       temp = 0;
       for (int j = 0; j < nh; j++){
-        temp += m_system->getNetwork()->getWeigths()(i,j)*m_system->getNetwork()->getWeigths()(i,j)*exp(-Q(j))/(1.0+exp(-Q(j)))*(1.0+exp(-Q(j)));
+        temp += W(i,j)*W(i,j)*exp(-Q(j))/(1.0+exp(-Q(j)))*(1.0+exp(-Q(j)));
       }
       psi2(i) = -1.0/(gibbs*sigma2) + temp/(gibbs*sigma2*sigma2);
 

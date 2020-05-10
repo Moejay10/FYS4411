@@ -40,10 +40,12 @@ vec NeuralNetwork::computeBiasAgradients() {
     double temp1 = 0;
     int nx = m_system->getNumberOfInputs();
 
+    vec x = getPositions();
+    vec a = getBiasA();
     vec agradient(nx);
 
     for (int m = 0; m < nx; m++){
-      temp1 = (getPositions()(m) - getBiasA()(m))/(gibbs*sigma2);
+      temp1 = (x(m) - a(m))/(gibbs*sigma2);
       agradient(m) = temp1;
     }
 
@@ -57,7 +59,11 @@ vec NeuralNetwork::computeBiasBgradients() {
     double gibbs = m_system->getWaveFunction()->getParameters()[1];
     int nh = m_system->getNumberOfHidden();
 
-    vec Q = getBiasB() + (1.0/sigma2)*(getPositions().t()*getWeigths()).t();
+    vec x = getPositions();
+    vec b = getBiasB();
+    mat W = getWeigths();
+
+    vec Q = b + (1.0/sigma2)*(x.t()*W).t();
     vec bgradient(nh);
 
     for (int j = 0; j < nh; j++) {
@@ -76,12 +82,16 @@ vec NeuralNetwork::computeWeightsgradients() {
     int nx = m_system->getNumberOfInputs();
     int nh = m_system->getNumberOfHidden();
 
-    vec Q = getBiasB() + (1.0/sigma2)*(getPositions().t()*getWeigths()).t();
+    vec x = getPositions();
+    vec b = getBiasB();
+    mat W = getWeigths();
+
+    vec Q = b + (1.0/sigma2)*(x.t()*W).t();
     vec wgradient(nx*nh);
 
     for (int i = 0; i < nx; i++) {
       for (int j = 0; j < nh; j++) {
-          wgradient(i*nh + j) = getPositions()(i)/(gibbs*sigma2*(1.0+exp(-Q(j))));
+          wgradient(i*nh + j) = x(i)/(gibbs*sigma2*(1.0+exp(-Q(j))));
       }
     }
 
@@ -132,7 +142,6 @@ void NeuralNetwork::StochasticGradientDescent(vec agrad, vec bgrad, vec wgrad) {
    int nx = m_system->getNumberOfInputs();
    int nh = m_system->getNumberOfHidden();
 
-   cout << m_gradPrevBiasA.size() << endl;
    double gradProduct = -dot(agrad, m_gradPrevBiasA) - dot(bgrad, m_gradPrevBiasB) - dot(wgrad, m_gradPrevWeights);
 
    double f = m_fmin + (m_fmax - m_fmin)/(1 - (m_fmax/m_fmin)*exp(-gradProduct/m_asgdOmega));

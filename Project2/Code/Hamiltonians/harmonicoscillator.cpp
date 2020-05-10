@@ -34,11 +34,12 @@ double HarmonicOscillator::computeLocalEnergy(Network* network) {
 
     vec firstder = m_system->getWaveFunction()->computeFirstDerivative();
     vec secondder = m_system->getWaveFunction()->computeDoubleDerivative();
+    vec x = network->getPositions();
 
     // Loop over the visibles (n_particles*n_coordinates) for the Laplacian
     for (int i = 0; i < nx; i++){
       kineticenergy += -firstder(i)*firstder(i) - secondder(i);
-      potentialenergy += m_omega*m_omega*network->getPositions()(i)*m_system->getNetwork()->getPositions()(i);
+      potentialenergy += m_omega*m_omega*x(i)*x(i);
     }
 
     totalenergy = 0.5*(kineticenergy + potentialenergy);

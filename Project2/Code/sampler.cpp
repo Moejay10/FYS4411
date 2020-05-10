@@ -23,6 +23,10 @@ void Sampler::setNumberOfMetropolisSteps(int steps) {
     m_numberOfMetropolisSteps = steps;
 }
 
+void Sampler::setMCcyles(int effectiveSamplings) {
+    m_MCcycles = effectiveSamplings;
+}
+
 void Sampler::setacceptedStep(int counter) {
     m_acceptedStep = counter;
 }
@@ -52,7 +56,7 @@ void Sampler::setGradients() {
 }
 
 
-void Sampler::sample(bool acceptedStep, int MCcycles) {
+void Sampler::sample() {
     // Making sure the sampling variable(s) are initialized at the first step.
     if (m_stepNumber == 0) {
         m_cumulativeEnergy = 0;
@@ -116,7 +120,9 @@ void Sampler::printOutputToTerminal(double total_time) {
       cout << " Energy : " << m_energy << endl;
       cout << " Variance : " << m_variance << endl;
       cout << " Time : " << total_time << endl;
-      cout << " # Accepted Steps : " << m_acceptedStep << endl;
+      if (m_system->getGibbsSampling() == false){
+        cout << " # Accepted Steps : " << m_acceptedStep << endl;
+      }
       cout << endl;
   }
 }
@@ -125,9 +131,9 @@ void Sampler::computeAverages(double total_time) {
     /* Compute the averages of the sampled quantities.
      */
     int Dim = m_system->getNumberOfDimensions(); // The Dimension
-    int N = m_system->getNumberOfParticles(); // Number of Particles
-    int MCcycles = m_system->getNumberOfMetropolisSteps(); // Number of Monte Carlo steps
-    double norm = 1.0/((double) (MCcycles));  // divided by  number of cycles
+    int N = m_system->getNumberOfParticles();    // Number of Particles
+    int MCcycles = m_MCcycles;                   // Number of equilibration steps
+    double norm = 1.0/((double) (MCcycles));     // divided by  number of cycles
 
     m_energy = m_cumulativeEnergy *norm;
     m_cumulativeEnergy2 = m_cumulativeEnergy2 *norm;
@@ -152,7 +158,7 @@ void Sampler::computeAverages(double total_time) {
     if (m_system->getOptimizer()){
       m_system->getNetwork()->StochasticGradientDescent(m_agrad, m_bgrad, m_wgrad);
     }
-    
+
     else{
       m_system->getNetwork()->GradientDescent(m_agrad, m_bgrad, m_wgrad);
     }
