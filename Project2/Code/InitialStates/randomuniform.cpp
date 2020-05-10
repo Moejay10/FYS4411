@@ -34,7 +34,7 @@ RandomUniform::RandomUniform(System*    system,
 
     m_system->setNumberOfDimensions(numberOfDimensions);
     m_system->setNumberOfParticles(numberOfParticles);
-    m_system->setNumberOfHidden(numberOfParticles);
+    m_system->setNumberOfHidden(numberOfHidden);
     setupInitialState();
 }
 

@@ -183,13 +183,14 @@ void System::Gibbs() {
     z = b(j) + (dot(x, w.col(j)))/(sigma2);
     logisticSigmoid = 1.0/(1+exp(-z));
     h(j) = Uniform(gen) < logisticSigmoid;
+    cout << h(j) << endl;
   }
 
   // Set new positions (visibles) given hidden, according to normal distribution
   std::normal_distribution<double> distributionX;
   double xMean;
   for (int i = 0; i < nx; i++) {
-      xMean = a(i) + dot(h, w.col(i));
+      xMean = a(i) + dot(w.row(i), h);
       distributionX = std::normal_distribution<double>(xMean, sigma);
       new_positions(i) = distributionX(gen);
   }
