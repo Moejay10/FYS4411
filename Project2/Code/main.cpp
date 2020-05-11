@@ -10,7 +10,7 @@
 #include <time.h>
 #include <armadillo>
 #include <omp.h>
-//#include <mpi.h> // Parallellization
+#include <mpi.h> // Parallellization
 
 // Include all header files
 #include "system.h"
@@ -90,19 +90,18 @@ using namespace std;
 
 
 int main(int argc, char **argv) {
-
-  cout << "\n" << "Which Project Task do you want to run?: " << endl;
-  cout << "\n" << "Project Task B -  Brute Force: " <<  "Write b " << endl;
-  cout << "\n" << "Project Task C -  Importance Sampling: " <<  "Write c " << endl;
-  cout << "\n" << "Project Task D -  Statistical Analysis: " <<  "Write d " << endl;
-  cout << "\n" << "Project Task F  - Gibbs sampling: " <<  "Write e " << endl;
-  cout << "\n" << "Project Task G  - Interaction: " <<  "Write g " << endl;
-  /*
-  //  MPI initializations
+    //  MPI initializations
   int numberOfProcesses, myRank, NumberMCsamples;
   MPI_Init (&argc, &argv);
   MPI_Comm_rank (MPI_COMM_WORLD, &myRank);
-  */
+  if (myRank == 0){
+  	cout << "\n" << "Which Project Task do you want to run?: " << endl;
+ 	cout << "\n" << "Project Task B -  Brute Force: " <<  "Write b " << endl;
+  	cout << "\n" << "Project Task C -  Importance Sampling: " <<  "Write c " << endl;
+  	cout << "\n" << "Project Task D -  Statistical Analysis: " <<  "Write d " << endl;
+  	cout << "\n" << "Project Task F  - Gibbs sampling: " <<  "Write e " << endl;
+  	cout << "\n" << "Project Task G  - Interaction: " <<  "Write g " << endl;
+  }
 
   // Chosen parameters
   int OptCycles           = 1;
@@ -133,9 +132,12 @@ int main(int argc, char **argv) {
   double t1               = A;            // or t0=t1=0
 
 
-  cout << "\n" << "Write here " << endl;
-  string Task;
-  cin >> Task;
+  //cout << "\n" << "Write here " << endl;
+  //string Task;
+  //cin >> Task;
+  string Task = "b";
+  cout << myRank << " " << Task << endl;
+
 
   //Benchmark task a.
   if (Task == "b"){
@@ -152,6 +154,7 @@ int main(int argc, char **argv) {
       system->setStepLength               (stepLength);
       //system->setOptimizer                (true); //adaptive stochastic GD
       system->setPrintOutToTerminal       (true);
+      system->setEquilibrationFraction    (equilibration);
       system->runOptimizer                (ofile, OptCycles, MCcycles);
 
 
@@ -253,7 +256,7 @@ int main(int argc, char **argv) {
   }
 
 
-  //MPI_Finalize();
+  MPI_Finalize();
 
   return 0;
 }

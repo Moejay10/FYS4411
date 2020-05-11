@@ -18,7 +18,7 @@ public:
     bool setOptimizer               (bool);
     bool setPrintOutToTerminal      (bool);
     void runOptimizer               (ofstream& ofile, int OptCycles, int numberOfMetropolisSteps);
-    void runMetropolisSteps         (ofstream& ofile, int numberOfMetropolisSteps);
+    void runMetropolisSteps         (ofstream& ofile, int localMetropolisSteps, int numberOfProcessess, int myRank);
     void setNumberOfParticles       (int numberOfParticles);
     void setNumberOfDimensions      (int numberOfDimensions);
     void setNumberOfHidden          (int numberOfHidden);

@@ -13,6 +13,7 @@
 #include "InitialStates/initialstate.h"
 #include "NeuralNetworks/network.h"
 #include "Math/random.h"
+#include <mpi.h>
 
 
 bool System::metropolisStep() {
@@ -93,7 +94,7 @@ bool System::ImportanceMetropolisStep() {
      int N   = getNumberOfParticles(); // The Particles
 
 
-     double r, wfold, wfnew, poschange;
+     double wfold, wfnew, poschange;
 
      // Initial Position
      vec posold = getNetwork()->getPositions();
@@ -201,10 +202,16 @@ void System::Gibbs() {
 
 
 void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolisSteps) {
+  int numberOfProcesses, myRank;
+  MPI_Comm_rank (MPI_COMM_WORLD, &myRank);
+  MPI_Comm_size (MPI_COMM_WORLD, &numberOfProcesses);
+
   m_sampler                   = new Sampler(this);
   m_numberOfMetropolisSteps   = numberOfMetropolisSteps;
   m_sampler->setNumberOfMetropolisSteps(numberOfMetropolisSteps);
 
+  int localMetropolisSteps = numberOfMetropolisSteps/numberOfProcesses;
+  
   double start_time, end_time, total_time;
 
   m_sampler->setEnergies(m_numberOfMetropolisSteps);
@@ -212,26 +219,31 @@ void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolis
   for (int i = 0; i < OptCycles; i++){
     start_time = omp_get_wtime();
 
-    runMetropolisSteps(ofile, numberOfMetropolisSteps);
+    runMetropolisSteps(ofile, localMetropolisSteps, numberOfProcesses, myRank);
 
     end_time = omp_get_wtime();
     total_time = end_time - start_time;
 
-    m_sampler->computeAverages(total_time);
-    m_sampler->printOutputToTerminal(total_time);
+    m_sampler->computeAverages(total_time, numberOfProcesses, myRank);
+    if (myRank==0){
+       m_sampler->printOutputToTerminal(total_time);
+    }
   }
-
-  m_sampler->WriteBlockingtoFile(ofile, m_numberOfMetropolisSteps);
+  if (myRank==0){
+    m_sampler->WriteBlockingtoFile(ofile, m_numberOfMetropolisSteps);
+  }
 }
 
 
-void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
-
+void System::runMetropolisSteps(ofstream& ofile, int localMetropolisSteps, int numberOfProcesses, int myRank) {
+  
   double effectiveSamplings = 0;
   double counter = 0;
   bool acceptedStep;
+  int localEquilibrationFraction = getEquilibrationFraction()*localMetropolisSteps;
 
-  for (int i = 1; i <= numberOfMetropolisSteps; i++) {
+  
+  for (int i = 1; i <= localMetropolisSteps; i++) {
 
     // Choose importance samling or brute force
     if (getImportanceSampling()){
@@ -246,13 +258,13 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
         acceptedStep = metropolisStep();
     }
 
-    if (getEquilibrationFraction()){
+    if (i>=localEquilibrationFraction){
       effectiveSamplings++;
       counter += acceptedStep;
 
       m_sampler->sample();
 
-      m_sampler->Analysis(effectiveSamplings);
+      m_sampler->Analysis(effectiveSamplings, numberOfProcesses, myRank);
     }
 
 

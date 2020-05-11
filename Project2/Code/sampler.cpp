@@ -9,6 +9,7 @@
 #include "Hamiltonians/hamiltonian.h"
 #include "WaveFunctions/wavefunction.h"
 #include "NeuralNetworks/network.h"
+#include <mpi.h>
 
 using std::cout;
 using std::endl;
@@ -41,26 +42,36 @@ void Sampler::setGradients() {
   int nx = m_system->getNumberOfInputs();
   int nh = m_system->getNumberOfHidden();
 
-  m_aDelta.zeros(nx);
-  m_EaDelta.zeros(nx);
+  m_localaDelta.zeros(nx);
+  m_localEaDelta.zeros(nx);
   m_agrad.zeros(nx);
 
-  m_bDelta.zeros(nh);
-  m_EbDelta.zeros(nh);
+  m_localbDelta.zeros(nh);
+  m_localEbDelta.zeros(nh);
   m_bgrad.zeros(nh);
 
-  m_wDelta.zeros(nx*nh);
-  m_EwDelta.zeros(nx*nh);
+  m_localwDelta.zeros(nx*nh);
+  m_localEwDelta.zeros(nx*nh);
   m_wgrad.zeros(nx*nh);
 
+  m_globalaDelta.zeros(nx);
+  m_globalEaDelta.zeros(nx);
+
+  m_globalbDelta.zeros(nh);
+  m_globalEbDelta.zeros(nh);
+
+  m_globalwDelta.zeros(nx*nh);
+  m_globalEwDelta.zeros(nx*nh);
 }
 
 
 void Sampler::sample() {
     // Making sure the sampling variable(s) are initialized at the first step.
     if (m_stepNumber == 0) {
-        m_cumulativeEnergy = 0;
-        m_cumulativeEnergy2 = 0;
+        m_localcumulativeEnergy = 0;
+	m_globalcumulativeEnergy = 0;
+        m_localcumulativeEnergy2 = 0;
+	m_globalcumulativeEnergy2 = 0;
         m_DeltaPsi = 0;
         m_DerivativePsiE = 0;
         setGradients();
@@ -74,18 +85,16 @@ void Sampler::sample() {
     vec temp_bDelta = m_system->getNetwork()->computeBiasBgradients();
     vec temp_wDelta = m_system->getNetwork()->computeWeightsgradients();
 
-    m_cumulativeEnergy  += localEnergy;
-    m_cumulativeEnergy2  += localEnergy*localEnergy;
+    m_localcumulativeEnergy  += localEnergy;
+    m_localcumulativeEnergy2  += localEnergy*localEnergy;
 
-    m_aDelta += temp_aDelta;
-    m_bDelta += temp_bDelta;
-    m_wDelta += temp_wDelta;
+    m_localaDelta += temp_aDelta;
+    m_localbDelta += temp_bDelta;
+    m_localwDelta += temp_wDelta;
 
-    m_EaDelta += temp_aDelta*localEnergy;
-    m_EbDelta += temp_bDelta*localEnergy;
-    m_EwDelta += temp_wDelta*localEnergy;
-
-
+    m_localEaDelta += temp_aDelta*localEnergy;
+    m_localEbDelta += temp_bDelta*localEnergy;
+    m_localEwDelta += temp_wDelta*localEnergy;
 
     m_stepNumber++;
 }
@@ -127,52 +136,67 @@ void Sampler::printOutputToTerminal(double total_time) {
   }
 }
 
-void Sampler::computeAverages(double total_time) {
+void Sampler::computeAverages(double total_time, int numberOfProcesses, int myRank) {
     /* Compute the averages of the sampled quantities.
      */
     int Dim = m_system->getNumberOfDimensions(); // The Dimension
     int N = m_system->getNumberOfParticles();    // Number of Particles
     int MCcycles = m_MCcycles;                   // Number of equilibration steps
-    double norm = 1.0/((double) (MCcycles));     // divided by  number of cycles
+    double norm = 1.0/((double) (MCcycles*numberOfProcesses));     // divided by  number of cycles
+    
+    MPI_Reduce(&m_localcumulativeEnergy, &m_globalcumulativeEnergy, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&m_localcumulativeEnergy2, &m_globalcumulativeEnergy2, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
-    m_energy = m_cumulativeEnergy *norm;
-    m_cumulativeEnergy2 = m_cumulativeEnergy2 *norm;
-    m_cumulativeEnergy = m_cumulativeEnergy *norm;
-    m_variance = (m_cumulativeEnergy2 - m_cumulativeEnergy*m_cumulativeEnergy)*norm;
-    m_STD = sqrt(m_variance);
-
-    m_aDelta /= MCcycles;
-    m_bDelta /= MCcycles;
-    m_wDelta /= MCcycles;
-
-    m_EaDelta /= MCcycles;
-    m_EbDelta /= MCcycles;
-    m_EwDelta /= MCcycles;
-
-    // Compute gradients
-    m_agrad = 2*(m_EaDelta - m_cumulativeEnergy*m_aDelta);
-    m_bgrad = 2*(m_EbDelta - m_cumulativeEnergy*m_bDelta);
-    m_wgrad = 2*(m_EwDelta - m_cumulativeEnergy*m_wDelta);
-
-    // Optimizer parameters (choose either stochastic gradient descent (SGD) or adaptive SGD (ASGD))
-    if (m_system->getOptimizer()){
-      m_system->getNetwork()->StochasticGradientDescent(m_agrad, m_bgrad, m_wgrad);
+    if (myRank==0){
+        m_energy = m_globalcumulativeEnergy *norm;
+        m_globalcumulativeEnergy2 = m_globalcumulativeEnergy2 *norm;
+        m_globalcumulativeEnergy = m_globalcumulativeEnergy *norm;
+        m_variance = (m_globalcumulativeEnergy2 - m_globalcumulativeEnergy*m_globalcumulativeEnergy)*norm;
+        m_STD = sqrt(m_variance);
     }
 
-    else{
-      m_system->getNetwork()->GradientDescent(m_agrad, m_bgrad, m_wgrad);
-    }
+    MPI_Reduce(&m_localaDelta, &m_globalaDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&m_localbDelta, &m_globalbDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&m_localwDelta, &m_globalwDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    
+    MPI_Reduce(&m_localEaDelta, &m_globalEaDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&m_localEbDelta, &m_globalEbDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&m_localEwDelta, &m_globalEwDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
-    m_totalTime = total_time;
-    m_acceptedStep *= norm;
+    if (myRank==0){
+        m_globalaDelta /= MCcycles;
+        m_globalbDelta /= MCcycles;
+        m_globalwDelta /= MCcycles;
+
+        m_globalEaDelta /= MCcycles;
+        m_globalEbDelta /= MCcycles;
+        m_globalEwDelta /= MCcycles;
+
+        // Compute gradients
+        m_agrad = 2*(m_globalEaDelta - m_globalcumulativeEnergy*m_globalaDelta);
+        m_bgrad = 2*(m_globalEbDelta - m_globalcumulativeEnergy*m_globalbDelta);
+        m_wgrad = 2*(m_globalEwDelta - m_globalcumulativeEnergy*m_globalwDelta);
+
+        // Optimizer parameters (choose either stochastic gradient descent (SGD) or adaptive SGD (ASGD))
+        if (m_system->getOptimizer()){
+           m_system->getNetwork()->StochasticGradientDescent(m_agrad, m_bgrad, m_wgrad);
+        }
+
+        else{
+           m_system->getNetwork()->GradientDescent(m_agrad, m_bgrad, m_wgrad);
+        }
+
+        m_totalTime = total_time;
+        m_acceptedStep *= norm;
+    }
 }
 
 
-void Sampler::Analysis(int MCcycles){
+void Sampler::Analysis(int MCcycles, int numberofProcessors, int myRank){
 
   double norm = 1.0/((double) (MCcycles));  // divided by  number of cycles
-  double Energy = m_cumulativeEnergy * norm;
-  m_Energies(MCcycles-1) = Energy;
+  double Energy = m_localcumulativeEnergy * norm;
+  m_Energies((MCcycles-1)*numberofProcessors + myRank) = Energy;
 }
 
 
