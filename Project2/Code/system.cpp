@@ -114,7 +114,7 @@ bool System::ImportanceMetropolisStep() {
        }
      }
 
-
+     // evaluate new position
      vec posnew = getNetwork()->getPositions();
      wfnew = getWaveFunction()->evaluate();
      vec qfnew = 2*(getWaveFunction()->computeFirstDerivative());
@@ -355,20 +355,25 @@ void System::setNumberofBins(int numberofBins) {
 
 bool System::setRepulsivePotential(bool statement){
   m_statement = statement;
+  return m_statement;
 }
 
 bool System::setImportanceSampling(bool importance_sampling){
   m_importance_sampling = importance_sampling;
+  return m_importance_sampling;
 }
 
 bool System::setGibbsSampling(bool gibbs_sampling){
   m_gibbs_sampling = gibbs_sampling;
+  return m_gibbs_sampling;
 }
 
 bool System::setOptimizer(bool optimizer){
   m_optimizer = optimizer;
+  return m_optimizer;
 }
 
 bool System::setPrintOutToTerminal(bool print_terminal){
   m_print_terminal = print_terminal;
+  return m_print_terminal;
 }
