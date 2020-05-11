@@ -91,7 +91,7 @@ using namespace std;
 
 int main(int argc, char **argv) {
     //  MPI initializations
-  int numberOfProcesses, myRank, NumberMCsamples;
+  int numberOfProcesses, myRank;
   MPI_Init (&argc, &argv);
   MPI_Comm_rank (MPI_COMM_WORLD, &myRank);
   if (myRank == 0){
@@ -104,8 +104,8 @@ int main(int argc, char **argv) {
   }
 
   // Chosen parameters
-  int OptCycles           = 1;
-  int MCcycles            = pow(2, 14);
+  int OptCycles           = 3;
+  int MCcycles            = pow(2, 17);
   int numberOfParticles   = 2;
   int numberOfDimensions  = 2;
   int numberOfInputs      = numberOfParticles*numberOfDimensions;  // Number of visible units
@@ -117,7 +117,7 @@ int main(int argc, char **argv) {
   double stepLength       = 1.0;         // Metropolis step length.
   double timeStep         = 0.01;         // Timestep to be used in Metropolis-Hastings
   double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.
-  double equilibration    = 0.1;          // Amount of the total steps used
+  double equilibration    = 0.0;          // Amount of the total steps used
   // for equilibration.
 
   // ASGD parameters. lr: gamma_i=a/(A+t_i) where t[i]=max(0, t[i-1]+f(-grad[i]*grad[i-1]))

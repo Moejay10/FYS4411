@@ -14,7 +14,7 @@ public:
     void setMCcyles(int effectiveSamplings);
     void setacceptedStep(int counter);
     void setEnergies(int MCcycles);
-    void setGradients();
+    void initializeVariables();
     void sample();
     void printOutputToTerminal(double time);
     void computeAverages(double time, int numberOfProcesses, int myRank);

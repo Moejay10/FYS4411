@@ -242,7 +242,7 @@ void System::runMetropolisSteps(ofstream& ofile, int localMetropolisSteps, int n
   bool acceptedStep;
   int localEquilibrationFraction = getEquilibrationFraction()*localMetropolisSteps;
 
-  
+  //m_sampler->initializeVariables();
   for (int i = 1; i <= localMetropolisSteps; i++) {
 
     // Choose importance samling or brute force
@@ -259,12 +259,13 @@ void System::runMetropolisSteps(ofstream& ofile, int localMetropolisSteps, int n
     }
 
     if (i>=localEquilibrationFraction){
-      effectiveSamplings++;
+      effectiveSamplings++; 
       counter += acceptedStep;
 
       m_sampler->sample();
 
       m_sampler->Analysis(effectiveSamplings, numberOfProcesses, myRank);
+      
     }
 
 
