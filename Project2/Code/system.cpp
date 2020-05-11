@@ -246,7 +246,7 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
         acceptedStep = metropolisStep();
     }
 
-    if (getEquilibrationFraction()){
+    if (i >= getEquilibrationFraction()){
       effectiveSamplings++;
       counter += acceptedStep;
 

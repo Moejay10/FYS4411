@@ -101,7 +101,7 @@ int main() {
 
   // Chosen parameters
   int OptCycles           = 200;
-  int MCcycles            = pow(2, 20);
+  int MCcycles            = pow(2, 17);
   int numberOfParticles   = 2;
   int numberOfDimensions  = 2;
   int numberOfInputs      = numberOfParticles*numberOfDimensions;  // Number of visible units
