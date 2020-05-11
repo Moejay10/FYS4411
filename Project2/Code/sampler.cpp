@@ -1,4 +1,4 @@
-include <iostream>
+#include <iostream>
 #include <iomanip>
 #include <fstream>
 #include <cmath>
@@ -69,12 +69,12 @@ void Sampler::initializeVariables() {
   m_globalcumulativeEnergy2 = 0;
   m_DeltaPsi = 0;
   m_DerivativePsiE = 0;
- 
+  m_energy=0; 
 }
 
 
 void Sampler::sample() {
-    if (m_stepnumber == 0){
+    if (m_stepNumber == 0){
 	    initializeVariables();
     }
     double localEnergy = m_system->getHamiltonian()->
