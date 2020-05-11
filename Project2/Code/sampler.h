@@ -12,7 +12,7 @@ public:
     Sampler(class System* system);
     void setNumberOfMetropolisSteps(int steps);
     void setMCcyles(int effectiveSamplings);
-    void setacceptedStep(int counter);
+    void setacceptedSteps(int counter);
     void setEnergies(int MCcycles);
     void initializeVariables();
     void sample();
@@ -26,7 +26,7 @@ public:
     double getEnergy()                { return m_energy; }
     double getEnergyDer()             { return m_EnergyDer; }
     double getTime()                  { return m_totalTime; }
-    double getAcceptedStep()          { return m_acceptedStep; }
+    double getAcceptedSteps()         { return m_globalacceptedSteps; }
     vec getEnergies()                 { return m_Energies; }
 
 
@@ -48,7 +48,8 @@ private:
     double  m_variance = 0;
     double  m_STD = 0;
     double  m_totalTime = 0;
-    double  m_acceptedStep = 0;
+    double  m_localacceptedSteps = 0;
+    double  m_globalacceptedSteps = 0; 
 
     vec m_Energies;
 

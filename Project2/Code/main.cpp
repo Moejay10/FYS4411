@@ -136,15 +136,14 @@ int main(int argc, char **argv) {
   //string Task;
   //cin >> Task;
   string Task = "b";
-  cout << myRank << " " << Task << endl;
 
 
   //Benchmark task a.
   if (Task == "b"){
-
-    // Analytical Run
-    cout << "-------------- \n" << "Brute Force \n" << "-------------- \n" << endl;
-
+      if (myRank == 0){
+      // Analytical Run
+      cout << "-------------- \n" << "Brute Force \n" << "-------------- \n" << endl;
+      }
       //Initialise the system.
       System* system = new System();
       system->setNetwork                  (new NeuralNetwork(system, eta, a, A, asgdOmega, fmax, fmin, t0, t1, numberOfInputs, numberOfHidden));

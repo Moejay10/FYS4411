@@ -28,8 +28,8 @@ void Sampler::setMCcyles(int effectiveSamplings) {
     m_MCcycles = effectiveSamplings;
 }
 
-void Sampler::setacceptedStep(int counter) {
-    m_acceptedStep = counter;
+void Sampler::setacceptedSteps(int counter) {
+    m_localacceptedSteps = counter;
 }
 
 
@@ -67,6 +67,8 @@ void Sampler::initializeVariables() {
   m_globalcumulativeEnergy = 0;
   m_localcumulativeEnergy2 = 0;
   m_globalcumulativeEnergy2 = 0;
+  m_globalacceptedSteps = 0;
+  m_localacceptedSteps = 0;
   m_DeltaPsi = 0;
   m_DerivativePsiE = 0;
   m_energy=0; 
@@ -74,9 +76,6 @@ void Sampler::initializeVariables() {
 
 
 void Sampler::sample() {
-    if (m_stepNumber == 0){
-	    initializeVariables();
-    }
     double localEnergy = m_system->getHamiltonian()->
                      computeLocalEnergy(m_system->getNetwork());
 
@@ -129,7 +128,7 @@ void Sampler::printOutputToTerminal(double total_time) {
       cout << " Variance : " << m_variance << endl;
       cout << " Time : " << total_time << endl;
       if (m_system->getGibbsSampling() == false){
-        cout << " # Accepted Steps : " << m_acceptedStep << endl;
+        cout << " # Accepted Steps : " << m_globalacceptedSteps << endl;
       }
       cout << endl;
   }
@@ -141,9 +140,6 @@ void Sampler::computeAverages(double total_time, int numberOfProcesses, int myRa
     
     int MCcycles = m_MCcycles;                   // Number of equilibration steps
     double norm = 1.0/((double) (MCcycles*numberOfProcesses));     // divided by  number of cycles
- 
-    cout << "myrank: " << myRank << " energy: " << m_energy << endl;
-
 
     MPI_Reduce(&m_localcumulativeEnergy, &m_globalcumulativeEnergy, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     MPI_Reduce(&m_localcumulativeEnergy2, &m_globalcumulativeEnergy2, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
@@ -155,7 +151,7 @@ void Sampler::computeAverages(double total_time, int numberOfProcesses, int myRa
         m_variance = (m_globalcumulativeEnergy2 - m_globalcumulativeEnergy*m_globalcumulativeEnergy)*norm;
         m_STD = sqrt(m_variance);
     }
-    cout << "myrank: " << myRank << " energy: " << m_energy << endl;
+    
     MPI_Reduce(&m_localaDelta, &m_globalaDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     MPI_Reduce(&m_localbDelta, &m_globalbDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     MPI_Reduce(&m_localwDelta, &m_globalwDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
@@ -163,6 +159,8 @@ void Sampler::computeAverages(double total_time, int numberOfProcesses, int myRa
     MPI_Reduce(&m_localEaDelta, &m_globalEaDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     MPI_Reduce(&m_localEbDelta, &m_globalEbDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     MPI_Reduce(&m_localEwDelta, &m_globalEwDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+ 
+    MPI_Reduce(&m_localacceptedSteps, &m_globalacceptedSteps, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
     if (myRank==0){
         m_globalaDelta /= MCcycles;
@@ -188,7 +186,7 @@ void Sampler::computeAverages(double total_time, int numberOfProcesses, int myRa
         }
 
         m_totalTime = total_time;
-        m_acceptedStep *= norm;
+        m_globalacceptedSteps *= norm;
     }
 }
 
