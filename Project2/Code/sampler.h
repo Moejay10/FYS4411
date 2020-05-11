@@ -18,7 +18,7 @@ public:
     void sample();
     void printOutputToTerminal(double time);
     void computeAverages(double time, int numberOfProcesses, int myRank);
-    void Analysis(int MCcycles, int numberofProcessors, int myRank);
+    void Analysis(int MCcycles, int numberOfProcesses, int myRank);
     void WriteBlockingtoFile(ofstream& ofile, int MCcycles);
 
     double getSTD()                   { return m_STD; }
@@ -63,7 +63,7 @@ private:
     vec m_agrad;
     vec m_bgrad;
     vec m_wgrad;
-    
+
     vec m_globalaDelta;
     vec m_globalbDelta;
     vec m_globalwDelta;

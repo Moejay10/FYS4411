@@ -69,9 +69,9 @@ void Sampler::sample() {
     // Making sure the sampling variable(s) are initialized at the first step.
     if (m_stepNumber == 0) {
         m_localcumulativeEnergy = 0;
-	m_globalcumulativeEnergy = 0;
+	      m_globalcumulativeEnergy = 0;
         m_localcumulativeEnergy2 = 0;
-	m_globalcumulativeEnergy2 = 0;
+ 	      m_globalcumulativeEnergy2 = 0;
         m_DeltaPsi = 0;
         m_DerivativePsiE = 0;
         setGradients();
@@ -143,7 +143,7 @@ void Sampler::computeAverages(double total_time, int numberOfProcesses, int myRa
     int N = m_system->getNumberOfParticles();    // Number of Particles
     int MCcycles = m_MCcycles;                   // Number of equilibration steps
     double norm = 1.0/((double) (MCcycles*numberOfProcesses));     // divided by  number of cycles
-    
+
     MPI_Reduce(&m_localcumulativeEnergy, &m_globalcumulativeEnergy, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     MPI_Reduce(&m_localcumulativeEnergy2, &m_globalcumulativeEnergy2, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
@@ -158,7 +158,7 @@ void Sampler::computeAverages(double total_time, int numberOfProcesses, int myRa
     MPI_Reduce(&m_localaDelta, &m_globalaDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     MPI_Reduce(&m_localbDelta, &m_globalbDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     MPI_Reduce(&m_localwDelta, &m_globalwDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-    
+
     MPI_Reduce(&m_localEaDelta, &m_globalEaDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     MPI_Reduce(&m_localEbDelta, &m_globalEbDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     MPI_Reduce(&m_localEwDelta, &m_globalEwDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
@@ -192,11 +192,11 @@ void Sampler::computeAverages(double total_time, int numberOfProcesses, int myRa
 }
 
 
-void Sampler::Analysis(int MCcycles, int numberofProcessors, int myRank){
+void Sampler::Analysis(int MCcycles, int numberOfProcesses, int myRank){
 
-  double norm = 1.0/((double) (MCcycles));  // divided by  number of cycles
+  double norm = 1.0/((double) (MCcycles*numberOfProcesses));  // divided by  number of cycles
   double Energy = m_localcumulativeEnergy * norm;
-  m_Energies((MCcycles-1)*numberofProcessors + myRank) = Energy;
+  m_Energies((MCcycles-1)*numberOfProcesses + myRank) = Energy;
 }
 
 
