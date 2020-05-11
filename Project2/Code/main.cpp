@@ -10,6 +10,7 @@
 #include <time.h>
 #include <armadillo>
 #include <omp.h>
+//#include <mpi.h> // Parallellization
 
 // Include all header files
 #include "system.h"
@@ -88,7 +89,7 @@ using namespace std;
 // #############################################################################
 
 
-int main() {
+int main(int argc, char **argv) {
 
   cout << "\n" << "Which Project Task do you want to run?: " << endl;
   cout << "\n" << "Project Task B -  Brute Force: " <<  "Write b " << endl;
@@ -96,12 +97,16 @@ int main() {
   cout << "\n" << "Project Task D -  Statistical Analysis: " <<  "Write d " << endl;
   cout << "\n" << "Project Task F  - Gibbs sampling: " <<  "Write e " << endl;
   cout << "\n" << "Project Task G  - Interaction: " <<  "Write g " << endl;
-
-
+  /*
+  //  MPI initializations
+  int numberOfProcesses, myRank, NumberMCsamples;
+  MPI_Init (&argc, &argv);
+  MPI_Comm_rank (MPI_COMM_WORLD, &myRank);
+  */
 
   // Chosen parameters
-  int OptCycles           = 200;
-  int MCcycles            = pow(2, 20);
+  int OptCycles           = 1;
+  int MCcycles            = pow(2, 14);
   int numberOfParticles   = 2;
   int numberOfDimensions  = 2;
   int numberOfInputs      = numberOfParticles*numberOfDimensions;  // Number of visible units
@@ -145,9 +150,10 @@ int main() {
       system->setHamiltonian              (new HarmonicOscillator(system, omega));
       system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
       system->setStepLength               (stepLength);
-      //system->setOptimizer                (true);
+      //system->setOptimizer                (true); //adaptive stochastic GD
       system->setPrintOutToTerminal       (true);
       system->runOptimizer                (ofile, OptCycles, MCcycles);
+
 
   }
 
@@ -247,7 +253,7 @@ int main() {
   }
 
 
-
+  //MPI_Finalize();
 
   return 0;
 }
