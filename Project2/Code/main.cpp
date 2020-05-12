@@ -94,14 +94,21 @@ int main(int argc, char **argv) {
   int numberOfProcesses, myRank;
   MPI_Init (&argc, &argv);
   MPI_Comm_rank (MPI_COMM_WORLD, &myRank);
+  int Task;
   if (myRank == 0){
   	cout << "\n" << "Which Project Task do you want to run?: " << endl;
- 	cout << "\n" << "Project Task B -  Brute Force: " <<  "Write b " << endl;
-  	cout << "\n" << "Project Task C -  Importance Sampling: " <<  "Write c " << endl;
-  	cout << "\n" << "Project Task D -  Statistical Analysis: " <<  "Write d " << endl;
-  	cout << "\n" << "Project Task F  - Gibbs sampling: " <<  "Write e " << endl;
-  	cout << "\n" << "Project Task G  - Interaction: " <<  "Write g " << endl;
+ 	cout << "\n" << "Project Task B -  Brute Force: " <<  "Write 1 " << endl;
+  	cout << "\n" << "Project Task C -  Importance Sampling: " <<  "Write 2 " << endl;
+  	cout << "\n" << "Project Task D -  Statistical Analysis: " <<  "Write 3 " << endl;
+  	cout << "\n" << "Project Task F  - Gibbs sampling: " <<  "Write 4 " << endl;
+  	cout << "\n" << "Project Task G  - Interaction: " <<  "Write 5 " << endl;
+  	cout << "\n" << "Write here " << endl;
+  	//string Task;
+	cin >> Task;
+	
+
   }
+  MPI_Bcast(&Task, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
   // Chosen parameters
   int OptCycles           = 3;
@@ -135,15 +142,17 @@ int main(int argc, char **argv) {
   //cout << "\n" << "Write here " << endl;
   //string Task;
   //cin >> Task;
-  string Task = "b";
+  //string Task = "b";
+  
+  
 
 
   //Benchmark task a.
-  if (Task == "b"){
-      if (myRank == 0){
+  if (Task == 1){
+      //if (myRank == 0){
       // Analytical Run
-      cout << "-------------- \n" << "Brute Force \n" << "-------------- \n" << endl;
-      }
+      //cout << "-------------- \n" << "Brute Force \n" << "-------------- \n" << endl;
+      //}
       //Initialise the system.
       System* system = new System();
       system->setNetwork                  (new NeuralNetwork(system, eta, a, A, asgdOmega, fmax, fmin, t0, t1, numberOfInputs, numberOfHidden));
@@ -159,9 +168,9 @@ int main(int argc, char **argv) {
 
   }
 
-  if (Task == "c"){
-
-    cout << "-------------- \n" << "Importance Sampling \n" << "-------------- \n" << endl;
+  if (Task == 2){
+ 
+    //cout << "-------------- \n" << "Importance Sampling \n" << "-------------- \n" << endl;
 
     //Initialise the system.
     System* system = new System();
@@ -179,9 +188,9 @@ int main(int argc, char **argv) {
   }
 
 
-  if (Task == "d"){
+  if (Task == 3){
 
-    cout << "-------------- \n" << "Statistical Analysis \n" << "-------------- \n" << endl;
+    //cout << "-------------- \n" << "Statistical Analysis \n" << "-------------- \n" << endl;
 
 
     // Choose which file to write to
@@ -208,10 +217,10 @@ int main(int argc, char **argv) {
   }
 
 
-  if (Task == "f"){
+  if (Task == 4){
 
     // Analytical Run
-    cout << "-------------- \n" << "Gibbs sampling \n" << "-------------- \n" << endl;
+    //cout << "-------------- \n" << "Gibbs sampling \n" << "-------------- \n" << endl;
     gibbs = 2;
 
     //Initialise the system.
@@ -228,10 +237,10 @@ int main(int argc, char **argv) {
   }
 
 
-  if (Task == "g"){
+  if (Task == 5){
 
     // Analytical Run
-    cout << "-------------- \n" << "Interaction \n" << "-------------- \n" << endl;
+    //cout << "-------------- \n" << "Interaction \n" << "-------------- \n" << endl;
     //gibbs = 2;
 
     //Initialise the system.
