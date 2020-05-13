@@ -93,7 +93,7 @@ int main() {
   cout << "\n" << "Which Project Task do you want to run?: " << endl;
   cout << "\n" << "Project Task B -  Brute Force: " <<  "Write b " << endl;
   cout << "\n" << "Project Task C -  Importance Sampling: " <<  "Write c " << endl;
-  cout << "\n" << "Project Task F  - Gibbs sampling: " <<  "Write e " << endl;
+  cout << "\n" << "Project Task F  - Gibbs sampling: " <<  "Write f " << endl;
   cout << "\n" << "Project Task G  - Interaction: " <<  "Write g " << endl;
 
 
@@ -142,7 +142,9 @@ int main() {
     cout << "-------------- \n" << "Brute Force \n" << "-------------- \n" << endl;
 
     // Choose which file to write to
-    string file = "Python/Results/Statistical_Analysis/BF_Blocking.dat";
+    string file = "Python/Results/Statistical_Analysis/BF_Blocking_eta_10^" + to_string(gamma) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+    //string file = "Python/Results/Statistical_Analysis/Interaction_BF_Blocking_eta_10^" + to_string(gamma) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
     ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
@@ -154,7 +156,7 @@ int main() {
     system->setHamiltonian              (new HarmonicOscillator(system, omega));
     system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
     system->setStepLength               (stepLength);
-    //system->setOptimizer                (true);
+    //system->setRepulsivePotential       (true);
     system->setPrintOutToTerminal       (true);
     system->runOptimizer                (ofile, OptCycles, MCcycles);
 
@@ -162,7 +164,9 @@ int main() {
 
 
     // Write to file
-    file = "Python/Results/Brute_Force/Energies_eta_10^" + to_string(gamma) + ".dat";
+    file = "Python/Results/Brute_Force/Energies_eta_10^" + to_string(gamma) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+    //file = "Python/Results/Brute_Force/Interaction_Energies_eta_10^" + to_string(gamma) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
     ofile << setw(15) << setprecision(8) << "Iteration"; // OptCycles
@@ -183,7 +187,9 @@ int main() {
     cout << "-------------- \n" << "Importance Sampling \n" << "-------------- \n" << endl;
 
     // Choose which file to write to
-    string file = "Python/Results/Statistical_Analysis/IS_Blocking.dat";
+    string file = "Python/Results/Statistical_Analysis/IS_Blocking_eta_10^" + to_string(gamma) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+    //string file = "Python/Results/Statistical_Analysis/Interaction_IS_Blocking_eta_10^" + to_string(gamma) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
     ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
@@ -197,7 +203,7 @@ int main() {
     system->setTimeStep                 (timeStep);
     system->setDiffusionCoefficient     (diffusionCoefficient);
     system->setImportanceSampling       (true);
-    //system->setOptimizer                (true);
+    //system->setRepulsivePotential       (true);
     system->setPrintOutToTerminal       (true);
     system->runOptimizer                (ofile, OptCycles, MCcycles);
 
@@ -205,7 +211,9 @@ int main() {
 
 
     // Write to file
-    file = "Python/Results/Importance_Sampling/Energies_eta_10^" + to_string(gamma) + ".dat";
+    file = "Python/Results/Importance_Sampling/Energies_eta_10^" + to_string(gamma) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+    //file = "Python/Results/Importance_Sampling/Interaction_Energies_eta_10^" + to_string(gamma) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
     ofile << setw(15) << setprecision(8) << "Iteration"; // OptCycles
@@ -230,7 +238,9 @@ int main() {
     gibbs = 2;
 
     // Choose which file to write to
-    string file = "Python/Results/Statistical_Analysis/Gibbs_Blocking.dat";
+    string file = "Python/Results/Statistical_Analysis/Gibbs_Blocking_eta_10^" + to_string(gamma) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+    //string file = "Python/Results/Statistical_Analysis/Interaction_Gibbs_Blocking_eta_10^" + to_string(gamma) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
     ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
@@ -242,14 +252,16 @@ int main() {
     system->setHamiltonian              (new HarmonicOscillator(system, omega));
     system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
     system->setGibbsSampling            (true);
-    //system->setOptimizer                (true);
+    //system->setRepulsivePotential       (true);
     system->setPrintOutToTerminal       (true);
     system->runOptimizer                (ofile, OptCycles, MCcycles);
 
     ofile.close();
 
     // Write to file
-    file = "Python/Results/Gibbs/Energies_eta_10^" + to_string(gamma) + ".dat";
+    file = "Python/Results/Gibbs/Energies_eta_10^" + to_string(gamma) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+    //file = "Python/Results/Gibbs/Interaction_Energies_eta_10^" + to_string(gamma) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
     ofile << setw(15) << setprecision(8) << "Iteration"; // OptCycles
@@ -264,35 +276,6 @@ int main() {
     ofile.close();
 
   }
-
-
-  if (Task == "g"){
-
-    // Analytical Run
-    cout << "-------------- \n" << "Interaction \n" << "-------------- \n" << endl;
-    //gibbs = 2;
-
-    //Initialise the system.
-    System* system = new System();
-    system->setNetwork                  (new NeuralNetwork(system, eta, a, A, asgdOmega, fmax, fmin, t0, t1, numberOfInputs, numberOfHidden));
-    system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
-    system->setHamiltonian              (new HarmonicOscillator(system, omega));
-    system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
-    system->setStepLength               (stepLength);
-    system->setTimeStep                 (timeStep);
-    system->setDiffusionCoefficient     (diffusionCoefficient);
-
-    //system->setImportanceSampling       (true);
-    //system->setGibbsSampling            (true);
-
-    //system->setOptimizer                (true);
-    system->setRepulsivePotential       (true);
-    system->setPrintOutToTerminal       (true);
-    system->runOptimizer                (ofile, OptCycles, MCcycles);
-
-  }
-
-
 
 
   return 0;
