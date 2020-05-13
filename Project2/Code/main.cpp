@@ -99,7 +99,7 @@ int main() {
 
 
   // Chosen parameters
-  int OptCycles           = 10;
+  int OptCycles           = 100;
   int MCcycles            = pow(2, 15);
   int numberOfParticles   = 1;
   int numberOfDimensions  = 1;
