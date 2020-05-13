@@ -210,10 +210,12 @@ void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolis
   m_sampler->setBlocking(m_numberOfMetropolisSteps);
   m_sampler->setEnergies(OptCycles);
 
+  int ef = getEquilibrationFraction()*numberOfMetropolisSteps;
+
   for (int i = 0; i < OptCycles; i++){
     start_time = omp_get_wtime();
 
-    runMetropolisSteps(ofile, numberOfMetropolisSteps);
+    runMetropolisSteps(ofile, numberOfMetropolisSteps + ef);
 
     end_time = omp_get_wtime();
     total_time = end_time - start_time;
@@ -233,10 +235,12 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
   double effectiveSamplings = 0;
   double counter = 0;
   bool acceptedStep;
+  int ef = getEquilibrationFraction()*getNumberOfMetropolisSteps();
+
 
   for (int i = 1; i <= numberOfMetropolisSteps; i++) {
 
-    // Choose importance samling or brute force
+    // Choose importance samling, gibbs sampling or brute force
     if (getImportanceSampling()){
         acceptedStep = ImportanceMetropolisStep();
     }
@@ -249,7 +253,7 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
         acceptedStep = metropolisStep();
     }
 
-    if (i >= getEquilibrationFraction()*numberOfMetropolisSteps){
+    if (i > ef){
       effectiveSamplings++;
       counter += acceptedStep;
 

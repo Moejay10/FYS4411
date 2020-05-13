@@ -3,7 +3,7 @@ import pandas as pd
 from pandas import DataFrame
 import numpy as np
 # Where to save the figures and data files
-DATA_ID = "../Results/Task_d"
+DATA_ID = "../Results/Statistical_Analysis"
 
 def data_path(dat_id):
     return os.path.join(DATA_ID, dat_id)
@@ -50,7 +50,7 @@ def use_blocking_importance():
     mean_list = []
     std_list = []
     var_list = []
-    infile = open(data_path("Blocking.dat"),'r')
+    infile = open(data_path("Gibbs_Blocking.dat"),'r')
     infile.readline()
     data = np.loadtxt(infile)
     data = data[0:]
