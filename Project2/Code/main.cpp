@@ -94,7 +94,6 @@ int main() {
   cout << "\n" << "Project Task B -  Brute Force: " <<  "Write b " << endl;
   cout << "\n" << "Project Task C -  Importance Sampling: " <<  "Write c " << endl;
   cout << "\n" << "Project Task F  - Gibbs sampling: " <<  "Write f " << endl;
-  cout << "\n" << "Project Task G  - Interaction: " <<  "Write g " << endl;
 
 
 

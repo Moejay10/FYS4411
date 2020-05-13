@@ -47,7 +47,7 @@ void RandomUniform::setupInitialState() {
 
   double sigma_initRBM = 0.001;
   //std::normal_distribution<double> distribution_initRBM(0, sigma_initRBM);
-  std::uniform_real_distribution<double> distribution_initRBM(0, 0.3);
+  std::uniform_real_distribution<double> distribution_initRBM(0, 0.5);
 
 
   vec positions(m_numberOfInputs);
