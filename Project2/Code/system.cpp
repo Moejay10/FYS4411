@@ -207,7 +207,8 @@ void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolis
 
   double start_time, end_time, total_time;
 
-  m_sampler->setEnergies(m_numberOfMetropolisSteps);
+  m_sampler->setBlocking(m_numberOfMetropolisSteps);
+  m_sampler->setEnergies(OptCycles);
 
   for (int i = 0; i < OptCycles; i++){
     start_time = omp_get_wtime();
@@ -219,9 +220,11 @@ void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolis
 
     m_sampler->computeAverages(total_time);
     m_sampler->printOutputToTerminal(total_time);
+    m_sampler->Energies(i);
+
   }
 
-  m_sampler->WriteBlockingtoFile(ofile, m_numberOfMetropolisSteps);
+  m_sampler->WriteBlockingtoFile(ofile);
 }
 
 
@@ -246,13 +249,13 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
         acceptedStep = metropolisStep();
     }
 
-    if (i >= getEquilibrationFraction()){
+    if (i >= getEquilibrationFraction()*numberOfMetropolisSteps){
       effectiveSamplings++;
       counter += acceptedStep;
 
       m_sampler->sample();
 
-      m_sampler->Analysis(effectiveSamplings);
+      m_sampler->Blocking(effectiveSamplings);
     }
 
 

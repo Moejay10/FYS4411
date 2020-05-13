@@ -93,24 +93,23 @@ int main() {
   cout << "\n" << "Which Project Task do you want to run?: " << endl;
   cout << "\n" << "Project Task B -  Brute Force: " <<  "Write b " << endl;
   cout << "\n" << "Project Task C -  Importance Sampling: " <<  "Write c " << endl;
-  cout << "\n" << "Project Task D -  Statistical Analysis: " <<  "Write d " << endl;
   cout << "\n" << "Project Task F  - Gibbs sampling: " <<  "Write e " << endl;
   cout << "\n" << "Project Task G  - Interaction: " <<  "Write g " << endl;
 
 
 
   // Chosen parameters
-  int OptCycles           = 200;
-  int MCcycles            = pow(2, 17);
-  int numberOfParticles   = 2;
-  int numberOfDimensions  = 2;
+  int OptCycles           = 10;
+  int MCcycles            = pow(2, 15);
+  int numberOfParticles   = 1;
+  int numberOfDimensions  = 1;
   int numberOfInputs      = numberOfParticles*numberOfDimensions;  // Number of visible units
   int numberOfHidden      = 2;            // Number of hidden units
   double sigma            = 1.0;          // Normal distribution visibles
   double gibbs            = 1.0;          // Gibbs parameter to change the wavefunction
   double eta              = 0.01;         // Learning rate
   double omega            = 1.0;          // Oscillator frequency.
-  double stepLength       = 1.0;         // Metropolis step length.
+  double stepLength       = 1.5;         // Metropolis step length.
   double timeStep         = 0.01;         // Timestep to be used in Metropolis-Hastings
   double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.
   double equilibration    = 0.1;          // Amount of the total steps used
@@ -132,28 +131,21 @@ int main() {
   string Task;
   cin >> Task;
 
+  // Parameter for files
+  int gamma = log10(eta);
+
+
   //Benchmark task a.
   if (Task == "b"){
 
     // Analytical Run
     cout << "-------------- \n" << "Brute Force \n" << "-------------- \n" << endl;
 
-      //Initialise the system.
-      System* system = new System();
-      system->setNetwork                  (new NeuralNetwork(system, eta, a, A, asgdOmega, fmax, fmin, t0, t1, numberOfInputs, numberOfHidden));
-      system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
-      system->setHamiltonian              (new HarmonicOscillator(system, omega));
-      system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
-      system->setStepLength               (stepLength);
-      //system->setOptimizer                (true);
-      system->setPrintOutToTerminal       (true);
-      system->runOptimizer                (ofile, OptCycles, MCcycles);
-
-  }
-
-  if (Task == "c"){
-
-    cout << "-------------- \n" << "Importance Sampling \n" << "-------------- \n" << endl;
+    // Choose which file to write to
+    string file = "Python/Results/Statistical_Analysis/BF_Blocking.dat";
+    ofile.open(file);
+    ofile << setiosflags(ios::showpoint | ios::uppercase);
+    ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
 
     //Initialise the system.
     System* system = new System();
@@ -161,23 +153,37 @@ int main() {
     system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
     system->setHamiltonian              (new HarmonicOscillator(system, omega));
     system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
-    system->setTimeStep                 (timeStep);
-    system->setDiffusionCoefficient     (diffusionCoefficient);
-    system->setImportanceSampling       (true);
+    system->setStepLength               (stepLength);
     //system->setOptimizer                (true);
     system->setPrintOutToTerminal       (true);
     system->runOptimizer                (ofile, OptCycles, MCcycles);
 
+    ofile.close();
+
+
+    // Write to file
+    file = "Python/Results/Brute_Force/Energies_eta_10^" + to_string(gamma) + ".dat";
+    ofile.open(file);
+    ofile << setiosflags(ios::showpoint | ios::uppercase);
+    ofile << setw(15) << setprecision(8) << "Iteration"; // OptCycles
+    ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
+
+    for (int i = 0; i < OptCycles; i++){
+      ofile << setw(15) << setprecision(8) << i+1; // Iteration
+      ofile << setw(15) << setprecision(8) << system->getSampler()->getEnergies()(i) << endl; // Mean energy
+
+    }
+
+    ofile.close();
+
   }
 
+  if (Task == "c"){
 
-  if (Task == "d"){
-
-    cout << "-------------- \n" << "Statistical Analysis \n" << "-------------- \n" << endl;
-
+    cout << "-------------- \n" << "Importance Sampling \n" << "-------------- \n" << endl;
 
     // Choose which file to write to
-    string file = "Python/Results/Task_d/Blocking.dat";
+    string file = "Python/Results/Statistical_Analysis/IS_Blocking.dat";
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
     ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
@@ -197,7 +203,24 @@ int main() {
 
     ofile.close();
 
+
+    // Write to file
+    file = "Python/Results/Importance_Sampling/Energies_eta_10^" + to_string(gamma) + ".dat";
+    ofile.open(file);
+    ofile << setiosflags(ios::showpoint | ios::uppercase);
+    ofile << setw(15) << setprecision(8) << "Iteration"; // OptCycles
+    ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
+
+    for (int i = 0; i < OptCycles; i++){
+      ofile << setw(15) << setprecision(8) << i+1; // Iteration
+      ofile << setw(15) << setprecision(8) << system->getSampler()->getEnergies()(i) << endl; // Mean energy
+
+    }
+
+    ofile.close();
+
   }
+
 
 
   if (Task == "f"){
@@ -205,6 +228,12 @@ int main() {
     // Analytical Run
     cout << "-------------- \n" << "Gibbs sampling \n" << "-------------- \n" << endl;
     gibbs = 2;
+
+    // Choose which file to write to
+    string file = "Python/Results/Statistical_Analysis/Gibbs_Blocking.dat";
+    ofile.open(file);
+    ofile << setiosflags(ios::showpoint | ios::uppercase);
+    ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
 
     //Initialise the system.
     System* system = new System();
@@ -216,6 +245,23 @@ int main() {
     //system->setOptimizer                (true);
     system->setPrintOutToTerminal       (true);
     system->runOptimizer                (ofile, OptCycles, MCcycles);
+
+    ofile.close();
+
+    // Write to file
+    file = "Python/Results/Gibbs/Energies_eta_10^" + to_string(gamma) + ".dat";
+    ofile.open(file);
+    ofile << setiosflags(ios::showpoint | ios::uppercase);
+    ofile << setw(15) << setprecision(8) << "Iteration"; // OptCycles
+    ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
+
+    for (int i = 0; i < OptCycles; i++){
+      ofile << setw(15) << setprecision(8) << i+1; // Iteration
+      ofile << setw(15) << setprecision(8) << system->getSampler()->getEnergies()(i) << endl; // Mean energy
+
+    }
+
+    ofile.close();
 
   }
 
