@@ -45,7 +45,7 @@ void RandomUniform::setupInitialState() {
   std::normal_distribution<double> Normal(0.0,1.0);
 
 
-  double sigma_initRBM = 0.001;
+  double sigma_initRBM = 0.5; // 0.001;
   std::normal_distribution<double> distribution_initRBM(0, sigma_initRBM);
   //std::uniform_real_distribution<double> distribution_initRBM(0, 0.5);
 

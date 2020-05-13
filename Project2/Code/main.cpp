@@ -95,7 +95,8 @@ int main(int argc, char **argv) {
   MPI_Init (&argc, &argv);
   MPI_Comm_rank (MPI_COMM_WORLD, &myRank);
   int Task;
-  if (myRank == 0){
+  if (myRank == 0){ 
+	cout << "\n" << "Number of processors running: " << numberOfProcesses << endl;
   	cout << "\n" << "Which Project Task do you want to run?: " << endl;
  	cout << "\n" << "Project Task B -  Brute Force: " <<  "Write 1 " << endl;
   	cout << "\n" << "Project Task C -  Importance Sampling: " <<  "Write 2 " << endl;
@@ -111,8 +112,8 @@ int main(int argc, char **argv) {
   MPI_Bcast(&Task, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
   // Chosen parameters
-  int OptCycles           = 3;
-  int MCcycles            = pow(2, 17);
+  int OptCycles           = 10;
+  int MCcycles            = pow(2, 21);
   int numberOfParticles   = 2;
   int numberOfDimensions  = 2;
   int numberOfInputs      = numberOfParticles*numberOfDimensions;  // Number of visible units
@@ -146,6 +147,9 @@ int main(int argc, char **argv) {
   
   
 
+  string file;
+  // Parameter for files
+  int gamma = log10(eta);
 
   //Benchmark task a.
   if (Task == 1){
@@ -153,7 +157,19 @@ int main(int argc, char **argv) {
       // Analytical Run
       //cout << "-------------- \n" << "Brute Force \n" << "-------------- \n" << endl;
       //}
-      //Initialise the system.
+      //Initialise the system
+      //
+      
+      // Choose which file to write to
+          // Write to file
+      file = "Python/Results/Brute_Force/Energies_eta_10^" + to_string(gamma) + ".dat";
+      if (myRank==0){
+        ofile.open(file);
+        ofile << setiosflags(ios::showpoint | ios::uppercase);
+        ofile << setw(15) << setprecision(8) << "Iteration"; // OptCycles
+        ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
+      }
+
       System* system = new System();
       system->setNetwork                  (new NeuralNetwork(system, eta, a, A, asgdOmega, fmax, fmin, t0, t1, numberOfInputs, numberOfHidden));
       system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
@@ -171,7 +187,13 @@ int main(int argc, char **argv) {
   if (Task == 2){
  
     //cout << "-------------- \n" << "Importance Sampling \n" << "-------------- \n" << endl;
-
+    file = "Python/Results/Importance_Sampling/Energies_eta_10^" + to_string(gamma) + ".dat";
+    if (myRank==0){
+      ofile.open(file);
+      ofile << setiosflags(ios::showpoint | ios::uppercase);
+      ofile << setw(15) << setprecision(8) << "Iteration"; // OptCycles
+      ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
+    }
     //Initialise the system.
     System* system = new System();
     system->setNetwork                  (new NeuralNetwork(system, eta, a, A, asgdOmega, fmax, fmin, t0, t1, numberOfInputs, numberOfHidden));
@@ -197,7 +219,10 @@ int main(int argc, char **argv) {
     string file = "Python/Results/Task_d/Blocking.dat";
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
-    ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
+    
+    if (myRank==0){
+    	ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
+    }
 
     //Initialise the system.
     System* system = new System();
@@ -221,6 +246,13 @@ int main(int argc, char **argv) {
 
     // Analytical Run
     //cout << "-------------- \n" << "Gibbs sampling \n" << "-------------- \n" << endl;
+    file = "Python/Results/Gibbs/Energies_eta_10^" + to_string(gamma) + ".dat";
+    if (myRank==0){
+      ofile.open(file);
+      ofile << setiosflags(ios::showpoint | ios::uppercase);
+      ofile << setw(15) << setprecision(8) << "Iteration"; // OptCycles
+      ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
+    }
     gibbs = 2;
 
     //Initialise the system.
@@ -242,6 +274,14 @@ int main(int argc, char **argv) {
     // Analytical Run
     //cout << "-------------- \n" << "Interaction \n" << "-------------- \n" << endl;
     //gibbs = 2;
+    file = "Python/Results/Interaction/Energies_eta_10^" + to_string(gamma) + ".dat"; 
+    
+    if (myRank==0){
+      ofile.open(file);
+      ofile << setiosflags(ios::showpoint | ios::uppercase);
+      ofile << setw(15) << setprecision(8) << "Iteration"; // OptCycles
+      ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
+    }
 
     //Initialise the system.
     System* system = new System();
@@ -263,7 +303,7 @@ int main(int argc, char **argv) {
 
   }
 
-
+  ofile.close();
   MPI_Finalize();
 
   return 0;

@@ -193,16 +193,20 @@ void Sampler::computeAverages(double total_time, int numberOfProcesses, int myRa
 
 void Sampler::Analysis(int MCcycles, int numberOfProcesses, int myRank){
 
-  double norm = 1.0/((double) (MCcycles*numberOfProcesses));  // divided by  number of cycles
+  double norm = 1.0/((double) (MCcycles));  // divided by  number of local cycles
   double Energy = m_localcumulativeEnergy * norm;
   m_Energies((MCcycles-1)*numberOfProcesses + myRank) = Energy;
 }
 
 
-void Sampler::WriteBlockingtoFile(ofstream& ofile, int MCcycles){
-
-  for (int i = 0; i < MCcycles; i++){
-    ofile << setw(15) << setprecision(8) << m_Energies(i) << endl; // Mean energy
+void Sampler::WriteBlockingtoFile(ofstream& ofile, int MCcycles, int myRank){
+  vec globalEnergies;
+  globalEnergies.zeros(MCcycles);
+  MPI_Allreduce(m_Energies.memptr(), globalEnergies.memptr(), MCcycles, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+  if (myRank==0){
+    for (int i = 0; i < MCcycles; i++){
+      ofile << setw(15) << setprecision(8) << globalEnergies(i) << endl; // Mean energy
+    }
   }
-
+ ofile.close();
 }

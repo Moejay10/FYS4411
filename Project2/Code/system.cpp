@@ -208,9 +208,9 @@ void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolis
 
   m_sampler                   = new Sampler(this);
   m_numberOfMetropolisSteps   = numberOfMetropolisSteps;
-  m_sampler->setNumberOfMetropolisSteps(numberOfMetropolisSteps);
+  m_sampler->setNumberOfMetropolisSteps(m_numberOfMetropolisSteps);
 
-  int localMetropolisSteps = numberOfMetropolisSteps/numberOfProcesses;
+  int localMetropolisSteps = (numberOfMetropolisSteps+numberOfMetropolisSteps*getEquilibrationFraction() )/numberOfProcesses;
   
   double start_time, end_time, total_time;
 
@@ -227,11 +227,11 @@ void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolis
     m_sampler->computeAverages(total_time, numberOfProcesses, myRank);
     if (myRank==0){
        m_sampler->printOutputToTerminal(total_time);
+       ofile << setw(15) << setprecision(8) << i+1; // Iteration
+       ofile << setw(15) << setprecision(8) << m_sampler->getEnergy() << endl; // Mean energy
     }
   }
-  if (myRank==0){
-    m_sampler->WriteBlockingtoFile(ofile, m_numberOfMetropolisSteps);
-  }
+  //m_sampler->WriteBlockingtoFile(ofile, m_numberOfMetropolisSteps, myRank);  
 }
 
 
@@ -240,10 +240,10 @@ void System::runMetropolisSteps(ofstream& ofile, int localMetropolisSteps, int n
   double effectiveSamplings = 0;
   double counter = 0;
   bool acceptedStep;
-  int localEquilibrationFraction = getEquilibrationFraction()*localMetropolisSteps;
+  int localEquilibrationFraction = getEquilibrationFraction()*m_numberOfMetropolisSteps;
 
   m_sampler->initializeVariables();
-  for (int i = 1; i <= localMetropolisSteps; i++) {
+  for (int i = 1; i <= localMetropolisSteps; i++) { //to run correct number of MC
 
     // Choose importance samling or brute force
     if (getImportanceSampling()){
@@ -258,7 +258,7 @@ void System::runMetropolisSteps(ofstream& ofile, int localMetropolisSteps, int n
         acceptedStep = metropolisStep();
     }
 
-    if (i>=localEquilibrationFraction){
+    if (i>localEquilibrationFraction){
       effectiveSamplings++; 
       counter += acceptedStep;
 

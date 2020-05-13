@@ -19,7 +19,7 @@ public:
     void printOutputToTerminal(double time);
     void computeAverages(double time, int numberOfProcesses, int myRank);
     void Analysis(int MCcycles, int numberOfProcesses, int myRank);
-    void WriteBlockingtoFile(ofstream& ofile, int MCcycles);
+    void WriteBlockingtoFile(ofstream& ofile, int MCcycles, int myRank);
 
     double getSTD()                   { return m_STD; }
     double getVAR()                   { return m_variance; }
