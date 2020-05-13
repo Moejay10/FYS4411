@@ -99,8 +99,8 @@ int main() {
 
 
   // Chosen parameters
-  int OptCycles           = 100;
-  int MCcycles            = pow(2, 15);
+  int OptCycles           = 500;
+  int MCcycles            = pow(2, 20);
   int numberOfParticles   = 1;
   int numberOfDimensions  = 1;
   int numberOfInputs      = numberOfParticles*numberOfDimensions;  // Number of visible units
@@ -109,7 +109,7 @@ int main() {
   double gibbs            = 1.0;          // Gibbs parameter to change the wavefunction
   double eta              = 0.01;         // Learning rate
   double omega            = 1.0;          // Oscillator frequency.
-  double stepLength       = 1.5;         // Metropolis step length.
+  double stepLength       = 1.0;         // Metropolis step length.
   double timeStep         = 0.01;         // Timestep to be used in Metropolis-Hastings
   double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.
   double equilibration    = 0.1;          // Amount of the total steps used
