@@ -29,7 +29,7 @@ if(APPLE)
 
   set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp")
 else()
-  set (CMAKE_CXX_FLAGS "-Wall -fopenmp")
+  set (CMAKE_CXX_FLAGS "-fopenmp")
 endif()
 
 # Including armadillo

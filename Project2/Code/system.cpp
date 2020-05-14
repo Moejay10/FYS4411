@@ -206,16 +206,16 @@ void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolis
   m_sampler->setNumberOfMetropolisSteps(numberOfMetropolisSteps);
 
   double start_time, end_time, total_time;
+  int eq = getEquilibrationFraction()*numberOfMetropolisSteps;
 
-  m_sampler->setBlocking(m_numberOfMetropolisSteps);
+
   m_sampler->setEnergies(OptCycles);
-
-  int ef = getEquilibrationFraction()*numberOfMetropolisSteps;
+  m_sampler->setBlocking(numberOfMetropolisSteps + eq);
 
   for (int i = 0; i < OptCycles; i++){
     start_time = omp_get_wtime();
 
-    runMetropolisSteps(ofile, numberOfMetropolisSteps + ef);
+    runMetropolisSteps(ofile, numberOfMetropolisSteps + eq);
 
     end_time = omp_get_wtime();
     total_time = end_time - start_time;
@@ -232,10 +232,8 @@ void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolis
 
 void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
 
-  double effectiveSamplings = 0;
   double counter = 0;
   bool acceptedStep;
-  int ef = getEquilibrationFraction()*getNumberOfMetropolisSteps();
 
 
   for (int i = 1; i <= numberOfMetropolisSteps; i++) {
@@ -253,18 +251,14 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
         acceptedStep = metropolisStep();
     }
 
-    if (i > ef){
-      effectiveSamplings++;
-      counter += acceptedStep;
+    counter += acceptedStep;
 
-      m_sampler->sample();
+    m_sampler->sample();
 
-      m_sampler->Blocking(effectiveSamplings);
-    }
-
+    m_sampler->Blocking(i);
 
   }
-  m_sampler->setMCcyles(effectiveSamplings);
+  m_sampler->setMCcyles(numberOfMetropolisSteps);
   m_sampler->setacceptedStep(counter);
 
 }
