@@ -13,13 +13,15 @@ public:
     void setNumberOfMetropolisSteps(int steps);
     void setMCcyles(int effectiveSamplings);
     void setacceptedStep(int counter);
-    void setEnergies(int MCcycles);
+    void setEnergies(int OptCycles);
+    void setBlocking(int MCcycles);
     void setGradients();
     void sample();
     void printOutputToTerminal(double time);
     void computeAverages(double time);
-    void Analysis(int MCcycles);
-    void WriteBlockingtoFile(ofstream& ofile, int MCcycles);
+    void Blocking(int MCcycles);
+    void Energies(int OptCycles);
+    void WriteBlockingtoFile(ofstream& ofile);
 
     double getSTD()                   { return m_STD; }
     double getVAR()                   { return m_variance; }
@@ -28,6 +30,8 @@ public:
     double getTime()                  { return m_totalTime; }
     double getAcceptedStep()          { return m_acceptedStep; }
     vec getEnergies()                 { return m_Energies; }
+    vec getBlocking()                 { return m_Blocking; }
+
 
 
 
@@ -47,6 +51,8 @@ private:
     double  m_acceptedStep = 0;
 
     vec m_Energies;
+    vec m_Blocking;
+
 
     vec m_aDelta;
     vec m_bDelta;

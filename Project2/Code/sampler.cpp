@@ -32,8 +32,13 @@ void Sampler::setacceptedStep(int counter) {
 }
 
 
-void Sampler::setEnergies(int MCcycles) {
-  m_Energies.zeros(MCcycles);
+void Sampler::setEnergies(int Optcycles) {
+  m_Energies.zeros(Optcycles);
+
+}
+
+void Sampler::setBlocking(int MCcycles) {
+  m_Blocking.zeros(MCcycles);
 
 }
 
@@ -168,18 +173,23 @@ void Sampler::computeAverages(double total_time) {
 }
 
 
-void Sampler::Analysis(int MCcycles){
+void Sampler::Blocking(int MCcycles){
 
   double norm = 1.0/((double) (MCcycles));  // divided by  number of cycles
   double Energy = m_cumulativeEnergy * norm;
-  m_Energies(MCcycles-1) = Energy;
+  m_Blocking(MCcycles-1) = Energy;
+}
+
+void Sampler::Energies(int OptCycles){
+
+  m_Energies(OptCycles) = m_energy;
 }
 
 
-void Sampler::WriteBlockingtoFile(ofstream& ofile, int MCcycles){
+void Sampler::WriteBlockingtoFile(ofstream& ofile){
 
-  for (int i = 0; i < MCcycles; i++){
-    ofile << setw(15) << setprecision(8) << m_Energies(i) << endl; // Mean energy
+  for (int i = 0; i < m_MCcycles; i++){
+    ofile << setw(15) << setprecision(8) << m_Blocking(i) << endl; // Mean energy
   }
 
 }

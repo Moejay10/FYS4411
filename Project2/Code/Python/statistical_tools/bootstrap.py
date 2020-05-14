@@ -2,12 +2,12 @@
 import os
 
 # Where to save the figures and data files
-DATA_ID = "Results"
+DATA_ID = "../Results/Statistical_Analysis"
 
 def data_path(dat_id):
     return os.path.join(DATA_ID, dat_id)
 
-infile = open(data_path("Energies.dat"),'r')
+infile = open(data_path("BF_Blocking.dat"),'r')
 infile.readline()
 from numpy import std, mean, concatenate, arange, loadtxt, zeros, ceil
 from numpy.random import randint
