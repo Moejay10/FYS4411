@@ -100,8 +100,8 @@ int main() {
   // Chosen parameters
   int OptCycles           = 500;
   int MCcycles            = pow(2, 20);
-  int numberOfParticles   = 2;
-  int numberOfDimensions  = 2;
+  int numberOfParticles   = 1;
+  int numberOfDimensions  = 1;
   int numberOfInputs      = numberOfParticles*numberOfDimensions;  // Number of visible units
   int numberOfHidden      = 2;            // Number of hidden units
   double sigma            = 1.0;          // Normal distribution visibles
