@@ -102,7 +102,7 @@ int main(int argc, char **argv) {
   	cout << "\n" << "Which Project Task do you want to run?: " << endl;
  	cout << "\n" << "Project Task B -  Brute Force: " <<  "Write 1 " << endl;
   	cout << "\n" << "Project Task C -  Importance Sampling: " <<  "Write 2 " << endl;
-  	cout << "\n" << "Project Task F  - Gibbs sampling: " <<  "Write 4 " << endl;
+  	cout << "\n" << "Project Task F  - Gibbs sampling: " <<  "Write 3 " << endl;
   	cout << "\n" << "Write here " << endl;
   	//string Task;
 	cin >> Task;
@@ -113,7 +113,7 @@ int main(int argc, char **argv) {
 
   // Chosen parameters
   int OptCycles           = 100;
-  int MCcycles            = pow(2, 20);
+  int MCcycles            = pow(2, 16);
   int numberOfParticles   = 1;
   int numberOfDimensions  = 1;
   int numberOfInputs      = numberOfParticles*numberOfDimensions;  // Number of visible units

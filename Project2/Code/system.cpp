@@ -239,10 +239,8 @@ void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolis
 
 void System::runMetropolisSteps(ofstream& ofile, int localMetropolisSteps, int numberOfProcesses, int myRank) {
 
-  double effectiveSamplings = 0;
   double counter = 0;
   bool acceptedStep;
-  int localEquilibrationFraction = getEquilibrationFraction()*m_numberOfMetropolisSteps;
 
   m_sampler->initializeVariables();
   for (int i = 1; i <= localMetropolisSteps; i++) { //to run correct number of MC

@@ -57,25 +57,19 @@ private:
     vec m_Energies;
     vec m_Blocking;
 
-    vec m_localaDelta;
-    vec m_localbDelta;
-    vec m_localwDelta;
+    vec m_aDelta;
+    vec m_bDelta;
+    vec m_wDelta;
 
-    vec m_localEaDelta;
-    vec m_localEbDelta;
-    vec m_localEwDelta;
+    vec m_EaDelta;
+    vec m_EbDelta;
+    vec m_EwDelta;
 
     vec m_agrad;
     vec m_bgrad;
     vec m_wgrad;
 
-    vec m_globalaDelta;
-    vec m_globalbDelta;
-    vec m_globalwDelta;
 
-    vec m_globalEaDelta;
-    vec m_globalEbDelta;
-    vec m_globalEwDelta;;
 
     class System* m_system = nullptr;
 };
