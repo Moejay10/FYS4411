@@ -102,9 +102,7 @@ int main(int argc, char **argv) {
   	cout << "\n" << "Which Project Task do you want to run?: " << endl;
  	cout << "\n" << "Project Task B -  Brute Force: " <<  "Write 1 " << endl;
   	cout << "\n" << "Project Task C -  Importance Sampling: " <<  "Write 2 " << endl;
-  	cout << "\n" << "Project Task D -  Statistical Analysis: " <<  "Write 3 " << endl;
   	cout << "\n" << "Project Task F  - Gibbs sampling: " <<  "Write 4 " << endl;
-  	cout << "\n" << "Project Task G  - Interaction: " <<  "Write 5 " << endl;
   	cout << "\n" << "Write here " << endl;
   	//string Task;
 	cin >> Task;
@@ -114,8 +112,8 @@ int main(int argc, char **argv) {
   MPI_Bcast(&Task, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
   // Chosen parameters
-  int OptCycles           = 10;
-  int MCcycles            = pow(2, 15);
+  int OptCycles           = 100;
+  int MCcycles            = pow(2, 20);
   int numberOfParticles   = 1;
   int numberOfDimensions  = 1;
   int numberOfInputs      = numberOfParticles*numberOfDimensions;  // Number of visible units
@@ -155,12 +153,6 @@ int main(int argc, char **argv) {
 
   //Benchmark task a.
   if (Task == 1){
-      //if (myRank == 0){
-      // Analytical Run
-      //cout << "-------------- \n" << "Brute Force \n" << "-------------- \n" << endl;
-      //}
-      //Initialise the system
-      //
 
       // Choose which file to write to
           // Write to file
@@ -226,44 +218,28 @@ int main(int argc, char **argv) {
     system->setEquilibrationFraction    (equilibration);
     system->runOptimizer                (ofile, OptCycles, MCcycles);
 
+    if (myRank==0){
+      // Write to file
+      file = "Python/Results/Importance_Sampling/Energies_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+      //file = "Python/Results/Importance_Sampling/Interaction_Energies_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+      ofile.open(file);
+      ofile << setiosflags(ios::showpoint | ios::uppercase);
+      ofile << setw(15) << setprecision(8) << "Iteration"; // OptCycles
+      ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
+
+      for (int i = 0; i < OptCycles; i++){
+        ofile << setw(15) << setprecision(8) << i+1; // Iteration
+        ofile << setw(15) << setprecision(8) << system->getSampler()->getEnergies()(i) << endl; // Mean energy
+
+      }
+
+      ofile.close();
+    }
+
   }
 
 
   if (Task == 3){
-
-    //cout << "-------------- \n" << "Statistical Analysis \n" << "-------------- \n" << endl;
-
-
-    // Choose which file to write to
-    string file = "Python/Results/Task_d/Blocking.dat";
-    ofile.open(file);
-    ofile << setiosflags(ios::showpoint | ios::uppercase);
-
-    if (myRank==0){
-    	ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
-    }
-
-    //Initialise the system.
-    System* system = new System();
-    system->setNetwork                  (new NeuralNetwork(system, eta, a, A, asgdOmega, fmax, fmin, t0, t1, numberOfInputs, numberOfHidden));
-    system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
-    system->setHamiltonian              (new HarmonicOscillator(system, omega));
-    system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
-    system->setTimeStep                 (timeStep);
-    system->setDiffusionCoefficient     (diffusionCoefficient);
-    system->setImportanceSampling       (true);
-    //system->setOptimizer                (true);
-    system->setPrintOutToTerminal       (true);
-    system->setEquilibrationFraction    (equilibration);
-
-    system->runOptimizer                (ofile, OptCycles, MCcycles);
-
-    ofile.close();
-
-  }
-
-
-  if (Task == 4){
 
     // Analytical Run
     //cout << "-------------- \n" << "Gibbs sampling \n" << "-------------- \n" << endl;
@@ -288,42 +264,25 @@ int main(int argc, char **argv) {
     system->setEquilibrationFraction    (equilibration);
     system->runOptimizer                (ofile, OptCycles, MCcycles);
 
-  }
-
-
-  if (Task == 5){
-
-    // Analytical Run
-    //cout << "-------------- \n" << "Interaction \n" << "-------------- \n" << endl;
-    //gibbs = 2;
-    file = "Python/Results/Interaction/Energies_eta_10^" + to_string(gamma) + ".dat";
-
     if (myRank==0){
+      // Write to file
+      file = "Python/Results/Gibbs/Energies_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+      //file = "Python/Results/Gibbs/Interaction_Energies_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
       ofile.open(file);
       ofile << setiosflags(ios::showpoint | ios::uppercase);
       ofile << setw(15) << setprecision(8) << "Iteration"; // OptCycles
       ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
+
+      for (int i = 0; i < OptCycles; i++){
+        ofile << setw(15) << setprecision(8) << i+1; // Iteration
+        ofile << setw(15) << setprecision(8) << system->getSampler()->getEnergies()(i) << endl; // Mean energy
+
+      }
+
+      ofile.close();
     }
-
-    //Initialise the system.
-    System* system = new System();
-    system->setNetwork                  (new NeuralNetwork(system, eta, a, A, asgdOmega, fmax, fmin, t0, t1, numberOfInputs, numberOfHidden));
-    system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
-    system->setHamiltonian              (new HarmonicOscillator(system, omega));
-    system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
-    system->setStepLength               (stepLength);
-    system->setTimeStep                 (timeStep);
-    system->setDiffusionCoefficient     (diffusionCoefficient);
-    system->setEquilibrationFraction    (equilibration);
-    //system->setImportanceSampling       (true);
-    //system->setGibbsSampling            (true);
-
-    //system->setOptimizer                (true);
-    system->setRepulsivePotential       (true);
-    system->setPrintOutToTerminal       (true);
-    system->runOptimizer                (ofile, OptCycles, MCcycles);
-
   }
+
 
   MPI_Finalize();
 
