@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
   MPI_Bcast(&Task, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
   // Chosen parameters
-  int OptCycles           = 100;
+  int OptCycles           = 250;
   int MCcycles            = pow(2, 21);
   int numberOfParticles   = 1;
   int numberOfDimensions  = 1;
