@@ -207,14 +207,15 @@ void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolis
   MPI_Comm_size (MPI_COMM_WORLD, &numberOfProcesses);
 
   m_sampler                   = new Sampler(this);
-  m_numberOfMetropolisSteps   = numberOfMetropolisSteps;
+  m_numberOfMetropolisSteps   = numberOfMetropolisSteps+numberOfMetropolisSteps*getEquilibrationFraction();
   m_sampler->setNumberOfMetropolisSteps(m_numberOfMetropolisSteps);
 
-  int localMetropolisSteps = (numberOfMetropolisSteps+numberOfMetropolisSteps*getEquilibrationFraction() )/numberOfProcesses;
-  
+  int localMetropolisSteps = (m_numberOfMetropolisSteps)/numberOfProcesses;
+
   double start_time, end_time, total_time;
 
-  m_sampler->setEnergies(m_numberOfMetropolisSteps);
+  m_sampler->setEnergies(OptCycles);
+  m_sampler->setBlocking(m_numberOfMetropolisSteps);
 
   for (int i = 0; i < OptCycles; i++){
     start_time = omp_get_wtime();
@@ -227,16 +228,15 @@ void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolis
     m_sampler->computeAverages(total_time, numberOfProcesses, myRank);
     if (myRank==0){
        m_sampler->printOutputToTerminal(total_time);
-       ofile << setw(15) << setprecision(8) << i+1; // Iteration
-       ofile << setw(15) << setprecision(8) << m_sampler->getEnergy() << endl; // Mean energy
     }
   }
-  //m_sampler->WriteBlockingtoFile(ofile, m_numberOfMetropolisSteps, myRank);  
+  m_sampler->WriteBlockingtoFile(ofile, myRank);
+  //m_sampler->WriteBlockingtoFile(ofile, m_numberOfMetropolisSteps, myRank);
 }
 
 
 void System::runMetropolisSteps(ofstream& ofile, int localMetropolisSteps, int numberOfProcesses, int myRank) {
-  
+
   double effectiveSamplings = 0;
   double counter = 0;
   bool acceptedStep;
@@ -258,19 +258,12 @@ void System::runMetropolisSteps(ofstream& ofile, int localMetropolisSteps, int n
         acceptedStep = metropolisStep();
     }
 
-    if (i>localEquilibrationFraction){
-      effectiveSamplings++; 
-      counter += acceptedStep;
+    counter += acceptedStep;
 
-      m_sampler->sample();
-
-      m_sampler->Analysis(effectiveSamplings, numberOfProcesses, myRank);
-      
-    }
-
+    m_sampler->sample();
+    m_sampler->Blocking(i, numberOfProcesses, myRank);
 
   }
-  m_sampler->setMCcyles(effectiveSamplings);
   m_sampler->setacceptedSteps(counter);
 
 }

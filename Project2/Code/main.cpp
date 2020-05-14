@@ -94,8 +94,10 @@ int main(int argc, char **argv) {
   int numberOfProcesses, myRank;
   MPI_Init (&argc, &argv);
   MPI_Comm_rank (MPI_COMM_WORLD, &myRank);
+  MPI_Comm_size (MPI_COMM_WORLD, &numberOfProcesses);
+
   int Task;
-  if (myRank == 0){ 
+  if (myRank == 0){
 	cout << "\n" << "Number of processors running: " << numberOfProcesses << endl;
   	cout << "\n" << "Which Project Task do you want to run?: " << endl;
  	cout << "\n" << "Project Task B -  Brute Force: " <<  "Write 1 " << endl;
@@ -106,16 +108,16 @@ int main(int argc, char **argv) {
   	cout << "\n" << "Write here " << endl;
   	//string Task;
 	cin >> Task;
-	
+
 
   }
   MPI_Bcast(&Task, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
   // Chosen parameters
-  int OptCycles           = 10;
-  int MCcycles            = pow(2, 21);
-  int numberOfParticles   = 2;
-  int numberOfDimensions  = 2;
+  int OptCycles           = 50;
+  int MCcycles            = pow(2, 20);
+  int numberOfParticles   = 1;
+  int numberOfDimensions  = 1;
   int numberOfInputs      = numberOfParticles*numberOfDimensions;  // Number of visible units
   int numberOfHidden      = 2;            // Number of hidden units
   double sigma            = 1.0;          // Normal distribution visibles
@@ -125,7 +127,7 @@ int main(int argc, char **argv) {
   double stepLength       = 1.0;         // Metropolis step length.
   double timeStep         = 0.01;         // Timestep to be used in Metropolis-Hastings
   double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.
-  double equilibration    = 0.1;          // Amount of the total steps used
+  double equilibration    = 0.25;          // Amount of the total steps used
   // for equilibration.
 
   // ASGD parameters. lr: gamma_i=a/(A+t_i) where t[i]=max(0, t[i-1]+f(-grad[i]*grad[i-1]))
@@ -144,8 +146,8 @@ int main(int argc, char **argv) {
   //string Task;
   //cin >> Task;
   //string Task = "b";
-  
-  
+
+
 
   string file;
   // Parameter for files
@@ -159,7 +161,7 @@ int main(int argc, char **argv) {
       //}
       //Initialise the system
       //
-      
+
       // Choose which file to write to
           // Write to file
       file = "Python/Results/Brute_Force/Energies_eta_10^" + to_string(gamma) + ".dat";
@@ -180,12 +182,29 @@ int main(int argc, char **argv) {
       system->setPrintOutToTerminal       (true);
       system->setEquilibrationFraction    (equilibration);
       system->runOptimizer                (ofile, OptCycles, MCcycles);
+      ofile.close();
 
+      if (myRank==0){
+        // Write to file
+        file = "Python/Results/Brute_Force/Energies_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+        //file = "Python/Results/Brute_Force/Interaction_Energies_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+        ofile.open(file);
+        ofile << setiosflags(ios::showpoint | ios::uppercase);
+        ofile << setw(15) << setprecision(8) << "Iteration"; // OptCycles
+        ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
 
+        for (int i = 0; i < OptCycles; i++){
+          ofile << setw(15) << setprecision(8) << i+1; // Iteration
+          ofile << setw(15) << setprecision(8) << system->getSampler()->getEnergies()(i) << endl; // Mean energy
+
+        }
+
+        ofile.close();
+      }
   }
 
   if (Task == 2){
- 
+
     //cout << "-------------- \n" << "Importance Sampling \n" << "-------------- \n" << endl;
     file = "Python/Results/Importance_Sampling/Energies_eta_10^" + to_string(gamma) + ".dat";
     if (myRank==0){
@@ -205,6 +224,7 @@ int main(int argc, char **argv) {
     system->setImportanceSampling       (true);
     //system->setOptimizer                (true);
     system->setPrintOutToTerminal       (true);
+    system->setEquilibrationFraction    (equilibration);
     system->runOptimizer                (ofile, OptCycles, MCcycles);
 
   }
@@ -219,7 +239,7 @@ int main(int argc, char **argv) {
     string file = "Python/Results/Task_d/Blocking.dat";
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
-    
+
     if (myRank==0){
     	ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
     }
@@ -235,6 +255,8 @@ int main(int argc, char **argv) {
     system->setImportanceSampling       (true);
     //system->setOptimizer                (true);
     system->setPrintOutToTerminal       (true);
+    system->setEquilibrationFraction    (equilibration);
+
     system->runOptimizer                (ofile, OptCycles, MCcycles);
 
     ofile.close();
@@ -264,6 +286,7 @@ int main(int argc, char **argv) {
     system->setGibbsSampling            (true);
     //system->setOptimizer                (true);
     system->setPrintOutToTerminal       (true);
+    system->setEquilibrationFraction    (equilibration);
     system->runOptimizer                (ofile, OptCycles, MCcycles);
 
   }
@@ -274,8 +297,8 @@ int main(int argc, char **argv) {
     // Analytical Run
     //cout << "-------------- \n" << "Interaction \n" << "-------------- \n" << endl;
     //gibbs = 2;
-    file = "Python/Results/Interaction/Energies_eta_10^" + to_string(gamma) + ".dat"; 
-    
+    file = "Python/Results/Interaction/Energies_eta_10^" + to_string(gamma) + ".dat";
+
     if (myRank==0){
       ofile.open(file);
       ofile << setiosflags(ios::showpoint | ios::uppercase);
@@ -292,7 +315,7 @@ int main(int argc, char **argv) {
     system->setStepLength               (stepLength);
     system->setTimeStep                 (timeStep);
     system->setDiffusionCoefficient     (diffusionCoefficient);
-
+    system->setEquilibrationFraction    (equilibration);
     //system->setImportanceSampling       (true);
     //system->setGibbsSampling            (true);
 
@@ -303,7 +326,6 @@ int main(int argc, char **argv) {
 
   }
 
-  ofile.close();
   MPI_Finalize();
 
   return 0;

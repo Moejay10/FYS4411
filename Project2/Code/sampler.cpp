@@ -24,10 +24,6 @@ void Sampler::setNumberOfMetropolisSteps(int steps) {
     m_numberOfMetropolisSteps = steps;
 }
 
-void Sampler::setMCcyles(int effectiveSamplings) {
-    m_MCcycles = effectiveSamplings;
-}
-
 void Sampler::setacceptedSteps(int counter) {
     m_localacceptedSteps = counter;
 }
@@ -36,6 +32,10 @@ void Sampler::setacceptedSteps(int counter) {
 void Sampler::setEnergies(int MCcycles) {
   m_Energies.zeros(MCcycles);
 
+}
+
+void Sampler::setBlocking(int MCcycle) {
+  m_Blocking.zeros(MCcycle);
 }
 
 void Sampler::initializeVariables() {
@@ -71,7 +71,7 @@ void Sampler::initializeVariables() {
   m_localacceptedSteps = 0;
   m_DeltaPsi = 0;
   m_DerivativePsiE = 0;
-  m_energy=0; 
+  //m_energy=0;
 }
 
 
@@ -137,8 +137,9 @@ void Sampler::printOutputToTerminal(double total_time) {
 void Sampler::computeAverages(double total_time, int numberOfProcesses, int myRank) {
     /* Compute the averages of the sampled quantities.
      */
-    
-    int MCcycles = m_MCcycles;                   // Number of equilibration steps
+
+    int MCcycles=m_system->getNumberOfMetropolisSteps();
+
     double norm = 1.0/((double) (MCcycles*numberOfProcesses));     // divided by  number of cycles
 
     MPI_Reduce(&m_localcumulativeEnergy, &m_globalcumulativeEnergy, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
@@ -151,7 +152,7 @@ void Sampler::computeAverages(double total_time, int numberOfProcesses, int myRa
         m_variance = (m_globalcumulativeEnergy2 - m_globalcumulativeEnergy*m_globalcumulativeEnergy)*norm;
         m_STD = sqrt(m_variance);
     }
-    
+
     MPI_Reduce(&m_localaDelta, &m_globalaDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     MPI_Reduce(&m_localbDelta, &m_globalbDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     MPI_Reduce(&m_localwDelta, &m_globalwDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
@@ -159,7 +160,7 @@ void Sampler::computeAverages(double total_time, int numberOfProcesses, int myRa
     MPI_Reduce(&m_localEaDelta, &m_globalEaDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     MPI_Reduce(&m_localEbDelta, &m_globalEbDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     MPI_Reduce(&m_localEwDelta, &m_globalEwDelta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
- 
+
     MPI_Reduce(&m_localacceptedSteps, &m_globalacceptedSteps, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
     if (myRank==0){
@@ -191,18 +192,23 @@ void Sampler::computeAverages(double total_time, int numberOfProcesses, int myRa
 }
 
 
-void Sampler::Analysis(int MCcycles, int numberOfProcesses, int myRank){
+void Sampler::Blocking(int MCcycle, int numberOfProcesses, int myRank){
 
-  double norm = 1.0/((double) (MCcycles));  // divided by  number of local cycles
+  double norm = 1.0/((double) (MCcycle));  // divided by  number of local cycles
   double Energy = m_localcumulativeEnergy * norm;
-  m_Energies((MCcycles-1)*numberOfProcesses + myRank) = Energy;
+  m_Blocking((MCcycle-1)*numberOfProcesses + myRank) = Energy;
+}
+
+void Sampler::Energies(int OptCycles){
+  m_Energies(OptCycles) = m_energy;
 }
 
 
-void Sampler::WriteBlockingtoFile(ofstream& ofile, int MCcycles, int myRank){
+void Sampler::WriteBlockingtoFile(ofstream& ofile, int myRank){
   vec globalEnergies;
+  int MCcycles=m_system->getNumberOfMetropolisSteps();
   globalEnergies.zeros(MCcycles);
-  MPI_Allreduce(m_Energies.memptr(), globalEnergies.memptr(), MCcycles, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+  MPI_Allreduce(m_Blocking.memptr(), globalEnergies.memptr(), MCcycles, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
   if (myRank==0){
     for (int i = 0; i < MCcycles; i++){
       ofile << setw(15) << setprecision(8) << globalEnergies(i) << endl; // Mean energy
