@@ -1,3 +1,0 @@
-/Users/ohebbi/Documents/UiO /V20/FYS4411/Project2/Code/build/CMakeFiles/rebuild_cache.dir
-/Users/ohebbi/Documents/UiO /V20/FYS4411/Project2/Code/build/CMakeFiles/edit_cache.dir
-/Users/ohebbi/Documents/UiO /V20/FYS4411/Project2/Code/build/CMakeFiles/vmc.dir
