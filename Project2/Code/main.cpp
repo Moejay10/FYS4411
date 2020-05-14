@@ -90,7 +90,8 @@ using namespace std;
 
 
 int main(int argc, char **argv) {
-    //  MPI initializations
+
+  //  MPI initializations
   int numberOfProcesses, myRank;
   MPI_Init (&argc, &argv);
   MPI_Comm_rank (MPI_COMM_WORLD, &myRank);
@@ -98,22 +99,21 @@ int main(int argc, char **argv) {
 
   int Task;
   if (myRank == 0){
-	cout << "\n" << "Number of processors running: " << numberOfProcesses << endl;
+	  cout << "\n" << "Number of processors running: " << numberOfProcesses << endl;
   	cout << "\n" << "Which Project Task do you want to run?: " << endl;
- 	cout << "\n" << "Project Task B -  Brute Force: " <<  "Write 1 " << endl;
+ 	  cout << "\n" << "Project Task B -  Brute Force: " <<  "Write 1 " << endl;
   	cout << "\n" << "Project Task C -  Importance Sampling: " <<  "Write 2 " << endl;
   	cout << "\n" << "Project Task F  - Gibbs sampling: " <<  "Write 3 " << endl;
   	cout << "\n" << "Write here " << endl;
   	//string Task;
 	cin >> Task;
 
-
   }
   MPI_Bcast(&Task, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
   // Chosen parameters
-  int OptCycles           = 100;
-  int MCcycles            = pow(2, 16);
+  int OptCycles           = 500;
+  int MCcycles            = pow(2, 21);
   int numberOfParticles   = 1;
   int numberOfDimensions  = 1;
   int numberOfInputs      = numberOfParticles*numberOfDimensions;  // Number of visible units
@@ -125,7 +125,7 @@ int main(int argc, char **argv) {
   double stepLength       = 1.0;         // Metropolis step length.
   double timeStep         = 0.01;         // Timestep to be used in Metropolis-Hastings
   double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.
-  double equilibration    = 0.25;          // Amount of the total steps used
+  double equilibration    = 0.20;          // Amount of the total steps used
   // for equilibration.
 
   // ASGD parameters. lr: gamma_i=a/(A+t_i) where t[i]=max(0, t[i-1]+f(-grad[i]*grad[i-1]))
@@ -138,14 +138,6 @@ int main(int argc, char **argv) {
   // ASGD optional: initial conditions
   double t0               = A;            // Suggested choices are t0=t1=A=20 (default)
   double t1               = A;            // or t0=t1=0
-
-
-  //cout << "\n" << "Write here " << endl;
-  //string Task;
-  //cin >> Task;
-  //string Task = "b";
-
-
 
   string file;
   // Parameter for files
@@ -276,7 +268,6 @@ int main(int argc, char **argv) {
       for (int i = 0; i < OptCycles; i++){
         ofile << setw(15) << setprecision(8) << i+1; // Iteration
         ofile << setw(15) << setprecision(8) << system->getSampler()->getEnergies()(i) << endl; // Mean energy
-
       }
 
       ofile.close();
