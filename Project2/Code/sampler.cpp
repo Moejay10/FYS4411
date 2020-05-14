@@ -164,6 +164,7 @@ void Sampler::computeAverages(double total_time, int numberOfProcesses, int myRa
     MPI_Reduce(&m_localacceptedSteps, &m_globalacceptedSteps, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
     if (myRank==0){
+        cout << "local: " << m_localaDelta << ", global: " << m_globalaDelta << endl;
         m_globalaDelta /= MCcycles;
         m_globalbDelta /= MCcycles;
         m_globalwDelta /= MCcycles;
@@ -199,8 +200,10 @@ void Sampler::Blocking(int MCcycle, int numberOfProcesses, int myRank){
   m_Blocking((MCcycle-1)*numberOfProcesses + myRank) = Energy;
 }
 
-void Sampler::Energies(int OptCycles){
-  m_Energies(OptCycles) = m_energy;
+void Sampler::Energies(int OptCycles, int myRank){
+  if (myRank == 0){
+    m_Energies(OptCycles) = m_energy;
+  }
 }
 
 

@@ -114,8 +114,8 @@ int main(int argc, char **argv) {
   MPI_Bcast(&Task, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
   // Chosen parameters
-  int OptCycles           = 50;
-  int MCcycles            = pow(2, 20);
+  int OptCycles           = 10;
+  int MCcycles            = pow(2, 15);
   int numberOfParticles   = 1;
   int numberOfDimensions  = 1;
   int numberOfInputs      = numberOfParticles*numberOfDimensions;  // Number of visible units
@@ -164,11 +164,10 @@ int main(int argc, char **argv) {
 
       // Choose which file to write to
           // Write to file
-      file = "Python/Results/Brute_Force/Energies_eta_10^" + to_string(gamma) + ".dat";
       if (myRank==0){
+        file = "Python/Results/Brute_Force/Energies_eta_10^" + to_string(gamma) + ".dat";
         ofile.open(file);
         ofile << setiosflags(ios::showpoint | ios::uppercase);
-        ofile << setw(15) << setprecision(8) << "Iteration"; // OptCycles
         ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
       }
 

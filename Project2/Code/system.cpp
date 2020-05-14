@@ -226,6 +226,8 @@ void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolis
     total_time = end_time - start_time;
 
     m_sampler->computeAverages(total_time, numberOfProcesses, myRank);
+    m_sampler->Energies(i, myRank);
+
     if (myRank==0){
        m_sampler->printOutputToTerminal(total_time);
     }
