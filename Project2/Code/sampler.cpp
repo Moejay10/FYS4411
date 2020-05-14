@@ -154,7 +154,7 @@ void Sampler::computeAverages(double total_time, int numberOfProcesses, int myRa
     MPI_Allreduce(m_EwDelta.memptr(), m_EwDelta.memptr(), nx*nh, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
     */
     //Fra her //
-
+    m_localcumulativeEnergy /= MCcycles; 
 
     MPI_Reduce(&m_localacceptedSteps, &m_globalacceptedSteps, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
