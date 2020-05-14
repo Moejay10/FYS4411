@@ -7,7 +7,7 @@ mkdir build
 cd build
 
 # Run CMake to create a Makefile
-cmake ../
+cmake -DCMAKE_C_COMPILER=gcc-9 -DCMAKE_CXX_COMPILER=g++-9 ../
 
 # Make the Makefile using two threads
 make -j2

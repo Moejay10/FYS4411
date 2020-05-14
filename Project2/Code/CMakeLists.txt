@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.17)
 project(project_2_fys4411)
+cmake_minimum_required(VERSION 3.17)
 
 # Add directories containing header-files
 include_directories(
@@ -23,11 +23,11 @@ file(
 )
 
 if(APPLE)
-  # If problems with flags, export these in unix
-  #export LDFLAGS="-L/usr/local/opt/llvm/lib"
-  #export CPPFLAGS="-I/usr/local/opt/llvm/include"
-
   set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp")
+  # If problems, add these two lines (I think)
+  # set(CMAKE_CXX_COMPILER "/usr/local/Cellar/open-mpi/4.0.3/lib/libmpi.dylib")
+  # set(CMAKE_C_COMPILER "/usr/local/Cellar/open-mpi/4.0.3/lib/libmpi.dylib")
+  
 else()
   set (CMAKE_CXX_FLAGS "-Wall -fopenmp")
 endif()
@@ -36,11 +36,9 @@ endif()
 find_package(Armadillo REQUIRED)
 include_directories(${ARMADILLO_INCLUDE_DIRS})
 
-
 # Including MPI
 find_package(MPI REQUIRED)
 include_directories(${MPI_INCLUDE_PATH})
-
 
 # Create executable called "vmc"
 add_executable(vmc ${SOURCES})
