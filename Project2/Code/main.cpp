@@ -113,7 +113,7 @@ int main(int argc, char **argv) {
 
   // Chosen parameters
   int OptCycles           = 100;
-  int MCcycles            = pow(2, 20);
+  int MCcycles            = pow(2, 21);
   int numberOfParticles   = 1;
   int numberOfDimensions  = 1;
   int numberOfInputs      = numberOfParticles*numberOfDimensions;  // Number of visible units

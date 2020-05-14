@@ -169,9 +169,9 @@ void Sampler::computeAverages(double total_time, int numberOfProcesses, int myRa
         m_EwDelta /= MCcycles;
 
         // Compute gradients
-        m_agrad = 2*(m_EaDelta - m_globalcumulativeEnergy*m_aDelta);
-        m_bgrad = 2*(m_EbDelta - m_globalcumulativeEnergy*m_bDelta);
-        m_wgrad = 2*(m_EwDelta - m_globalcumulativeEnergy*m_wDelta);
+        m_agrad = 2*(m_EaDelta - m_localcumulativeEnergy*m_aDelta);
+        m_bgrad = 2*(m_EbDelta - m_localcumulativeEnergy*m_bDelta);
+        m_wgrad = 2*(m_EwDelta - m_localcumulativeEnergy*m_wDelta);
 
         // Optimizer parameters (choose either stochastic gradient descent (SGD) or adaptive SGD (ASGD))
         if (m_system->getOptimizer()){
