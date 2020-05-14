@@ -137,8 +137,7 @@ void Sampler::computeAverages(double total_time) {
      */
     int Dim = m_system->getNumberOfDimensions(); // The Dimension
     int N = m_system->getNumberOfParticles();    // Number of Particles
-    int MCcycles = m_MCcycles;                   // Number of equilibration steps
-    double norm = 1.0/((double) (MCcycles));     // divided by  number of cycles
+    double norm = 1.0/((double) (m_MCcycles));     // divided by  number of cycles
 
     m_energy = m_cumulativeEnergy *norm;
     m_cumulativeEnergy2 = m_cumulativeEnergy2 *norm;
@@ -146,13 +145,13 @@ void Sampler::computeAverages(double total_time) {
     m_variance = (m_cumulativeEnergy2 - m_cumulativeEnergy*m_cumulativeEnergy)*norm;
     m_STD = sqrt(m_variance);
 
-    m_aDelta /= MCcycles;
-    m_bDelta /= MCcycles;
-    m_wDelta /= MCcycles;
+    m_aDelta *= norm;
+    m_bDelta *= norm;
+    m_wDelta *= norm;
 
-    m_EaDelta /= MCcycles;
-    m_EbDelta /= MCcycles;
-    m_EwDelta /= MCcycles;
+    m_EaDelta *= norm;
+    m_EbDelta *= norm;
+    m_EwDelta *= norm;
 
     // Compute gradients
     m_agrad = 2*(m_EaDelta - m_cumulativeEnergy*m_aDelta);
