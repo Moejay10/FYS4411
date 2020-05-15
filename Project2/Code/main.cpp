@@ -108,8 +108,8 @@ int main() {
   double gibbs            = 1.0;          // Gibbs parameter to change the wavefunction
   double eta              = 0.01;         // Learning rate
   double omega            = 1.0;          // Oscillator frequency.
-  double stepLength       = 1.0;         // Metropolis step length.
-  double timeStep         = 0.01;         // Timestep to be used in Metropolis-Hastings
+  double stepLength       = 0.45;         // Metropolis step length.
+  double timeStep         = 0.05;         // Timestep to be used in Metropolis-Hastings
   double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.
   double equilibration    = 0.1;          // Amount of the total steps used
   // for equilibration.
