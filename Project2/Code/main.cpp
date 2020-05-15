@@ -112,8 +112,8 @@ int main(int argc, char **argv) {
   MPI_Bcast(&Task, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
   // Chosen parameters
-  int OptCycles           = 250;
-  int MCcycles            = pow(2, 21);
+  int OptCycles           = 500;
+  int MCcycles            = pow(2, 20);
   int numberOfParticles   = 1;
   int numberOfDimensions  = 1;
   int numberOfInputs      = numberOfParticles*numberOfDimensions;  // Number of visible units
@@ -164,14 +164,14 @@ int main(int argc, char **argv) {
       //system->setOptimizer                (true); //adaptive stochastic GD
       system->setPrintOutToTerminal       (true);
       system->setEquilibrationFraction    (equilibration);
-      system->setRepulsivePotential       (true);
+      //system->setRepulsivePotential       (true);
       system->runOptimizer                (ofile, OptCycles, MCcycles);
       ofile.close();
 
       if (myRank==0){
         // Write to file
-        //file = "Python/Results/Brute_Force/Energies_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
-        file = "Python/Results/Brute_Force/Interaction_Energies_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+        file = "Python/Results/Brute_Force/Energies_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+        //file = "Python/Results/Brute_Force/Interaction_Energies_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
         ofile.open(file);
         ofile << setiosflags(ios::showpoint | ios::uppercase);
         ofile << setw(15) << setprecision(8) << "Iteration"; // OptCycles
@@ -256,7 +256,7 @@ int main(int argc, char **argv) {
     //system->setOptimizer                (true);
     system->setPrintOutToTerminal       (true);
     system->setEquilibrationFraction    (equilibration);
-    system->setRepulsivePotential       (true);
+    //system->setRepulsivePotential       (true);
     system->runOptimizer                (ofile, OptCycles, MCcycles);
 
     if (myRank==0){
