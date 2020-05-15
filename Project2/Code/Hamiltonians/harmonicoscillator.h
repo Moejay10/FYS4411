@@ -6,7 +6,7 @@
 class HarmonicOscillator : public Hamiltonian {
 public:
     HarmonicOscillator(System* system, double omega);
-    double computeLocalEnergy(Network* network);
+    double computeLocalEnergy(Network* network, vec Q);
     double Interaction();
 
 

@@ -25,15 +25,15 @@ HarmonicOscillator::HarmonicOscillator(System* system, double omega) :
  */
 
 
-double HarmonicOscillator::computeLocalEnergy(Network* network) {
+double HarmonicOscillator::computeLocalEnergy(Network* network, vec Q) {
     // Here we compute the analytical local energy
     int nx = m_system->getNumberOfInputs();
     double kineticenergy = 0;
     double potentialenergy = 0;
     double totalenergy;
 
-    vec firstder = m_system->getWaveFunction()->computeFirstDerivative();
-    vec secondder = m_system->getWaveFunction()->computeDoubleDerivative();
+    vec firstder = m_system->getWaveFunction()->computeFirstDerivative(Q);
+    vec secondder = m_system->getWaveFunction()->computeDoubleDerivative(Q);
     vec x = network->getPositions();
 
     // Loop over the visibles (n_particles*n_coordinates) for the Laplacian

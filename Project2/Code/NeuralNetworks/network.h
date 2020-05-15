@@ -8,8 +8,8 @@ public:
     Network(class System* system);
 
     virtual vec computeBiasAgradients() = 0;
-    virtual vec computeBiasBgradients() = 0;
-    virtual vec computeWeightsgradients() = 0;
+    virtual vec computeBiasBgradients(vec Q) = 0;
+    virtual vec computeWeightsgradients(vec Q) = 0;
 
     virtual void GradientDescent(vec agrad, vec bgrad, vec wgrad) = 0;
     virtual void StochasticGradientDescent(vec agrad, vec bgrad, vec wgrad) = 0;

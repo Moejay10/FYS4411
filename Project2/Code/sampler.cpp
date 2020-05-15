@@ -67,12 +67,20 @@ void Sampler::initializeVariables() {
 
 
 void Sampler::sample() {
+
+    vec x = m_system->getNetwork()->getPositions();
+    vec b = m_system->getNetwork()->getBiasB();
+    mat W = m_system->getNetwork()->getWeigths();
+    double sigma = m_system->getWaveFunction()->getParameters()[0];
+    double sigma2 = sigma*sigma;
+    vec Q = b + (1.0/sigma2)*(x.t()*W).t();
+
     double localEnergy = m_system->getHamiltonian()->
-                     computeLocalEnergy(m_system->getNetwork());
+                     computeLocalEnergy(m_system->getNetwork(), Q);
 
     vec temp_aDelta = m_system->getNetwork()->computeBiasAgradients();
-    vec temp_bDelta = m_system->getNetwork()->computeBiasBgradients();
-    vec temp_wDelta = m_system->getNetwork()->computeWeightsgradients();
+    vec temp_bDelta = m_system->getNetwork()->computeBiasBgradients(Q);
+    vec temp_wDelta = m_system->getNetwork()->computeWeightsgradients(Q);
 
     m_localcumulativeEnergy  += localEnergy;
     m_localcumulativeEnergy2  += localEnergy*localEnergy;
@@ -154,7 +162,7 @@ void Sampler::computeAverages(double total_time, int numberOfProcesses, int myRa
     MPI_Allreduce(m_EwDelta.memptr(), m_EwDelta.memptr(), nx*nh, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
     */
     //Fra her //
-    m_localcumulativeEnergy /= MCcycles; 
+    m_localcumulativeEnergy /= MCcycles;
 
     MPI_Reduce(&m_localacceptedSteps, &m_globalacceptedSteps, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 

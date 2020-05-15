@@ -20,7 +20,7 @@ NeuralQuantumState::NeuralQuantumState(System* system, double sigma, double gibb
     m_parameters.push_back(gibbs);
 }
 
-double NeuralQuantumState::evaluate() {
+double NeuralQuantumState::evaluate(vec Q) {
     // Here we compute the wave function.
     double sigma = m_parameters[0];
     double sigma2 = sigma*sigma;
@@ -32,10 +32,7 @@ double NeuralQuantumState::evaluate() {
 
     vec x = m_system->getNetwork()->getPositions();
     vec a = m_system->getNetwork()->getBiasA();
-    vec b = m_system->getNetwork()->getBiasB();
-    mat W = m_system->getNetwork()->getWeigths();
 
-    vec Q = b + (1.0/sigma2)*(x.t()*W).t();
 
     for (int i = 0; i < nx; i++){
        psi1 += (x(i) - a(i)) * (x(i) - a(i));
@@ -57,7 +54,7 @@ double NeuralQuantumState::evaluate() {
     return psi;
 }
 
-vec NeuralQuantumState::computeFirstDerivative() {
+vec NeuralQuantumState::computeFirstDerivative(vec Q) {
     // Here we compute the first derivative
     //of the wave function with respect to the visible nodes
 
@@ -75,8 +72,6 @@ vec NeuralQuantumState::computeFirstDerivative() {
     vec b = m_system->getNetwork()->getBiasB();
     mat W = m_system->getNetwork()->getWeigths();
 
-    vec Q = b + (1.0/sigma2)*(x.t()*W).t();
-
     for (int i = 0; i < nx; i++){
       temp = 0;
       for (int j = 0; j < nh; j++){
@@ -89,7 +84,7 @@ vec NeuralQuantumState::computeFirstDerivative() {
     return psi1;
 }
 
-vec NeuralQuantumState::computeDoubleDerivative() {
+vec NeuralQuantumState::computeDoubleDerivative(vec Q) {
     // Here we compute the double derivative of the wavefunction
     double sigma = m_parameters[0];
     double sigma2 = sigma*sigma;
@@ -103,8 +98,6 @@ vec NeuralQuantumState::computeDoubleDerivative() {
     vec b = m_system->getNetwork()->getBiasB();
     mat W = m_system->getNetwork()->getWeigths();
 
-    vec Q = b + (1.0/sigma2)*(x.t()*W).t();
-
     for (int i = 0; i < nx; i++){
       temp = 0;
       for (int j = 0; j < nh; j++){
@@ -115,4 +108,16 @@ vec NeuralQuantumState::computeDoubleDerivative() {
     }
 
     return psi2;
+}
+
+vec NeuralQuantumState::computeQ(){
+  double sigma = m_parameters[0];
+  double sigma2 = sigma*sigma;
+
+  vec x = m_system->getNetwork()->getPositions();
+  vec b = m_system->getNetwork()->getBiasB();
+  mat W = m_system->getNetwork()->getWeigths();
+
+  vec Q = b + (1.0/sigma2)*(x.t()*W).t();
+  return Q;
 }

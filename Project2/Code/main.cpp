@@ -190,7 +190,7 @@ int main(int argc, char **argv) {
   if (Task == 2){
 
     //cout << "-------------- \n" << "Importance Sampling \n" << "-------------- \n" << endl;
-    file = "Python/Results/Importance_Sampling/Energies_eta_10^" + to_string(gamma) + ".dat";
+    file = "Python/Results/Statistical_Analysis/IS_Blocking_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
     if (myRank==0){
       ofile.open(file);
       ofile << setiosflags(ios::showpoint | ios::uppercase);
@@ -237,7 +237,7 @@ int main(int argc, char **argv) {
 
     // Analytical Run
     //cout << "-------------- \n" << "Gibbs sampling \n" << "-------------- \n" << endl;
-    file = "Python/Results/Gibbs/Energies_eta_10^" + to_string(gamma) + ".dat";
+    file = "Python/Results/Statistical_Analysis/Gibbs_Blocking_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
     if (myRank==0){
       ofile.open(file);
       ofile << setiosflags(ios::showpoint | ios::uppercase);

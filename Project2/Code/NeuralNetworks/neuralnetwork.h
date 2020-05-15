@@ -10,8 +10,8 @@ public:
                double t0, double t1, int numberOfInputs, int numberOfHidden);
 
     vec computeBiasAgradients();
-    vec computeBiasBgradients();
-    vec computeWeightsgradients();
+    vec computeBiasBgradients(vec Q);
+    vec computeWeightsgradients(vec Q);
 
     void GradientDescent(vec agrad, vec bgrad, vec wgrad);
     void StochasticGradientDescent(vec agrad, vec bgrad, vec wgrad);

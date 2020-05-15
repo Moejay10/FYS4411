@@ -41,7 +41,8 @@ bool System::metropolisStep() {
    double wfold, wfnew;
 
    // Initial Position
-   wfold = getWaveFunction()->evaluate();
+   vec Q = getWaveFunction()->computeQ();
+   wfold = getWaveFunction()->evaluate(Q);
 
    // Trial position moving one particle at the time in all dimensions
    getNetwork()->adjustPositions(m_stepLength*a, 0, input);
@@ -51,8 +52,8 @@ bool System::metropolisStep() {
        getNetwork()->adjustPositions(m_stepLength*c, 2, input);
      }
    }
-
-   wfnew = getWaveFunction()->evaluate();
+   Q = getWaveFunction()->computeQ();
+   wfnew = getWaveFunction()->evaluate(Q);
 
    // Metropolis test
    if ( RandomNumberGenerator(gen) <= wfnew*wfnew/(wfold*wfold) ){
@@ -96,10 +97,12 @@ bool System::ImportanceMetropolisStep() {
 
      double wfold, wfnew, poschange;
 
+
+     vec Q = getWaveFunction()->computeQ();
      // Initial Position
      vec posold = getNetwork()->getPositions();
-     wfold = getWaveFunction()->evaluate();
-     vec qfold = 2*(getWaveFunction()->computeFirstDerivative());
+     wfold = getWaveFunction()->evaluate(Q);
+     vec qfold = 2*(getWaveFunction()->computeFirstDerivative(Q));
 
 
 
@@ -117,8 +120,9 @@ bool System::ImportanceMetropolisStep() {
 
      // evaluate new position
      vec posnew = getNetwork()->getPositions();
-     wfnew = getWaveFunction()->evaluate();
-     vec qfnew = 2*(getWaveFunction()->computeFirstDerivative());
+     Q = getWaveFunction()->computeQ();
+     wfnew = getWaveFunction()->evaluate(Q);
+     vec qfnew = 2*(getWaveFunction()->computeFirstDerivative(Q));
 
      // Greens function
      double greensFunction = 0;

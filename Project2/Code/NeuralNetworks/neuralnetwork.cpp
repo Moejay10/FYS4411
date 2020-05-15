@@ -52,7 +52,7 @@ vec NeuralNetwork::computeBiasAgradients() {
     return agradient;
 }
 
-vec NeuralNetwork::computeBiasBgradients() {
+vec NeuralNetwork::computeBiasBgradients(vec Q) {
     // Here we compute the derivative of the wave function
     double sigma = m_system->getWaveFunction()->getParameters()[0];
     double sigma2 = sigma*sigma;
@@ -63,7 +63,6 @@ vec NeuralNetwork::computeBiasBgradients() {
     vec b = getBiasB();
     mat W = getWeigths();
 
-    vec Q = b + (1.0/sigma2)*(x.t()*W).t();
     vec bgradient(nh);
 
     for (int j = 0; j < nh; j++) {
@@ -74,7 +73,7 @@ vec NeuralNetwork::computeBiasBgradients() {
 }
 
 
-vec NeuralNetwork::computeWeightsgradients() {
+vec NeuralNetwork::computeWeightsgradients(vec Q) {
     // Here we compute the derivative of the wave function
     double sigma = m_system->getWaveFunction()->getParameters()[0];
     double sigma2 = sigma*sigma;
@@ -86,7 +85,6 @@ vec NeuralNetwork::computeWeightsgradients() {
     vec b = getBiasB();
     mat W = getWeigths();
 
-    vec Q = b + (1.0/sigma2)*(x.t()*W).t();
     vec wgradient(nx*nh);
 
     for (int i = 0; i < nx; i++) {

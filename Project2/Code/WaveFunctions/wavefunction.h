@@ -9,10 +9,10 @@ public:
     WaveFunction(class System* system);
     int     getNumberOfParameters() { return m_numberOfParameters; }
     std::vector<double> getParameters() { return m_parameters; }
-    virtual double evaluate() = 0;
-    virtual vec computeDoubleDerivative() = 0;
-    virtual vec computeFirstDerivative() = 0;
-
+    virtual double evaluate(vec Q) = 0;
+    virtual vec computeDoubleDerivative(vec Q) = 0;
+    virtual vec computeFirstDerivative(vec Q) = 0;
+    virtual vec computeQ() = 0;
 
 
 

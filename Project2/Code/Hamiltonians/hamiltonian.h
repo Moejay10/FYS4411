@@ -6,7 +6,7 @@
 class Hamiltonian {
 public:
     Hamiltonian(class System* system);
-    virtual double computeLocalEnergy(Network* network) = 0;
+    virtual double computeLocalEnergy(Network* network, vec Q) = 0;
     virtual double Interaction() = 0;
 
 
