@@ -157,7 +157,7 @@ int main() {
     system->setStepLength               (stepLength);
     system->setEquilibrationFraction    (equilibration);
 
-    system->setRepulsivePotential       (true);
+    //system->setRepulsivePotential       (true);
     system->setPrintOutToTerminal       (true);
     system->runOptimizer                (ofile, OptCycles, MCcycles);
 
@@ -206,7 +206,7 @@ int main() {
     system->setEquilibrationFraction    (equilibration);
     system->setImportanceSampling       (true);
 
-    system->setRepulsivePotential       (true);
+    //system->setRepulsivePotential       (true);
     system->setPrintOutToTerminal       (true);
     system->runOptimizer                (ofile, OptCycles, MCcycles);
 
@@ -257,7 +257,7 @@ int main() {
     system->setGibbsSampling            (true);
     system->setEquilibrationFraction    (equilibration);
 
-    system->setRepulsivePotential       (true);
+    //system->setRepulsivePotential       (true);
     system->setPrintOutToTerminal       (true);
     system->runOptimizer                (ofile, OptCycles, MCcycles);
 

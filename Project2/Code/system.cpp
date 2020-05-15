@@ -210,12 +210,12 @@ void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolis
 
 
   m_sampler->setEnergies(OptCycles);
-  m_sampler->setBlocking(numberOfMetropolisSteps + eq);
+  m_sampler->setBlocking(numberOfMetropolisSteps);
 
   for (int i = 0; i < OptCycles; i++){
     start_time = omp_get_wtime();
 
-    runMetropolisSteps(ofile, numberOfMetropolisSteps + eq);
+    runMetropolisSteps(ofile, numberOfMetropolisSteps);
 
     end_time = omp_get_wtime();
     total_time = end_time - start_time;
