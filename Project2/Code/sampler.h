@@ -27,11 +27,10 @@ public:
     double getVAR()                   { return m_variance; }
     double getEnergy()                { return m_energy; }
     double getEnergyDer()             { return m_EnergyDer; }
-    double getTime()                  { return m_totalTime; }
     double getAcceptedSteps()         { return m_globalacceptedSteps; }
     vec getEnergies()                 { return m_Energies; }
     vec getBlocking()                 { return m_Blocking; }
-
+    vec getTime()                     { return m_Times; }
 
 
 private:
@@ -50,12 +49,14 @@ private:
     double  m_EnergyDer  = 0;
     double  m_variance = 0;
     double  m_STD = 0;
-    double  m_totalTime = 0;
+    double  m_localTime = 0;
+    double  m_globalTime = 0;
     double  m_localacceptedSteps = 0;
     double  m_globalacceptedSteps = 0;
 
     vec m_Energies;
     vec m_Blocking;
+    vec m_Times;
 
     vec m_aDelta;
     vec m_bDelta;
@@ -68,8 +69,6 @@ private:
     vec m_agrad;
     vec m_bgrad;
     vec m_wgrad;
-
-
 
     class System* m_system = nullptr;
 };

@@ -31,7 +31,7 @@ void Sampler::setacceptedSteps(int counter) {
 
 void Sampler::setEnergies(int MCcycles) {
   m_Energies.zeros(MCcycles);
-
+  m_Times.zeros(MCcycles);
 }
 
 void Sampler::setBlocking(int MCcycle) {
@@ -125,7 +125,7 @@ void Sampler::printOutputToTerminal(double total_time) {
       cout << "  -- Results -- " << endl;
       cout << " Energy : " << m_energy << endl;
       cout << " Variance : " << m_variance << endl;
-      cout << " Time : " << total_time << endl;
+      cout << " Time : " << m_globalTime << endl;
       if (m_system->getGibbsSampling() == false){
         cout << " # Accepted Steps : " << m_globalacceptedSteps << endl;
       }
@@ -136,10 +136,9 @@ void Sampler::printOutputToTerminal(double total_time) {
 void Sampler::computeAverages(double total_time, int numberOfProcesses, int myRank) {
     /* Compute the averages of the sampled quantities.
      */
-    int     nx = m_system->getNumberOfInputs();
-    int     nh = m_system->getNumberOfHidden();
-    int MCcycles=m_system->getNumberOfMetropolisSteps()/numberOfProcesses;
 
+    int MCcycles=m_system->getNumberOfMetropolisSteps()/numberOfProcesses;
+    m_localTime = total_time;
     double norm = 1.0/((double) (MCcycles*numberOfProcesses));     // divided by  number of cycles
 
     MPI_Reduce(&m_localcumulativeEnergy, &m_globalcumulativeEnergy, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
@@ -165,6 +164,7 @@ void Sampler::computeAverages(double total_time, int numberOfProcesses, int myRa
     m_localcumulativeEnergy /= MCcycles;
 
     MPI_Reduce(&m_localacceptedSteps, &m_globalacceptedSteps, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&m_localTime, &m_globalTime, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
     //if (myRank==0){
         //cout << "local: " << m_aDelta << ", global: " << m_aDelta << endl;
@@ -190,7 +190,6 @@ void Sampler::computeAverages(double total_time, int numberOfProcesses, int myRa
            m_system->getNetwork()->GradientDescent(m_agrad, m_bgrad, m_wgrad);
         }
 
-        m_totalTime = total_time;
         m_globalacceptedSteps *= norm;
     //}
 }
@@ -206,7 +205,10 @@ void Sampler::Blocking(int MCcycle, int numberOfProcesses, int myRank){
 void Sampler::Energies(int OptCycles, int myRank){
   if (myRank == 0){
     m_Energies(OptCycles) = m_energy;
+
+    m_Times(OptCycles) = m_globalTime;
   }
+
 }
 
 
@@ -217,6 +219,7 @@ void Sampler::WriteBlockingtoFile(ofstream& ofile, int myRank){
   MPI_Allreduce(m_Blocking.memptr(), globalEnergies.memptr(), MCcycles, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
   if (myRank==0){
     for (int i = 0; i < MCcycles; i++){
+      ofile << setw(15) << setprecision(8) << i+1 << endl; // Mean energy
       ofile << setw(15) << setprecision(8) << globalEnergies(i) << endl; // Mean energy
     }
   }
