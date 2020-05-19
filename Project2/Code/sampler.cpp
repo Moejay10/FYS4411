@@ -219,7 +219,7 @@ void Sampler::WriteBlockingtoFile(ofstream& ofile, int myRank){
   MPI_Allreduce(m_Blocking.memptr(), globalEnergies.memptr(), MCcycles, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
   if (myRank==0){
     for (int i = 0; i < MCcycles; i++){
-      ofile << setw(15) << setprecision(8) << i+1 << endl; // Mean energy
+      ofile << setw(15) << setprecision(8) << i+1; // Mean energy
       ofile << setw(15) << setprecision(8) << globalEnergies(i) << endl; // Mean energy
     }
   }

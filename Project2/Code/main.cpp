@@ -120,7 +120,7 @@ int main(int argc, char **argv) {
   int numberOfHidden      = 2;            // Number of hidden units
   double sigma            = 1.0;          // Normal distribution visibles
   double gibbs            = 1.0;          // Gibbs parameter to change the wavefunction
-  double eta              = 0.1;         // Learning rate
+  double eta              = 0.001;         // Learning rate
   double omega            = 1.0;          // Oscillator frequency.
   double stepLength       = 1.0;         // Metropolis step length.
   double timeStep         = 0.05;         // Timestep to be used in Metropolis-Hastings
