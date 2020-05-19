@@ -120,7 +120,7 @@ int main(int argc, char **argv) {
   int numberOfHidden      = 2;            // Number of hidden units
   double sigma            = 1.0;          // Normal distribution visibles
   double gibbs            = 1.0;          // Gibbs parameter to change the wavefunction
-  double eta              = 0.001;         // Learning rate
+  //double eta              = 0.001;         // Learning rate
   double omega            = 1.0;          // Oscillator frequency.
   double stepLength       = 1.0;         // Metropolis step length.
   double timeStep         = 0.05;         // Timestep to be used in Metropolis-Hastings
@@ -141,10 +141,19 @@ int main(int argc, char **argv) {
 
   string file;
   // Parameter for files
-  int gamma = log10(eta);
 
+
+  vec etas;
+  etas.zeros(6);
+  etas(0) = 0.0001; etas(1) = 0.0005; etas(2) = 0.001; etas(3) = 0.005;
+  etas(4) = 0.01; etas(5) = 0.05;
+  double eta;
+  int gamma;
   //Benchmark task a.
-  if (Task == 1){
+  //if (Task == 1){
+  for (int i = 0; i < 6; i++){
+      eta = etas(i);
+      gamma = log10(eta);
 
       // Choose which file to write to
           // Write to file
@@ -172,8 +181,8 @@ int main(int argc, char **argv) {
 
       if (myRank==0){
         // Write to file
-        file = "Python/Results/Brute_Force/Energies_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
-        //file = "Python/Results/Brute_Force/Interaction_Energies_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+        //file = "Python/Results/Brute_Force/Energies_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+        file = "Python/Results/Brute_Force/Interaction_Energies_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
         ofile.open(file);
         ofile << setiosflags(ios::showpoint | ios::uppercase);
         ofile << setw(15) << setprecision(8) << "Iteration"; // OptCycles
@@ -188,9 +197,9 @@ int main(int argc, char **argv) {
 
         ofile.close();
       }
-  }
+  //}
 
-  if (Task == 2){
+  //if (Task == 2){
 
     //cout << "-------------- \n" << "Importance Sampling \n" << "-------------- \n" << endl;
     //file = "Python/Results/Statistical_Analysis/IS_Blocking_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
@@ -202,7 +211,7 @@ int main(int argc, char **argv) {
       ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
     }
     //Initialise the system.
-    System* system = new System();
+    system = new System();
     system->setNetwork                  (new NeuralNetwork(system, eta, a, A, asgdOmega, fmax, fmin, t0, t1, numberOfInputs, numberOfHidden));
     system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
     system->setHamiltonian              (new HarmonicOscillator(system, omega));
@@ -235,10 +244,10 @@ int main(int argc, char **argv) {
       ofile.close();
     }
 
-  }
+  //}
 
 
-  if (Task == 3){
+  //if (Task == 3){
 
     // Analytical Run
     //cout << "-------------- \n" << "Gibbs sampling \n" << "-------------- \n" << endl;
@@ -254,7 +263,7 @@ int main(int argc, char **argv) {
     gibbs = 2;
 
     //Initialise the system.
-    System* system = new System();
+    system = new System();
     system->setNetwork                  (new NeuralNetwork(system, eta, a, A, asgdOmega, fmax, fmin, t0, t1, numberOfInputs, numberOfHidden));
     system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
     system->setHamiltonian              (new HarmonicOscillator(system, omega));
@@ -285,8 +294,8 @@ int main(int argc, char **argv) {
 
       ofile.close();
     }
+  //}
   }
-
 
   MPI_Finalize();
 
