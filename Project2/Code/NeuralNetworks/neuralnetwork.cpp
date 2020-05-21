@@ -163,7 +163,7 @@ void NeuralNetwork::StochasticGradientDescent(vec agrad, vec bgrad, vec wgrad) {
 }
 
 
-void NeuralNetwork::setPositions(const vec &positions) {
+void NeuralNetwork::setPositions(vec &positions) {
     assert(positions.size() == m_system->getNumberOfInputs());
     m_positions = positions;
 }

@@ -16,7 +16,7 @@ public:
     void StochasticGradientDescent(vec agrad, vec bgrad, vec wgrad);
 
 
-    void setPositions(const vec &positions);
+    void setPositions(vec &positions);
     void adjustPositions(double change, int dimension, int input);
     void setWeights(mat &weights);
     void setBiasA(vec &biasA);

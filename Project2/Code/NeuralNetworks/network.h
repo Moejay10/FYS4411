@@ -14,7 +14,7 @@ public:
     virtual void GradientDescent(vec agrad, vec bgrad, vec wgrad) = 0;
     virtual void StochasticGradientDescent(vec agrad, vec bgrad, vec wgrad) = 0;
 
-    virtual void setPositions(const vec &positions) = 0;
+    virtual void setPositions(vec &positions) = 0;
     virtual void adjustPositions(double change, int dimension, int input) = 0;
     virtual void setWeights(mat &weights) = 0;
     virtual void setBiasA(vec &biasA) = 0;

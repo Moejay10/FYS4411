@@ -57,18 +57,21 @@ double HarmonicOscillator::Interaction() {
   double interactionTerm = 0;
   double rDistance;
   int nx = m_system->getNumberOfInputs();
-  int dim = m_system->getNumberOfDimensions();
+  int P = m_system->getNumberOfParticles();
+  int D = m_system->getNumberOfDimensions();
 
   vec x = m_system->getNetwork()->getPositions();
 
   // Loop over each particle
-  for (int r = 0; r < nx - dim; r += dim) {
+  for (int i = 0; i < P; i++) {
       // Loop over each particle s that particle r hasn't been paired with
-      for (int s = (r+dim); s < nx; s += dim) {
+      for (int j = 0; j < i; j++) {
           rDistance = 0;
           // Loop over each dimension
-          for (int i = 0; i < dim; i++) {
-              rDistance += (x(r+i) - x(s+i))*(x(r+i) - x(s+i));
+          for (int d = 0; d < D; d++) {
+            int r_i = D*i + d;
+            int r_j = D*j + d;
+            rDistance += (x(r_i) - x(r_j))*(x(r_i) - x(r_j));
           }
           interactionTerm += 1.0/sqrt(rDistance);
       }

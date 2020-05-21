@@ -24,16 +24,16 @@ bool System::metropolisStep() {
    // Initialize the seed and call the Mersienne algo
    std::random_device rd;
    std::mt19937_64 gen(rd());
-   // Set up the uniform distribution for x \in [[0, 1]
-   std::uniform_real_distribution<double> RandomNumberGenerator(0.0,1.0);
+   // Set up the uniform distribution for x \in [[0.0, 1.0]
+   std::uniform_real_distribution<double> Uniform(0.0,1.0);
+   // Set up the uniform distribution for x \in [[-0.5, 0.5]
+   std::uniform_real_distribution<double> RandomNumberGenerator(-0.5,0.5);
 
    // Set up the uniform distribution for x \in [[0, N]
-   std::uniform_int_distribution<int> Inputs(0, getNumberOfParticles()-1);
+   std::uniform_int_distribution<int> Inputs(0, getNumberOfInputs()-1);
 
-   int input = Inputs(gen);
-   double a = RandomNumberGenerator(gen) - 0.5; // Random number
-   double b = RandomNumberGenerator(gen) - 0.5; // Random number
-   double c = RandomNumberGenerator(gen) - 0.5; // Random number
+   int updateCoordinate = Inputs(gen);
+   double a = RandomNumberGenerator(gen); // Random number
 
    int Dim = getNumberOfDimensions(); // The Dimensions
 
@@ -41,32 +41,24 @@ bool System::metropolisStep() {
 
    // Initial Position
    wfold = getWaveFunction()->evaluate();
+   vec posold = getNetwork()->getPositions();
+
+   vec posnew = getNetwork()->getPositions();
 
    // Trial position moving one particle at the time in all dimensions
-   getNetwork()->adjustPositions(m_stepLength*a, 0, input);
-   if (Dim>1){
-     getNetwork()->adjustPositions(m_stepLength*b, 1, input);
-     if (Dim>2){
-       getNetwork()->adjustPositions(m_stepLength*c, 2, input);
-     }
-   }
+   posnew(updateCoordinate) += m_stepLength*a;
+   getNetwork()->setPositions(posnew);
 
    wfnew = getWaveFunction()->evaluate();
 
    // Metropolis test
-   if ( RandomNumberGenerator(gen) <= wfnew*wfnew/(wfold*wfold) ){
+   if ( Uniform(gen) < wfnew*wfnew/(wfold*wfold) ){
       return true;
    }
 
    // return to previous value if Metropolis test is false
    else{
-     getNetwork()->adjustPositions(-m_stepLength*a, 0, input);
-     if (Dim>1){
-       getNetwork()->adjustPositions(-m_stepLength*b, 1, input);
-       if (Dim>2){
-         getNetwork()->adjustPositions(-m_stepLength*c, 2, input);
-       }
-     }
+      getNetwork()->setPositions(posold);
       return false;
     }
 }
@@ -82,70 +74,48 @@ bool System::ImportanceMetropolisStep() {
      std::normal_distribution<double> Normal(0.0,1.0);
      std::uniform_real_distribution<double> Uniform(0.0,1.0);
      // Set up the uniform distribution for x \in [[0, N]
-     std::uniform_int_distribution<int> Inputs(0,getNumberOfParticles()-1);
+     std::uniform_int_distribution<int> Inputs(0,getNumberOfInputs()-1);
 
-     int input = Inputs(gen);
+     int updateCoordinate = Inputs(gen);
      double a = Normal(gen); // Random number
-     double b = Normal(gen); // Random number
-     double c = Normal(gen); // Random number
 
      int Dim = getNumberOfDimensions(); // The Dimensions
      int N   = getNumberOfParticles(); // The Particles
 
 
-     double r, wfold, wfnew, poschange;
+     double wfold, wfnew, poschange;
 
      // Initial Position
      vec posold = getNetwork()->getPositions();
      wfold = getWaveFunction()->evaluate();
      vec qfold = 2*(getWaveFunction()->computeFirstDerivative());
 
-
+     vec posnew = getNetwork()->getPositions();
 
      // Trial position moving one particle at the time in all dimensions
-     poschange = a*sqrt(m_timeStep) + qfold(input*N + 0)*m_timeStep*m_diffusionCoefficient;
-     getNetwork()->adjustPositions(poschange, 0, input);
-     if (Dim > 1){
-       poschange = b*sqrt(m_timeStep) + qfold(input*N + 1)*m_timeStep*m_diffusionCoefficient;
-       getNetwork()->adjustPositions(poschange, 1, input);
-       if (Dim > 2){
-         poschange = c*sqrt(m_timeStep) + qfold(input*N + 2)*m_timeStep*m_diffusionCoefficient;
-         getNetwork()->adjustPositions(poschange, 2, input);
-       }
-     }
+     poschange = a*sqrt(m_timeStep) + qfold(updateCoordinate)*m_timeStep*m_diffusionCoefficient;
+     posnew(updateCoordinate) += poschange;
+     getNetwork()->setPositions(posnew);
 
      // evaluate new position
-     vec posnew = getNetwork()->getPositions();
      wfnew = getWaveFunction()->evaluate();
      vec qfnew = 2*(getWaveFunction()->computeFirstDerivative());
 
      // Greens function
      double greensFunction = 0;
-     for (int k = 0; k < Dim; k++)
-     {
-       greensFunction += 0.5*(qfold(input*N + k) + qfnew(input*N + k))*(m_diffusionCoefficient*m_timeStep*0.5*(qfold(input*N + k) - qfnew(input*N + k)) - posnew(input*N + k) + posold(input*N + k));
-     }
+     greensFunction += 0.5*(qfold(updateCoordinate) + qfnew(updateCoordinate))*(m_diffusionCoefficient*m_timeStep*0.5*(qfold(updateCoordinate) - qfnew(updateCoordinate)) - posnew(updateCoordinate) + posold(updateCoordinate));
      greensFunction = exp(greensFunction);
 
      // #Metropolis-Hastings test to see whether we accept the move
-	if ( Uniform(gen) <= greensFunction*wfnew*wfnew/(wfold*wfold) ){
+	if ( Uniform(gen) < greensFunction*wfnew*wfnew/(wfold*wfold) ){
 
     return true;
   }
 
   // return to previous value if Metropolis test is false
   else{
-    poschange = a*sqrt(m_timeStep) + qfold(input*N + 0)*m_timeStep*m_diffusionCoefficient;
-    getNetwork()->adjustPositions(-poschange, 0, input);
-    if (Dim > 1){
-      poschange = b*sqrt(m_timeStep) + qfold(input*N + 1)*m_timeStep*m_diffusionCoefficient;
-      getNetwork()->adjustPositions(-poschange, 1, input);
-      if (Dim > 2){
-        poschange = c*sqrt(m_timeStep) + qfold(input*N + 2)*m_timeStep*m_diffusionCoefficient;
-        getNetwork()->adjustPositions(-poschange, 2, input);
-        }
-      }
 
+    getNetwork()->setPositions(posold);
     return false;
   }
 
@@ -162,7 +132,7 @@ void System::Gibbs() {
   std::normal_distribution<double> Normal(0.0,1.0);
   std::uniform_real_distribution<double> Uniform(0.0,1.0);
   // Set up the uniform distribution for x \in [[0, N]
-  std::uniform_int_distribution<int> Inputs(0,getNumberOfParticles()-1);
+  std::uniform_int_distribution<int> Inputs(0,getNumberOfInputs()-1);
 
   int nx = getNumberOfInputs();
   int nh = getNumberOfHidden();
@@ -176,7 +146,7 @@ void System::Gibbs() {
   mat w = getNetwork()->getWeigths();
 
   vec h(nh);
-  vec new_positions(nx);
+  vec posnew(nx);
 
   double z, logisticSigmoid;
   for (int j = 0; j < nh; j++) {
@@ -191,10 +161,10 @@ void System::Gibbs() {
   for (int i = 0; i < nx; i++) {
       xMean = a(i) + dot(w.row(i), h);
       distributionX = std::normal_distribution<double>(xMean, sigma);
-      new_positions(i) = distributionX(gen);
+      posnew(i) = distributionX(gen);
   }
 
-  getNetwork()->setPositions(new_positions);
+  getNetwork()->setPositions(posnew);
 }
 
 
