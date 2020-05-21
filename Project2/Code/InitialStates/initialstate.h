@@ -6,7 +6,7 @@
 class InitialState {
 public:
     InitialState(class System* system);
-    virtual void setupInitialState() = 0;
+    virtual void setupInitialState(bool gaussianInitialization) = 0;
 
 protected:
     class System* m_system = nullptr;

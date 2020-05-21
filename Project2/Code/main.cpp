@@ -165,14 +165,11 @@ int main() {
     //Initialise the system.
     System* system = new System();
     system->setNetwork                  (new NeuralNetwork(system, eta, a, A, asgdOmega, fmax, fmin, t0, t1, numberOfInputs, numberOfHidden));
-    system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
+    system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden, gaussianInitialization));
     system->setHamiltonian              (new HarmonicOscillator(system, omega));
     system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
     system->setStepLength               (stepLength);
     system->setEquilibrationFraction    (equilibration);
-
-    system->setGaussianInitialization   (gaussianInitialization);
-
 
     //system->setRepulsivePotential       (includeInteraction);
     system->setPrintOutToTerminal       (true);
@@ -215,15 +212,13 @@ int main() {
     //Initialise the system.
     System* system = new System();
     system->setNetwork                  (new NeuralNetwork(system, eta, a, A, asgdOmega, fmax, fmin, t0, t1, numberOfInputs, numberOfHidden));
-    system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
+    system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden, gaussianInitialization));
     system->setHamiltonian              (new HarmonicOscillator(system, omega));
     system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
     system->setTimeStep                 (timeStep);
     system->setDiffusionCoefficient     (diffusionCoefficient);
     system->setEquilibrationFraction    (equilibration);
     system->setImportanceSampling       (true);
-
-    system->setGaussianInitialization   (gaussianInitialization);
 
     //system->setRepulsivePotential       (includeInteraction);
     system->setPrintOutToTerminal       (true);
@@ -270,13 +265,11 @@ int main() {
     //Initialise the system.
     System* system = new System();
     system->setNetwork                  (new NeuralNetwork(system, eta, a, A, asgdOmega, fmax, fmin, t0, t1, numberOfInputs, numberOfHidden));
-    system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
+    system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden, gaussianInitialization));
     system->setHamiltonian              (new HarmonicOscillator(system, omega));
     system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
     system->setGibbsSampling            (true);
     system->setEquilibrationFraction    (equilibration);
-    
-    system->setGaussianInitialization   (gaussianInitialization);
 
     //system->setRepulsivePotential       (includeInteraction);
     system->setPrintOutToTerminal       (true);

@@ -14,13 +14,16 @@ using std::endl;
 RandomUniform::RandomUniform(System*    system,
                              int        numberOfDimensions,
                              int        numberOfParticles,
-                             int        numberOfHidden) :
+                             int        numberOfHidden,
+                             bool       gaussianInitialization) :
+
     InitialState(system) {
     assert(numberOfDimensions > 0 && numberOfParticles > 0);
     m_numberOfDimensions = numberOfDimensions;
     m_numberOfParticles  = numberOfParticles;
     m_numberOfInputs     = numberOfParticles * numberOfDimensions;
     m_numberOfHidden     = numberOfHidden;
+
 
     /* The Initial State class is in charge of everything to do with the
      * initialization of the system; this includes determining the number of
@@ -35,24 +38,19 @@ RandomUniform::RandomUniform(System*    system,
     m_system->setNumberOfDimensions(numberOfDimensions);
     m_system->setNumberOfParticles(numberOfParticles);
     m_system->setNumberOfHidden(numberOfHidden);
-    setupInitialState();
+    setupInitialState(gaussianInitialization);
 }
 
-void RandomUniform::setupInitialState() {
+void RandomUniform::setupInitialState(bool gaussianInitialization) {
 
   // Set up the uniform distribution for x \in [[0, 1]
   std::uniform_real_distribution<double> Uniform(-0.5,0.5);
   std::normal_distribution<double> Normal(0.0,1.0);
 
-
   double sigma_initRBM = 0.001;
-  if (m_system->getGaussianInitialization()){
-    std::normal_distribution<double> distribution_initRBM(0, sigma_initRBM);
-  }
+  std::normal_distribution<double> distribution_initRBM(0, sigma_initRBM);
 
-  else{
-    std::uniform_real_distribution<double> distribution_initRBM(0, 0.5);
-  }
+  std::uniform_real_distribution<double> Uniform_initRBM(0, 0.5);
 
 
   vec positions(m_numberOfInputs);
@@ -64,15 +62,30 @@ void RandomUniform::setupInitialState() {
 
       positions(i) = Uniform(m_randomEngine);
 
-      biasA(i)=distribution_initRBM(m_randomEngine);
+      if (gaussianInitialization){
+        biasA(i) =distribution_initRBM(m_randomEngine);
+      }
+      else{
+        biasA(i) = Uniform_initRBM(m_randomEngine);
+      }
 
       for (int j = 0; j < m_numberOfHidden; j++){
-          weights(i,j)= distribution_initRBM(m_randomEngine);
+        if (gaussianInitialization){
+          weights(i,j) = distribution_initRBM(m_randomEngine);
+        }
+        else{
+          weights(i,j) = Uniform_initRBM(m_randomEngine);
+        }
       }
     }
 
     for (int i = 0; i < m_numberOfHidden; i++){
-      biasB(i) = distribution_initRBM(m_randomEngine);
+      if (gaussianInitialization){
+        biasB(i) = distribution_initRBM(m_randomEngine);
+      }
+      else{
+        biasB(i) = Uniform_initRBM(m_randomEngine);
+      }
     }
 
     m_system->getNetwork()->setPositions(positions);

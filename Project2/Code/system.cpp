@@ -354,10 +354,7 @@ void System::setNumberofBins(int numberofBins) {
     m_numberofBins = numberofBins;
 }
 
-bool System::setGaussianInitialization(bool gaussianInitialization){
-  m_gaussianInitialization = gaussianInitialization;
-  return m_gaussianInitialization;
-}
+
 
 bool System::setRepulsivePotential(bool statement){
   m_statement = statement;
