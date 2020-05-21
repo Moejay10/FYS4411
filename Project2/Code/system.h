@@ -13,6 +13,7 @@ public:
     void Gibbs                      ();
     bool metropolisStep             ();
     bool setRepulsivePotential      (bool);
+    bool setGaussianInitialization  (bool);
     bool setImportanceSampling      (bool);
     bool setGibbsSampling           (bool);
     bool setOptimizer               (bool);
@@ -59,6 +60,7 @@ public:
     double getBinStartpoint()           { return m_binStartpoint; }
     double getBinEndpoint()             { return m_binEndpoint; }
     bool   getRepulsivePotential()      { return m_statement;}
+    bool   getGaussianInitialization()  { return m_gaussianInitialization;}
     bool   getImportanceSampling()      { return m_importance_sampling;}
     bool   getGibbsSampling()           { return m_gibbs_sampling;}
     bool   getOneBodyDensity()          { return m_oneBodyDensity;}
@@ -71,6 +73,7 @@ public:
 
 private:
     bool                            m_statement = false;
+    bool                            m_gaussianInitialization = false;
     bool                            m_importance_sampling = false;
     bool                            m_gibbs_sampling = false;
     bool                            m_oneBodyDensity = false;

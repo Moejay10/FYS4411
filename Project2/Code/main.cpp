@@ -98,21 +98,35 @@ int main() {
 
 
   // Chosen parameters
-  int OptCycles           = 500;
-  int MCcycles            = pow(2, 20);
+
+  // Optimizer parameters
+  double eta              = 0.01;         // Learning rate
+  int numberOfHidden      = 2;            // Number of hidden units
+
+
+  // Initialisation parameters
   int numberOfParticles   = 1;
   int numberOfDimensions  = 1;
   int numberOfInputs      = numberOfParticles*numberOfDimensions;  // Number of visible units
-  int numberOfHidden      = 2;            // Number of hidden units
   double sigma            = 1.0;          // Normal distribution visibles
   double gibbs            = 1.0;          // Gibbs parameter to change the wavefunction
-  double eta              = 0.01;         // Learning rate
-  double omega            = 1.0;          // Oscillator frequency.
+  bool gaussianInitialization = true; // Weights & biases (a,b,w) initialized uniformly or gaussian
+
+
+  // Sampler parameters
+  int OptCycles           = 500;          // Number of optimization iterations
+  int MCcycles            = pow(2, 20);   // Number of samples in each iteration
   double stepLength       = 0.45;         // Metropolis step length.
   double timeStep         = 0.05;         // Timestep to be used in Metropolis-Hastings
   double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.
   double equilibration    = 0.1;          // Amount of the total steps used
   // for equilibration.
+
+  // Hamiltonian parameters
+  double omega            = 1.0;          // Oscillator frequency.
+  bool includeInteraction = false;      // Include interaction or not
+
+
 
   // ASGD parameters. lr: gamma_i=a/(A+t_i) where t[i]=max(0, t[i-1]+f(-grad[i]*grad[i-1]))
   double a                = 0.01;         // must be >0. Proportional to the lr
@@ -157,7 +171,10 @@ int main() {
     system->setStepLength               (stepLength);
     system->setEquilibrationFraction    (equilibration);
 
-    //system->setRepulsivePotential       (true);
+    system->setGaussianInitialization   (gaussianInitialization);
+
+
+    //system->setRepulsivePotential       (includeInteraction);
     system->setPrintOutToTerminal       (true);
     system->runOptimizer                (ofile, OptCycles, MCcycles);
 
@@ -206,7 +223,9 @@ int main() {
     system->setEquilibrationFraction    (equilibration);
     system->setImportanceSampling       (true);
 
-    //system->setRepulsivePotential       (true);
+    system->setGaussianInitialization   (gaussianInitialization);
+
+    //system->setRepulsivePotential       (includeInteraction);
     system->setPrintOutToTerminal       (true);
     system->runOptimizer                (ofile, OptCycles, MCcycles);
 
@@ -256,8 +275,10 @@ int main() {
     system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
     system->setGibbsSampling            (true);
     system->setEquilibrationFraction    (equilibration);
+    
+    system->setGaussianInitialization   (gaussianInitialization);
 
-    //system->setRepulsivePotential       (true);
+    //system->setRepulsivePotential       (includeInteraction);
     system->setPrintOutToTerminal       (true);
     system->runOptimizer                (ofile, OptCycles, MCcycles);
 
