@@ -116,7 +116,7 @@ int main() {
   // Sampler parameters
   int OptCycles           = 500;          // Number of optimization iterations
   int MCcycles            = pow(2, 20);   // Number of samples in each iteration
-  double stepLength       = 0.45;         // Metropolis step length.
+  double stepLength       = 1.0;         // Metropolis step length.
   double timeStep         = 0.05;         // Timestep to be used in Metropolis-Hastings
   double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.
   double equilibration    = 0.1;          // Amount of the total steps used
@@ -125,19 +125,6 @@ int main() {
   // Hamiltonian parameters
   double omega            = 1.0;          // Oscillator frequency.
   bool includeInteraction = false;      // Include interaction or not
-
-
-
-  // ASGD parameters. lr: gamma_i=a/(A+t_i) where t[i]=max(0, t[i-1]+f(-grad[i]*grad[i-1]))
-  double a                = 0.01;         // must be >0. Proportional to the lr
-  double A                = 20.0;         // must be >= 1. Inverse prop to the lr. (a/A) defines the max lr.
-  // ASGD optional: parameters to the function f
-  double asgdOmega        = 1.0;          // must be >0. As omega->0, f-> step function.
-  double fmax             = 2.0;          // must be >0
-  double fmin             = -0.5;         // must be <0
-  // ASGD optional: initial conditions
-  double t0               = A;            // Suggested choices are t0=t1=A=20 (default)
-  double t1               = A;            // or t0=t1=0
 
 
   cout << "\n" << "Write here " << endl;
@@ -164,14 +151,14 @@ int main() {
 
     //Initialise the system.
     System* system = new System();
-    system->setNetwork                  (new NeuralNetwork(system, eta, a, A, asgdOmega, fmax, fmin, t0, t1, numberOfInputs, numberOfHidden));
+    system->setNetwork                  (new NeuralNetwork(system, eta, numberOfInputs, numberOfHidden));
     system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden, gaussianInitialization));
     system->setHamiltonian              (new HarmonicOscillator(system, omega));
     system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
     system->setStepLength               (stepLength);
     system->setEquilibrationFraction    (equilibration);
 
-    //system->setRepulsivePotential       (includeInteraction);
+    system->setRepulsivePotential       (includeInteraction);
     system->setPrintOutToTerminal       (true);
     system->runOptimizer                (ofile, OptCycles, MCcycles);
 
@@ -211,7 +198,7 @@ int main() {
 
     //Initialise the system.
     System* system = new System();
-    system->setNetwork                  (new NeuralNetwork(system, eta, a, A, asgdOmega, fmax, fmin, t0, t1, numberOfInputs, numberOfHidden));
+    system->setNetwork                  (new NeuralNetwork(system, eta, numberOfInputs, numberOfHidden));
     system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden, gaussianInitialization));
     system->setHamiltonian              (new HarmonicOscillator(system, omega));
     system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
@@ -220,7 +207,7 @@ int main() {
     system->setEquilibrationFraction    (equilibration);
     system->setImportanceSampling       (true);
 
-    //system->setRepulsivePotential       (includeInteraction);
+    system->setRepulsivePotential       (includeInteraction);
     system->setPrintOutToTerminal       (true);
     system->runOptimizer                (ofile, OptCycles, MCcycles);
 
@@ -264,14 +251,14 @@ int main() {
 
     //Initialise the system.
     System* system = new System();
-    system->setNetwork                  (new NeuralNetwork(system, eta, a, A, asgdOmega, fmax, fmin, t0, t1, numberOfInputs, numberOfHidden));
+    system->setNetwork                  (new NeuralNetwork(system, eta, numberOfInputs, numberOfHidden));
     system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden, gaussianInitialization));
     system->setHamiltonian              (new HarmonicOscillator(system, omega));
     system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
     system->setGibbsSampling            (true);
     system->setEquilibrationFraction    (equilibration);
 
-    //system->setRepulsivePotential       (includeInteraction);
+    system->setRepulsivePotential       (includeInteraction);
     system->setPrintOutToTerminal       (true);
     system->runOptimizer                (ofile, OptCycles, MCcycles);
 

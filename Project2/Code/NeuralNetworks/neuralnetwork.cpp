@@ -7,24 +7,10 @@
 
 using namespace arma;
 
-NeuralNetwork::NeuralNetwork(System* system, double eta, double a, double A, double asgdOmega, double fmax, double fmin,
-           double t0, double t1, int numberOfInputs, int numberOfHidden) :
+NeuralNetwork::NeuralNetwork(System* system, double eta, int numberOfInputs, int numberOfHidden) :
           Network(system){
           assert(eta > 0);
-          assert(a > 0);
-          assert(A >= 0);
-          assert(asgdOmega > 0);
-          assert(fmax > 0);
-          assert(fmin < 0);
-
           m_eta = eta;
-          m_a = a;
-          m_A = A;
-          m_asgdOmega = asgdOmega;
-          m_fmax = fmax;
-          m_fmin = fmin;
-          m_t = t1;
-          m_tprev = t0;
 
           // Setting to 0 so that the first update of t will be t=tprev+f=tprev.
           m_gradPrevBiasA.zeros(numberOfInputs);
