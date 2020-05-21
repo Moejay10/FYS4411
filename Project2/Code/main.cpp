@@ -112,10 +112,10 @@ int main(int argc, char **argv) {
   MPI_Bcast(&Task, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
   // Chosen parameters
-  int OptCycles           = 1000;
-  int MCcycles            = pow(2, 20);
-  int numberOfParticles   = 2;
-  int numberOfDimensions  = 2;
+  int OptCycles           = 200;
+  int MCcycles            = pow(2, 17);
+  int numberOfParticles   = 1;
+  int numberOfDimensions  = 1;
   int numberOfInputs      = numberOfParticles*numberOfDimensions;  // Number of visible units
   int numberOfHidden      = 2;            // Number of hidden units
   double sigma            = 1.0;          // Normal distribution visibles
@@ -144,14 +144,14 @@ int main(int argc, char **argv) {
 
 
   vec etas;
-  etas.zeros(6);
-  etas(0) = 0.0001; etas(1) = 0.0005; etas(2) = 0.001; etas(3) = 0.005;
-  etas(4) = 0.01; etas(5) = 0.05;
+  etas.zeros(4);
+  etas(0) = 0.001; etas(1) = 0.005;
+  etas(2) = 0.01; etas(3) = 0.05;
   double eta;
   int gamma;
   //Benchmark task a.
-  //if (Task == 1){
-  for (int i = 0; i < 6; i++){
+  if (Task == 1){
+  for (int i = 2; i < 3; i++){
       eta = etas(i);
       gamma = log10(eta);
 
@@ -159,7 +159,7 @@ int main(int argc, char **argv) {
           // Write to file
       if (myRank==0){
         //file = "Python/Results/Statistical_Analysis/BF_Blocking_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
-        file = "Python/Results/Statistical_Analysis/Interaction_BF_Blocking_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+        file = "Python/Results/Statistical_Analysis/Interaction_BF_Blocking_eta_10^" + to_string(i) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
         ofile.open(file);
         ofile << setiosflags(ios::showpoint | ios::uppercase);
         ofile << setw(15) << setprecision(8) << "Iteration"; // OptCycles
@@ -175,7 +175,7 @@ int main(int argc, char **argv) {
       //system->setOptimizer                (true); //adaptive stochastic GD
       system->setPrintOutToTerminal       (true);
       system->setEquilibrationFraction    (equilibration);
-      system->setRepulsivePotential       (true);
+      //system->setRepulsivePotential       (true);
       system->runOptimizer                (ofile, OptCycles, MCcycles);
       ofile.close();
 
@@ -197,10 +197,12 @@ int main(int argc, char **argv) {
 
         ofile.close();
       }
-  //}
-
-  //if (Task == 2){
-
+  }
+  }
+  if (Task == 2){
+  for (int i = 0; i < 4; i++){
+      eta = etas(i);
+      gamma = log10(eta);
     //cout << "-------------- \n" << "Importance Sampling \n" << "-------------- \n" << endl;
     //file = "Python/Results/Statistical_Analysis/IS_Blocking_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
     file = "Python/Results/Statistical_Analysis/Interaction_IS_Blocking_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
@@ -211,7 +213,7 @@ int main(int argc, char **argv) {
       ofile << setw(15) << setprecision(8) << "Energy" << endl; // Mean energy
     }
     //Initialise the system.
-    system = new System();
+    System* system = new System();
     system->setNetwork                  (new NeuralNetwork(system, eta, a, A, asgdOmega, fmax, fmin, t0, t1, numberOfInputs, numberOfHidden));
     system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
     system->setHamiltonian              (new HarmonicOscillator(system, omega));
@@ -243,12 +245,14 @@ int main(int argc, char **argv) {
 
       ofile.close();
     }
+  }
+  }
 
-  //}
 
-
-  //if (Task == 3){
-
+  if (Task == 3){
+  for (int i = 0; i < 1; i++){
+      eta = etas(i);
+      gamma = log10(eta);
     // Analytical Run
     //cout << "-------------- \n" << "Gibbs sampling \n" << "-------------- \n" << endl;
     //file = "Python/Results/Statistical_Analysis/Gibbs_Blocking_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
@@ -263,7 +267,7 @@ int main(int argc, char **argv) {
     gibbs = 2;
 
     //Initialise the system.
-    system = new System();
+    System* system = new System();
     system->setNetwork                  (new NeuralNetwork(system, eta, a, A, asgdOmega, fmax, fmin, t0, t1, numberOfInputs, numberOfHidden));
     system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden));
     system->setHamiltonian              (new HarmonicOscillator(system, omega));
@@ -294,8 +298,9 @@ int main(int argc, char **argv) {
 
       ofile.close();
     }
-  //}
   }
+  }
+
 
   MPI_Finalize();
 

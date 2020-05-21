@@ -42,16 +42,23 @@ void Sampler::initializeVariables() {
   int nx = m_system->getNumberOfInputs();
   int nh = m_system->getNumberOfHidden();
 
-  m_aDelta.zeros(nx);
-  m_EaDelta.zeros(nx);
+  m_globalaDelta.zeros(nx);
+  m_globalEaDelta.zeros(nx);
+
+  m_localaDelta.zeros(nx);
+  m_localEaDelta.zeros(nx);
   m_agrad.zeros(nx);
 
-  m_bDelta.zeros(nh);
-  m_EbDelta.zeros(nh);
+  m_globalbDelta.zeros(nh);
+  m_globalEbDelta.zeros(nh);
+  m_localbDelta.zeros(nh);
+  m_localEbDelta.zeros(nh);
   m_bgrad.zeros(nh);
 
-  m_wDelta.zeros(nx*nh);
-  m_EwDelta.zeros(nx*nh);
+  m_localwDelta.zeros(nx*nh);
+  m_localEwDelta.zeros(nx*nh);
+  m_globalwDelta.zeros(nx*nh);
+  m_globalEwDelta.zeros(nx*nh);
   m_wgrad.zeros(nx*nh);
 
   m_localcumulativeEnergy = 0;
@@ -85,13 +92,13 @@ void Sampler::sample() {
     m_localcumulativeEnergy  += localEnergy;
     m_localcumulativeEnergy2  += localEnergy*localEnergy;
 
-    m_aDelta += temp_aDelta;
-    m_bDelta += temp_bDelta;
-    m_wDelta += temp_wDelta;
+    m_localaDelta += temp_aDelta;
+    m_localbDelta += temp_bDelta;
+    m_localwDelta += temp_wDelta;
 
-    m_EaDelta += temp_aDelta*localEnergy;
-    m_EbDelta += temp_bDelta*localEnergy;
-    m_EwDelta += temp_wDelta*localEnergy;
+    m_localEaDelta += temp_aDelta*localEnergy;
+    m_localEbDelta += temp_bDelta*localEnergy;
+    m_localEwDelta += temp_wDelta*localEnergy;
 
     m_stepNumber++;
 }
@@ -136,7 +143,8 @@ void Sampler::printOutputToTerminal(double total_time) {
 void Sampler::computeAverages(double total_time, int numberOfProcesses, int myRank) {
     /* Compute the averages of the sampled quantities.
      */
-
+    int nx = m_system->getNumberOfInputs();
+    int nh = m_system->getNumberOfHidden();
     int MCcycles=m_system->getNumberOfMetropolisSteps()/numberOfProcesses;
     m_localTime = total_time;
     double norm = 1.0/((double) (MCcycles*numberOfProcesses));     // divided by  number of cycles
@@ -151,47 +159,46 @@ void Sampler::computeAverages(double total_time, int numberOfProcesses, int myRa
         m_variance = (m_globalcumulativeEnergy2 - m_globalcumulativeEnergy*m_globalcumulativeEnergy)*norm;
         m_STD = sqrt(m_variance);
     }
-    /*
-    MPI_Allreduce(m_aDelta.memptr(), m_aDelta.memptr(), nx, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-    MPI_Allreduce(m_bDelta.memptr(), m_bDelta.memptr(), nh, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-    MPI_Allreduce(m_wDelta.memptr(), m_wDelta.memptr(), nx*nh, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 
-    MPI_Allreduce(m_EaDelta.memptr(), m_EaDelta.memptr(), nx, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-    MPI_Allreduce(m_EbDelta.memptr(), m_EbDelta.memptr(), nh, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-    MPI_Allreduce(m_EwDelta.memptr(), m_EwDelta.memptr(), nx*nh, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-    */
+    MPI_Allreduce(m_localaDelta.memptr(), m_globalaDelta.memptr(), nx, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    MPI_Allreduce(m_localbDelta.memptr(), m_globalbDelta.memptr(), nh, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    MPI_Allreduce(m_localwDelta.memptr(), m_globalwDelta.memptr(), nx*nh, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+
+    MPI_Allreduce(m_localEaDelta.memptr(), m_globalEaDelta.memptr(), nx, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    MPI_Allreduce(m_localEbDelta.memptr(), m_globalEbDelta.memptr(), nh, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    MPI_Allreduce(m_localEwDelta.memptr(), m_globalEwDelta.memptr(), nx*nh, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+
     //Fra her //
-    m_localcumulativeEnergy /= MCcycles;
+    m_globalcumulativeEnergy /= MCcycles;
 
     MPI_Reduce(&m_localacceptedSteps, &m_globalacceptedSteps, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     MPI_Reduce(&m_localTime, &m_globalTime, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
-    //if (myRank==0){
-        //cout << "local: " << m_aDelta << ", global: " << m_aDelta << endl;
-        m_aDelta /= MCcycles;
-        m_bDelta /= MCcycles;
-        m_wDelta /= MCcycles;
 
-        m_EaDelta /= MCcycles;
-        m_EbDelta /= MCcycles;
-        m_EwDelta /= MCcycles;
+    m_globalaDelta /= MCcycles;
+    m_globalbDelta /= MCcycles;
+    m_globalwDelta /= MCcycles;
 
-        // Compute gradients
-        m_agrad = 2*(m_EaDelta - m_localcumulativeEnergy*m_aDelta);
-        m_bgrad = 2*(m_EbDelta - m_localcumulativeEnergy*m_bDelta);
-        m_wgrad = 2*(m_EwDelta - m_localcumulativeEnergy*m_wDelta);
+    m_globalEaDelta /= MCcycles;
+    m_globalEbDelta /= MCcycles;
+    m_globalEwDelta /= MCcycles;
 
-        // Optimizer parameters (choose either stochastic gradient descent (SGD) or adaptive SGD (ASGD))
-        if (m_system->getOptimizer()){
-           m_system->getNetwork()->StochasticGradientDescent(m_agrad, m_bgrad, m_wgrad);
-        }
+    // Compute gradients
+    m_agrad = 2*(m_globalEaDelta - m_globalcumulativeEnergy*m_globalaDelta);
+    m_bgrad = 2*(m_globalEbDelta - m_globalcumulativeEnergy*m_globalbDelta);
+    m_wgrad = 2*(m_globalEwDelta - m_globalcumulativeEnergy*m_globalwDelta);
 
-        else{
-           m_system->getNetwork()->GradientDescent(m_agrad, m_bgrad, m_wgrad);
-        }
+    // Optimizer parameters (choose either stochastic gradient descent (SGD) or adaptive SGD (ASGD))
+    if (m_system->getOptimizer()){
+        m_system->getNetwork()->StochasticGradientDescent(m_agrad, m_bgrad, m_wgrad);
+    }
 
-        m_globalacceptedSteps *= norm;
-    //}
+    else{
+        m_system->getNetwork()->GradientDescent(m_agrad, m_bgrad, m_wgrad);
+    }
+
+    m_globalacceptedSteps *= norm;
+
 }
 
 
