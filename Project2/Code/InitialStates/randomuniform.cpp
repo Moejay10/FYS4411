@@ -46,7 +46,7 @@ void RandomUniform::setupInitialState() {
 
 
   double sigma_initRBM = 0.001;
-  if (getGaussianInitialization()){
+  if (m_system->getGaussianInitialization()){
     std::normal_distribution<double> distribution_initRBM(0, sigma_initRBM);
   }
 
