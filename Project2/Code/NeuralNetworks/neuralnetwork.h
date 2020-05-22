@@ -12,6 +12,7 @@ public:
     vec computeBiasBgradients();
     vec computeWeightsgradients();
 
+
     void GradientDescent(vec agrad, vec bgrad, vec wgrad);
     void StochasticGradientDescent(vec agrad, vec bgrad, vec wgrad);
 

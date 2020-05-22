@@ -84,6 +84,8 @@ vec NeuralNetwork::computeWeightsgradients() {
     return wgradient;
 }
 
+
+
 void NeuralNetwork::GradientDescent(vec agrad, vec bgrad, vec wgrad){
   // Compute new parameters
   int nx = m_system->getNumberOfInputs();

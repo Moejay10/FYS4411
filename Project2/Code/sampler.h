@@ -58,13 +58,16 @@ private:
     vec m_bDelta;
     vec m_wDelta;
 
+
     vec m_EaDelta;
     vec m_EbDelta;
     vec m_EwDelta;
 
+
     vec m_agrad;
     vec m_bgrad;
     vec m_wgrad;
+
 
 
     class System* m_system = nullptr;

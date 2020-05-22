@@ -58,6 +58,7 @@ void Sampler::setGradients() {
   m_EwDelta.zeros(nx*nh);
   m_wgrad.zeros(nx*nh);
 
+
 }
 
 
@@ -86,11 +87,10 @@ void Sampler::sample() {
     m_bDelta += temp_bDelta;
     m_wDelta += temp_wDelta;
 
+
     m_EaDelta += temp_aDelta*localEnergy;
     m_EbDelta += temp_bDelta*localEnergy;
     m_EwDelta += temp_wDelta*localEnergy;
-
-
 
     m_stepNumber++;
 }
@@ -149,14 +149,17 @@ void Sampler::computeAverages(double total_time) {
     m_bDelta *= norm;
     m_wDelta *= norm;
 
+
     m_EaDelta *= norm;
     m_EbDelta *= norm;
     m_EwDelta *= norm;
+
 
     // Compute gradients
     m_agrad = 2*(m_EaDelta - m_cumulativeEnergy*m_aDelta);
     m_bgrad = 2*(m_EbDelta - m_cumulativeEnergy*m_bDelta);
     m_wgrad = 2*(m_EwDelta - m_cumulativeEnergy*m_wDelta);
+
 
     // Optimizer parameters (choose either stochastic gradient descent (SGD) or adaptive SGD (ASGD))
     if (m_system->getOptimizer()){

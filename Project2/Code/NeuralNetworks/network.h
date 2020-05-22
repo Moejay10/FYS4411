@@ -11,6 +11,7 @@ public:
     virtual vec computeBiasBgradients() = 0;
     virtual vec computeWeightsgradients() = 0;
 
+
     virtual void GradientDescent(vec agrad, vec bgrad, vec wgrad) = 0;
     virtual void StochasticGradientDescent(vec agrad, vec bgrad, vec wgrad) = 0;
 
