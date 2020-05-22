@@ -98,4 +98,7 @@ private:
     std::vector<int>                m_binCounter;
     std::vector<int>                m_partclesPerBin;
 
+protected:
+  std::mt19937_64 m_randomEngine;
+
 };

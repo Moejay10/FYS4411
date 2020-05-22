@@ -62,8 +62,9 @@ void Sampler::setGradients() {
 }
 
 
-void Sampler::sample() {
+void Sampler::sample(int step) {
     // Making sure the sampling variable(s) are initialized at the first step.
+    m_stepNumber = step - 1;
     if (m_stepNumber == 0) {
         m_cumulativeEnergy = 0;
         m_cumulativeEnergy2 = 0;
@@ -139,21 +140,20 @@ void Sampler::computeAverages(double total_time) {
     int N = m_system->getNumberOfParticles();    // Number of Particles
     double norm = 1.0/((double) (m_MCcycles));     // divided by  number of cycles
 
-    m_energy = m_cumulativeEnergy *norm;
-    m_cumulativeEnergy2 = m_cumulativeEnergy2 *norm;
-    m_cumulativeEnergy = m_cumulativeEnergy *norm;
-    m_variance = (m_cumulativeEnergy2 - m_cumulativeEnergy*m_cumulativeEnergy)*norm;
+    m_energy = m_cumulativeEnergy/m_MCcycles;
+    m_cumulativeEnergy2 = m_cumulativeEnergy2/m_MCcycles;
+    m_cumulativeEnergy = m_cumulativeEnergy/m_MCcycles;
+    m_variance = (m_cumulativeEnergy2 - m_cumulativeEnergy*m_cumulativeEnergy)/m_MCcycles;
     m_STD = sqrt(m_variance);
 
-    m_aDelta *= norm;
-    m_bDelta *= norm;
-    m_wDelta *= norm;
+    m_aDelta /= m_MCcycles;
+    m_bDelta /= m_MCcycles;
+    m_wDelta /= m_MCcycles;
 
 
-    m_EaDelta *= norm;
-    m_EbDelta *= norm;
-    m_EwDelta *= norm;
-
+    m_EaDelta /= m_MCcycles;
+    m_EbDelta /= m_MCcycles;
+    m_EwDelta /= m_MCcycles;
 
     // Compute gradients
     m_agrad = 2*(m_EaDelta - m_cumulativeEnergy*m_aDelta);
@@ -171,14 +171,14 @@ void Sampler::computeAverages(double total_time) {
     }
 
     m_totalTime = total_time;
-    m_acceptedStep *= norm;
+    m_acceptedStep /= m_MCcycles;
 }
 
 
 void Sampler::Blocking(int MCcycles){
 
   double norm = 1.0/((double) (MCcycles));  // divided by  number of cycles
-  double Energy = m_cumulativeEnergy * norm;
+  double Energy = m_cumulativeEnergy/m_MCcycles;
   m_Blocking(MCcycles-1) = Energy;
 }
 

@@ -35,13 +35,13 @@ double NeuralQuantumState::evaluate() {
     vec b = m_system->getNetwork()->getBiasB();
     mat W = m_system->getNetwork()->getWeigths();
 
-    vec Q = b + (1.0/sigma2)*(x.t()*W).t();
+    vec Q = b + (((1.0/sigma2)*x).t()*W).t();
 
     for (int i = 0; i < nx; i++){
        psi1 += (x(i) - a(i)) * (x(i) - a(i));
-
     }
-     psi1 = exp(-psi1/(2*sigma2));
+
+    psi1 = exp(-psi1/(2*sigma2));
 
     for (int j = 0; j < nh; j++) {
         psi2 *= (1 + exp(Q(j)));
@@ -75,7 +75,7 @@ vec NeuralQuantumState::computeFirstDerivative() {
     vec b = m_system->getNetwork()->getBiasB();
     mat W = m_system->getNetwork()->getWeigths();
 
-    vec Q = b + (1.0/sigma2)*(x.t()*W).t();
+    vec Q = b + (((1.0/sigma2)*x).t()*W).t();
 
     for (int i = 0; i < nx; i++){
       temp = 0;
@@ -103,12 +103,12 @@ vec NeuralQuantumState::computeDoubleDerivative() {
     vec b = m_system->getNetwork()->getBiasB();
     mat W = m_system->getNetwork()->getWeigths();
 
-    vec Q = b + (1.0/sigma2)*(x.t()*W).t();
+    vec Q = b + (((1.0/sigma2)*x).t()*W).t();
 
     for (int i = 0; i < nx; i++){
       temp = 0;
       for (int j = 0; j < nh; j++){
-        temp += W(i,j)*W(i,j)*exp(-Q(j))/(1.0+exp(-Q(j)))*(1.0+exp(-Q(j)));
+        temp += W(i,j)*W(i,j)*exp(-Q(j))/((1.0+exp(-Q(j)))*(1.0+exp(-Q(j))));
       }
       psi2(i) = -1.0/(gibbs*sigma2) + temp/(gibbs*sigma2*sigma2);
 

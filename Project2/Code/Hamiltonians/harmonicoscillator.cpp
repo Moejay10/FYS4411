@@ -30,7 +30,7 @@ double HarmonicOscillator::computeLocalEnergy(Network* network) {
     int nx = m_system->getNumberOfInputs();
     double kineticenergy = 0;
     double potentialenergy = 0;
-    double totalenergy;
+    double totalenergy = 0;
 
     vec firstder = m_system->getWaveFunction()->computeFirstDerivative();
     vec secondder = m_system->getWaveFunction()->computeDoubleDerivative();
@@ -43,6 +43,7 @@ double HarmonicOscillator::computeLocalEnergy(Network* network) {
     }
 
     totalenergy = 0.5*(kineticenergy + potentialenergy);
+
 
     // With interaction:
     if (m_system->getRepulsivePotential()) {
@@ -57,21 +58,18 @@ double HarmonicOscillator::Interaction() {
   double interactionTerm = 0;
   double rDistance;
   int nx = m_system->getNumberOfInputs();
-  int P = m_system->getNumberOfParticles();
-  int D = m_system->getNumberOfDimensions();
+  int dim = m_system->getNumberOfDimensions();
 
   vec x = m_system->getNetwork()->getPositions();
 
   // Loop over each particle
-  for (int i = 0; i < P; i++) {
+  for (int r = 0; r < nx - dim; r += dim) {
       // Loop over each particle s that particle r hasn't been paired with
-      for (int j = 0; j < i; j++) {
+      for (int s = (r + dim); s < nx; s += dim) {
           rDistance = 0;
           // Loop over each dimension
-          for (int d = 0; d < D; d++) {
-            int r_i = D*i + d;
-            int r_j = D*j + d;
-            rDistance += (x(r_i) - x(r_j))*(x(r_i) - x(r_j));
+          for (int i = 0; i < dim; i++) {
+            rDistance += (x(r+i) - x(s+i))*(x(r+i) - x(s+i));
           }
           interactionTerm += 1.0/sqrt(rDistance);
       }

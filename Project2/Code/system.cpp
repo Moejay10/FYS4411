@@ -21,9 +21,7 @@ bool System::metropolisStep() {
    * accepted by the Metropolis test (compare the wave function evaluated
    * at this new position with the one at the old position).
    */
-   // Initialize the seed and call the Mersienne algo
-   std::random_device rd;
-   std::mt19937_64 gen(rd());
+
    // Set up the uniform distribution for x \in [[0.0, 1.0]
    std::uniform_real_distribution<double> Uniform(0.0,1.0);
    // Set up the uniform distribution for x \in [[-0.5, 0.5]
@@ -32,8 +30,8 @@ bool System::metropolisStep() {
    // Set up the uniform distribution for x \in [[0, N]
    std::uniform_int_distribution<int> Inputs(0, getNumberOfInputs()-1);
 
-   int updateCoordinate = Inputs(gen);
-   double a = RandomNumberGenerator(gen); // Random number
+   int updateCoordinate = Inputs(m_randomEngine);
+   double a = RandomNumberGenerator(m_randomEngine); // Random number
 
    int Dim = getNumberOfDimensions(); // The Dimensions
 
@@ -51,8 +49,10 @@ bool System::metropolisStep() {
 
    wfnew = getWaveFunction()->evaluate();
 
+   double probRatio = (wfnew*wfnew)/(wfold*wfold);
+
    // Metropolis test
-   if ( Uniform(gen) < wfnew*wfnew/(wfold*wfold) ){
+   if ( (1.0 < probRatio) || (Uniform(m_randomEngine) < probRatio) ){
       return true;
    }
 
@@ -67,17 +67,14 @@ bool System::metropolisStep() {
 bool System::ImportanceMetropolisStep() {
      // Perform the Importance sampling metropolis step.
 
-     // Initialize the seed and call the Mersienne algo
-     std::random_device rd;
-     std::mt19937_64 gen(rd());
      // Set up the uniform distribution for x \in [[0, 1]
      std::normal_distribution<double> Normal(0.0,1.0);
      std::uniform_real_distribution<double> Uniform(0.0,1.0);
      // Set up the uniform distribution for x \in [[0, N]
      std::uniform_int_distribution<int> Inputs(0,getNumberOfInputs()-1);
 
-     int updateCoordinate = Inputs(gen);
-     double a = Normal(gen); // Random number
+     int updateCoordinate = Inputs(m_randomEngine);
+     double a = Normal(m_randomEngine); // Random number
 
      int Dim = getNumberOfDimensions(); // The Dimensions
      int N   = getNumberOfParticles(); // The Particles
@@ -106,8 +103,10 @@ bool System::ImportanceMetropolisStep() {
      greensFunction += 0.5*(qfold(updateCoordinate) + qfnew(updateCoordinate))*(m_diffusionCoefficient*m_timeStep*0.5*(qfold(updateCoordinate) - qfnew(updateCoordinate)) - posnew(updateCoordinate) + posold(updateCoordinate));
      greensFunction = exp(greensFunction);
 
+     double probRatio = (greensFunction*wfnew*wfnew)/(wfold*wfold);
+
      // #Metropolis-Hastings test to see whether we accept the move
-	if ( Uniform(gen) < greensFunction*wfnew*wfnew/(wfold*wfold) ){
+    if ( (1.0 < probRatio) || (Uniform(m_randomEngine) < probRatio) ){
 
     return true;
   }
@@ -125,9 +124,6 @@ void System::Gibbs() {
   // Set new hidden variables given positions, according to the logistic sigmoid function
   // (implemented by comparing the sigmoid probability to a uniform random variable)
 
-  // Initialize the seed and call the Mersienne algo
-  std::random_device rd;
-  std::mt19937_64 gen(rd());
   // Set up the uniform distribution for x \in [[0, 1]
   std::normal_distribution<double> Normal(0.0,1.0);
   std::uniform_real_distribution<double> Uniform(0.0,1.0);
@@ -152,7 +148,7 @@ void System::Gibbs() {
   for (int j = 0; j < nh; j++) {
     z = b(j) + (dot(x, w.col(j)))/(sigma2);
     logisticSigmoid = 1.0/(1+exp(-z));
-    h(j) = Uniform(gen) < logisticSigmoid;
+    h(j) = Uniform(m_randomEngine) < logisticSigmoid;
   }
 
   // Set new positions (visibles) given hidden, according to normal distribution
@@ -161,7 +157,7 @@ void System::Gibbs() {
   for (int i = 0; i < nx; i++) {
       xMean = a(i) + dot(w.row(i), h);
       distributionX = std::normal_distribution<double>(xMean, sigma);
-      posnew(i) = distributionX(gen);
+      posnew(i) = distributionX(m_randomEngine);
   }
 
   getNetwork()->setPositions(posnew);
@@ -174,6 +170,10 @@ void System::runOptimizer(ofstream& ofile, int OptCycles, int numberOfMetropolis
   m_sampler                   = new Sampler(this);
   m_numberOfMetropolisSteps   = numberOfMetropolisSteps;
   m_sampler->setNumberOfMetropolisSteps(numberOfMetropolisSteps);
+
+  // Initialize the seed and call the Mersienne algo
+  std::random_device rd;
+  m_randomEngine = std::mt19937_64(rd());
 
   double start_time, end_time, total_time;
   int eq = getEquilibrationFraction()*numberOfMetropolisSteps;
@@ -204,9 +204,11 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
 
   double counter = 0;
   bool acceptedStep;
+  double effectivesampling = 0;
+  int eq = getEquilibrationFraction()*numberOfMetropolisSteps;
 
 
-  for (int i = 1; i <= numberOfMetropolisSteps; i++) {
+  for (int i = 1; i <= numberOfMetropolisSteps + eq; i++) {
 
     // Choose importance samling, gibbs sampling or brute force
     if (getImportanceSampling()){
@@ -221,14 +223,19 @@ void System::runMetropolisSteps(ofstream& ofile, int numberOfMetropolisSteps) {
         acceptedStep = metropolisStep();
     }
 
-    counter += acceptedStep;
+    if (i > getEquilibrationFraction() * numberOfMetropolisSteps){
+      effectivesampling++;
+      counter += acceptedStep;
 
-    m_sampler->sample();
+      m_sampler->sample(effectivesampling);
 
-    m_sampler->Blocking(i);
+      m_sampler->Blocking(effectivesampling);
+    }
+
+
 
   }
-  m_sampler->setMCcyles(numberOfMetropolisSteps);
+  m_sampler->setMCcyles(effectivesampling);
   m_sampler->setacceptedStep(counter);
 
 }

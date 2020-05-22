@@ -16,7 +16,7 @@ public:
     void setEnergies(int OptCycles);
     void setBlocking(int MCcycles);
     void setGradients();
-    void sample();
+    void sample(int step);
     void printOutputToTerminal(double time);
     void computeAverages(double time);
     void Blocking(int MCcycles);

@@ -23,7 +23,6 @@ vec NeuralNetwork::computeBiasAgradients() {
     double sigma = m_system->getWaveFunction()->getParameters()[0];
     double sigma2 = sigma*sigma;
     double gibbs = m_system->getWaveFunction()->getParameters()[1];
-    double temp1 = 0;
     int nx = m_system->getNumberOfInputs();
 
     vec x = getPositions();
@@ -31,8 +30,7 @@ vec NeuralNetwork::computeBiasAgradients() {
     vec agradient(nx);
 
     for (int m = 0; m < nx; m++){
-      temp1 = (x(m) - a(m))/(gibbs*sigma2);
-      agradient(m) = temp1;
+      agradient(m) = (x(m) - a(m))/(gibbs*sigma2);
     }
 
     return agradient;
@@ -49,7 +47,7 @@ vec NeuralNetwork::computeBiasBgradients() {
     vec b = getBiasB();
     mat W = getWeigths();
 
-    vec Q = b + (1.0/sigma2)*(x.t()*W).t();
+    vec Q = b + (((1.0/sigma2)*x).t()*W).t();
     vec bgradient(nh);
 
     for (int j = 0; j < nh; j++) {
@@ -72,7 +70,7 @@ vec NeuralNetwork::computeWeightsgradients() {
     vec b = getBiasB();
     mat W = getWeigths();
 
-    vec Q = b + (1.0/sigma2)*(x.t()*W).t();
+    vec Q = b + (((1.0/sigma2)*x).t()*W).t();
     vec wgradient(nx*nh);
 
     for (int i = 0; i < nx; i++) {

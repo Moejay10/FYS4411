@@ -100,31 +100,31 @@ int main() {
   // Chosen parameters
 
   // Optimizer parameters
-  double eta              = 0.01;         // Learning rate
+  double eta              = pow(2, -1);   // Learning rate
   int numberOfHidden      = 2;            // Number of hidden units
 
 
   // Initialisation parameters
-  int numberOfParticles   = 2;
-  int numberOfDimensions  = 2;
+  int numberOfParticles   = 1;
+  int numberOfDimensions  = 1;
   int numberOfInputs      = numberOfParticles*numberOfDimensions;  // Number of visible units
   double sigma            = 1.0;          // Normal distribution visibles
   double gibbs            = 1.0;          // Gibbs parameter to change the wavefunction
-  bool gaussianInitialization = true; // Weights & biases (a,b,w) initialized uniformly or gaussian
+  bool gaussianInitialization = false; // Weights & biases (a,b,w) initialized uniformly or gaussian
 
 
   // Sampler parameters
   int OptCycles           = 500;          // Number of optimization iterations
-  int MCcycles            = pow(2, 20);   // Number of samples in each iteration
+  int MCcycles            = pow(2, 17);   // Number of samples in each iteration
   double stepLength       = 1.0;         // Metropolis step length.
-  double timeStep         = 0.05;         // Timestep to be used in Metropolis-Hastings
+  double timeStep         = 0.5;         // Timestep to be used in Metropolis-Hastings
   double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.
   double equilibration    = 0.1;          // Amount of the total steps used
   // for equilibration.
 
   // Hamiltonian parameters
   double omega            = 1.0;          // Oscillator frequency.
-  bool includeInteraction = true;      // Include interaction or not
+  bool includeInteraction = false;      // Include interaction or not
 
 
   cout << "\n" << "Write here " << endl;
@@ -132,9 +132,10 @@ int main() {
   cin >> Task;
 
   // Parameter for files
-  int gamma = log10(eta);
+  int gamma = log2(eta);
+  int mc = log2(MCcycles);
 
-
+  string file;
   //Benchmark task a.
   if (Task == "b"){
 
@@ -142,8 +143,8 @@ int main() {
     cout << "-------------- \n" << "Brute Force \n" << "-------------- \n" << endl;
 
     // Choose which file to write to
-    //string file = "Python/Results/Statistical_Analysis/BF_Blocking_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
-    string file = "Python/Results/Statistical_Analysis/Interaction_BF_Blocking_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+    //string file = "Python/Results/Statistical_Analysis/BF_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
+    //string file = "Python/Results/Statistical_Analysis/I_BF_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
 
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
@@ -166,8 +167,8 @@ int main() {
 
 
     // Write to file
-    //file = "Python/Results/Brute_Force/Energies_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
-    file = "Python/Results/Brute_Force/Interaction_Energies_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+    //file = "Python/Results/Brute_Force/E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
+    //file = "Python/Results/Brute_Force/I_E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
 
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
@@ -189,8 +190,8 @@ int main() {
     cout << "-------------- \n" << "Importance Sampling \n" << "-------------- \n" << endl;
 
     // Choose which file to write to
-    //string file = "Python/Results/Statistical_Analysis/IS_Blocking_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
-    string file = "Python/Results/Statistical_Analysis/Interaction_IS_Blocking_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+    //string file = "Python/Results/Statistical_Analysis/IS_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
+    //string file = "Python/Results/Statistical_Analysis/I_IS_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
 
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
@@ -215,8 +216,8 @@ int main() {
 
 
     // Write to file
-    //file = "Python/Results/Importance_Sampling/Energies_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
-    file = "Python/Results/Importance_Sampling/Interaction_Energies_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+    //file = "Python/Results/Importance_Sampling/E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
+    //file = "Python/Results/Importance_Sampling/I_E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
 
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
@@ -242,8 +243,8 @@ int main() {
     gibbs = 2;
 
     // Choose which file to write to
-    //string file = "Python/Results/Statistical_Analysis/Gibbs_Blocking_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
-    string file = "Python/Results/Statistical_Analysis/Interaction_Gibbs_Blocking_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+    //string file = "Python/Results/Statistical_Analysis/GI_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
+    //string file = "Python/Results/Statistical_Analysis/I_GI_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
 
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
@@ -265,8 +266,8 @@ int main() {
     ofile.close();
 
     // Write to file
-    //file = "Python/Results/Gibbs/Energies_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
-    file = "Python/Results/Gibbs/Interaction_Energies_eta_10^" + to_string(gamma) + "_hidden_" + to_string(numberOfHidden) + "_inputs_" + to_string(numberOfInputs) + ".dat";
+    //file = "Python/Results/Gibbs/E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
+    //file = "Python/Results/Gibbs/I_E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
 
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);

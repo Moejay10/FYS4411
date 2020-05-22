@@ -48,9 +48,9 @@ void RandomUniform::setupInitialState(bool gaussianInitialization) {
   std::normal_distribution<double> Normal(0.0,1.0);
 
   double sigma_initRBM = 0.001;
-  std::normal_distribution<double> distribution_initRBM(0, sigma_initRBM);
+  std::normal_distribution<double> distribution_initRBM(0.0, sigma_initRBM);
 
-  std::uniform_real_distribution<double> Uniform_initRBM(0, 0.5);
+  std::uniform_real_distribution<double> Uniform_initRBM(-1.0, 1.0);
 
 
   vec positions(m_numberOfInputs);
@@ -63,7 +63,7 @@ void RandomUniform::setupInitialState(bool gaussianInitialization) {
       positions(i) = Uniform(m_randomEngine);
 
       if (gaussianInitialization){
-        biasA(i) =distribution_initRBM(m_randomEngine);
+        biasA(i) = distribution_initRBM(m_randomEngine);
       }
       else{
         biasA(i) = Uniform_initRBM(m_randomEngine);
