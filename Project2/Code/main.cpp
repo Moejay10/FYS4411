@@ -105,8 +105,8 @@ int main() {
 
 
   // Initialisation parameters
-  int numberOfParticles   = 1;
-  int numberOfDimensions  = 1;
+  int numberOfParticles   = 2;
+  int numberOfDimensions  = 2;
   int numberOfInputs      = numberOfParticles*numberOfDimensions;  // Number of visible units
   double sigma            = 1.0;          // Normal distribution visibles
   double gibbs            = 1.0;          // Gibbs parameter to change the wavefunction
@@ -124,7 +124,7 @@ int main() {
 
   // Hamiltonian parameters
   double omega            = 1.0;          // Oscillator frequency.
-  bool includeInteraction = false;      // Include interaction or not
+  bool includeInteraction = true;      // Include interaction or not
 
 
   cout << "\n" << "Write here " << endl;
