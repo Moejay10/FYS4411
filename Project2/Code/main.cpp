@@ -143,8 +143,8 @@ int main() {
     cout << "-------------- \n" << "Brute Force \n" << "-------------- \n" << endl;
 
     // Choose which file to write to
-    //string file = "Python/Results/Statistical_Analysis/BF_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
-    //string file = "Python/Results/Statistical_Analysis/I_BF_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
+    //file = "Python/Results/Statistical_Analysis/BF_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
+    //file = "Python/Results/Statistical_Analysis/I_BF_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
 
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
@@ -168,7 +168,7 @@ int main() {
 
     // Write to file
     //file = "Python/Results/Brute_Force/E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
-    //file = "Python/Results/Brute_Force/I_E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
+    file = "Python/Results/Brute_Force/I_E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
 
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
@@ -190,8 +190,8 @@ int main() {
     cout << "-------------- \n" << "Importance Sampling \n" << "-------------- \n" << endl;
 
     // Choose which file to write to
-    //string file = "Python/Results/Statistical_Analysis/IS_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
-    //string file = "Python/Results/Statistical_Analysis/I_IS_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
+    //file = "Python/Results/Statistical_Analysis/IS_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
+    //file = "Python/Results/Statistical_Analysis/I_IS_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
 
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
@@ -217,7 +217,7 @@ int main() {
 
     // Write to file
     //file = "Python/Results/Importance_Sampling/E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
-    //file = "Python/Results/Importance_Sampling/I_E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
+    file = "Python/Results/Importance_Sampling/I_E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
 
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
@@ -243,8 +243,8 @@ int main() {
     gibbs = 2;
 
     // Choose which file to write to
-    //string file = "Python/Results/Statistical_Analysis/GI_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
-    //string file = "Python/Results/Statistical_Analysis/I_GI_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
+    //file = "Python/Results/Statistical_Analysis/GI_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
+    //file = "Python/Results/Statistical_Analysis/I_GI_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
 
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
@@ -267,7 +267,7 @@ int main() {
 
     // Write to file
     //file = "Python/Results/Gibbs/E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
-    //file = "Python/Results/Gibbs/I_E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
+    file = "Python/Results/Gibbs/I_E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
 
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
