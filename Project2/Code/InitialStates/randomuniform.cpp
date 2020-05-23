@@ -47,7 +47,7 @@ void RandomUniform::setupInitialState(bool gaussianInitialization) {
   std::uniform_real_distribution<double> Uniform(-0.5,0.5);
   std::normal_distribution<double> Normal(0.0,1.0);
 
-  double sigma_initRBM = 0.001;
+  double sigma_initRBM = 0.1;
   std::normal_distribution<double> distribution_initRBM(0.0, sigma_initRBM);
 
   std::uniform_real_distribution<double> Uniform_initRBM(-0.5, 0.5);
