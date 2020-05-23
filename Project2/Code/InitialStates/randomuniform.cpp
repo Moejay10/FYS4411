@@ -50,7 +50,7 @@ void RandomUniform::setupInitialState(bool gaussianInitialization) {
   double sigma_initRBM = 0.001;
   std::normal_distribution<double> distribution_initRBM(0.0, sigma_initRBM);
 
-  std::uniform_real_distribution<double> Uniform_initRBM(-1.0, 1.0);
+  std::uniform_real_distribution<double> Uniform_initRBM(-0.5, 0.5);
 
 
   vec positions(m_numberOfInputs);
