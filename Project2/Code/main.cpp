@@ -105,17 +105,17 @@ int main() {
 
 
   // Initialisation parameters
-  int numberOfParticles   = 2;
-  int numberOfDimensions  = 2;
+  int numberOfParticles   = 1;
+  int numberOfDimensions  = 1;
   int numberOfInputs      = numberOfParticles*numberOfDimensions;  // Number of visible units
-  double sigma            = 1.0;          // Normal distribution visibles
+  float sigma            = 1.25;          // Normal distribution visibles
   double gibbs            = 1.0;          // Gibbs parameter to change the wavefunction
   bool gaussianInitialization = false; // Weights & biases (a,b,w) initialized uniformly or gaussian
 
 
   // Sampler parameters
   int OptCycles           = 500;          // Number of optimization iterations
-  int MCcycles            = pow(2, 17);   // Number of samples in each iteration
+  int MCcycles            = pow(2, 20);   // Number of samples in each iteration
   double stepLength       = 1.0;         // Metropolis step length.
   double timeStep         = 0.5;         // Timestep to be used in Metropolis-Hastings
   double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.
@@ -266,8 +266,9 @@ int main() {
     ofile.close();
 
     // Write to file
-    //file = "Python/Results/Gibbs/E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
-    file = "Python/Results/Gibbs/I_E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
+    file = "Python/Results/Gibbs/E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + "sigma_" + to_string(sigma) + ".dat";
+
+    //file = "Python/Results/Gibbs/I_E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + "sigma_" + to_string(sigma) + ".dat";
 
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
