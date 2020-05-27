@@ -14,7 +14,7 @@ gas for different numbers of particles with a specific trial wave function.
 
 # Project 2
 
-## The restricted Boltzmannn machine applied to the quantum many body problem
+## Restricted Boltzmannn Machine
 The aim of this project is to use the restricted Boltzmann machine
 (RBM) on a system of two interacting electrons
 (or bosons) confined to move in a harmonic oscillator trap and evaluate the ground state energy using VMC.
