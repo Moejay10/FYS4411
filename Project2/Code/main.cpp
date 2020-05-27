@@ -143,7 +143,7 @@ int main() {
 
   if (sampler == 1){
 
-    cout << "-------------- \n" << "Brute Force \n" << "-------------- \n" << endl;
+    cout << "-------------- \n" << "Brute force sampling \n" << "-------------- \n" << endl;
 
     // Choose which file to write to, either non-interaction or interaction
     //file = "Python/Results/Statistical_Analysis/BF_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
@@ -190,7 +190,7 @@ int main() {
 
   if (sampler == 2){
 
-    cout << "-------------- \n" << "Importance Sampling \n" << "-------------- \n" << endl;
+    cout << "-------------- \n" << "Importance sampling \n" << "-------------- \n" << endl;
 
     // Choose which file to write to, either non-interaction or interaction
     //file = "Python/Results/Statistical_Analysis/IS_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
