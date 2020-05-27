@@ -6,7 +6,6 @@ include_directories(
     .
     Hamiltonians
     InitialStates
-    Math
     WaveFunctions
     NeuralNetworks
 )
@@ -16,7 +15,6 @@ file(
     GLOB SOURCES "*.cpp"
     GLOB SOURCES "Hamiltonians/*.cpp"
     GLOB SOURCES "InitialStates/*.cpp"
-    GLOB SOURCES "Math/*.cpp"
     GLOB SOURCES "WaveFunctions/*.cpp"
     GLOB SOURCES "NeuralNetworks/*.cpp"
 
