@@ -96,8 +96,8 @@ using namespace std;
 int main() {
 
   cout << "\n" << "Which sampling algorithm do you want to run?: " << endl;
-  cout << "\n" << "Brute Force: " <<  "Write 1 " << endl;
-  cout << "\n" << "Importance Sampling: " <<  "Write 2 " << endl;
+  cout << "\n" << "Brute force sampling: " <<  "Write 1 " << endl;
+  cout << "\n" << "Importance sampling: " <<  "Write 2 " << endl;
   cout << "\n" << "Gibbs sampling: " <<  "Write 3 " << endl;
 
 
