@@ -10,7 +10,6 @@ This is to give an overview of the repository inside Code without going in-depth
   - InitialStates
     - randomuniform.cpp (where initial state is given)
     - ... classes of initialstate
-  - Math (directory with classes of random and initialisers)
   - Neural Networks
     - neuralnetwork.cpp (where one computes gradients of the network and utilize stochastic gradient descent)
   - WaveFunctions
@@ -28,8 +27,6 @@ This is to give an overview of the repository inside Code without going in-depth
   - compile_project (see how to compile project below)
   - main.cpp (main program, more details below)
   - Makefile
-  - particle.cpp (class of particle)
-  - particle.h (... and its header file)
   - README.md (this. du-uh)
   - sampler.cpp (where all and everything is sampled)
   - sampler.h (aand its headerfile)
