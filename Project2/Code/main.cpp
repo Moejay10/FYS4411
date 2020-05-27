@@ -32,28 +32,39 @@ using namespace std;
 // ############################### Description: ################################
 // #############################################################################
 // This is the main program where one chooses the constants, initialise the
-// system, and eventually adjust the variational parameter alpha as well.
-// This file is heavily dependent on what every task in the project description
-// explicitly asks for, however, it is quite easy to add a more general program
+// system, and eventually adjust the variational parameters as well.
+// This file is heavily dependent on what kind of sampler algorithm you want to execute,
+// however, it is quite easy to add a more general program
 // for a normal Monte Carlo run with your chosen parameters.
 //
 // #############################################################################
 // ########################## Optional parameters: #############################
 // #############################################################################
-//    double omega            = 1.0;          // Oscillator frequency.
-//    double alpha            = 0.5;          // Variational parameter.
-//    double beta             = 1.0;          // Variational parameter. Elliptical case
-//    double beta             = 2.82843;      // Variational parameter. Ideal case
-//    double gamma            = beta;         // Variational parameter.
-//    double a                = 0.0043;       // Interaction parameter.
-//    double stepLength       = 1.0;          // Metropolis step length.
-//    double timeStep         = 1.0;          // Timestep to be used in Metropolis-Hastings.
-//    double diffusionCoefficient  = 1.0;     // DiffusionCoefficient.
+//    // Optimizer parameters
+//    double eta              = pow(2, -2);   // Learning rate
+//    int numberOfHidden      = 2;            // Number of hidden units
+
+
+//    // Initialisation parameters
+//    int numberOfParticles   = 2;
+//    int numberOfDimensions  = 2;
+//    int numberOfInputs      = numberOfParticles*numberOfDimensions;  // Number of visible units
+//    float sigma            = 0.75;          // Normal distribution visibles
+//    double gibbs            = 1.0;          // Gibbs parameter to change the wavefunction // set gibbs = 2 if setGibbsSampling == true
+//    bool gaussianInitialization = false; // Weights & biases (a,b,w) initialized uniformly or gaussian
+
+
+//    // Sampler parameters
+//    int OptCycles           = 500;          // Number of optimization iterations
+//    int MCcycles            = pow(2, 20);   // Number of samples in each iteration
+//    double stepLength       = 1.0;         // Metropolis step length.
+//    double timeStep         = 0.5;         // Timestep to be used in Metropolis-Hastings
+//    double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.
 //    double equilibration    = 0.1;          // Amount of the total steps used for equilibration.
-//
-//    int numberofBins = 20;                  // Number of bins for OneBodyDensity
-//    double binStartpoint = 0;               // Where to start to count bins
-//    double binEndpoint = 2;                 // Where to end the counting of bins
+
+//    // Hamiltonian parameters
+//    double omega            = 1.0;          // Oscillator frequency.
+//    bool includeInteraction = true;         // Include interaction or not
 //
 // #############################################################################
 // ############# How to initialise a system and its parameters #################
@@ -63,44 +74,39 @@ using namespace std;
 //     The ones that HAS to be initialised is:
 //
 // #############################################################################
-//     System* system = new System();
-//     system->setHamiltonian              (new HarmonicOscillator(system, omega));
-//     system->setWaveFunction             (new SimpleGaussian(system, alpha, beta, gamma, a));
-//     system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles));
-//     system->setEquilibrationFraction    (equilibration);
-//     system->setStepLength               (stepLength);
-//     system->setDiffusionCoefficient     (diffusionCoefficient);
-//     system->setPrintOutToTerminal       (true); // true or false
-//     system->runMetropolisSteps          (ofile, MCcycles);
+//    System* system = new System();
+//    system->setNetwork                  (new NeuralNetwork(system, eta, numberOfInputs, numberOfHidden));
+//    system->setInitialState             (new RandomUniform(system, numberOfDimensions, numberOfParticles, numberOfHidden, gaussianInitialization));
+//    system->setHamiltonian              (new HarmonicOscillator(system, omega));
+//    system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
+//    system->setStepLength               (stepLength);
+//    system->setEquilibrationFraction    (equilibration);
+//    system->setPrintOutToTerminal       (true); // true or false
+//    system->runOptimizer                (ofile, OptCycles, MCcycles);
 // #############################################################################
 //  - The optional initialiser:
 // #############################################################################
-//     system->setRepulsivePotential       (true); // true or false
-//     system->setNumericalDerivative      (true); // true or false
+//    system->setRepulsivePotential       (true); // true or false
 //    system->setImportanceSampling       (true);  // true or false
-//    system->setTimeStep                 (timeStep(i)); // set if setImportanceSampling == true
-//
-//    system->setOneBodyDensity           (true); // true or false
-//    system->setBinStartpoint            (binStartpoint);
-//    system->setBinEndpoint              (binEndpoint);
-//    system->setNumberofBins             (numberofBins);
-//    system->setBinVector                (binStartpoint, binEndpoint, numberofBins);
+//    system->setGibbsSampling            (true); // true or false
+//    system->setTimeStep                 (timeStep); // set if setImportanceSampling == true
+//    system->setDiffusionCoefficient     (diffusionCoefficient); // set if setImportanceSampling == true
 // #############################################################################
 
 
 int main() {
 
-  cout << "\n" << "Which Project Task do you want to run?: " << endl;
-  cout << "\n" << "Project Task B -  Brute Force: " <<  "Write b " << endl;
-  cout << "\n" << "Project Task C -  Importance Sampling: " <<  "Write c " << endl;
-  cout << "\n" << "Project Task F  - Gibbs sampling: " <<  "Write f " << endl;
+  cout << "\n" << "Which sampling algorithm do you want to run?: " << endl;
+  cout << "\n" << "Brute Force: " <<  "Write 1 " << endl;
+  cout << "\n" << "Importance Sampling: " <<  "Write 2 " << endl;
+  cout << "\n" << "Gibbs sampling: " <<  "Write 3 " << endl;
 
 
 
   // Chosen parameters
 
   // Optimizer parameters
-  double eta              = pow(2, -1);   // Learning rate
+  double eta              = pow(2, -2);   // Learning rate
   int numberOfHidden      = 2;            // Number of hidden units
 
 
@@ -108,9 +114,9 @@ int main() {
   int numberOfParticles   = 1;
   int numberOfDimensions  = 1;
   int numberOfInputs      = numberOfParticles*numberOfDimensions;  // Number of visible units
-  float sigma            = 1.25;          // Normal distribution visibles
+  double sigma            = 1.0;          // Normal distribution visibles
   double gibbs            = 1.0;          // Gibbs parameter to change the wavefunction
-  bool gaussianInitialization = false; // Weights & biases (a,b,w) initialized uniformly or gaussian
+  bool gaussianInitialization = false;    // Weights & biases (a,b,w) initialized uniformly or gaussian
 
 
   // Sampler parameters
@@ -119,30 +125,28 @@ int main() {
   double stepLength       = 1.0;         // Metropolis step length.
   double timeStep         = 0.5;         // Timestep to be used in Metropolis-Hastings
   double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.
-  double equilibration    = 0.1;          // Amount of the total steps used
-  // for equilibration.
+  double equilibration    = 0.1;          // Amount of the total steps used for equilibration.
 
   // Hamiltonian parameters
   double omega            = 1.0;          // Oscillator frequency.
-  bool includeInteraction = true;      // Include interaction or not
+  bool includeInteraction = false;        // Include interaction or not
 
 
   cout << "\n" << "Write here " << endl;
-  string Task;
-  cin >> Task;
+  int sampler;
+  cin >> sampler;
 
-  // Parameter for files
+  // Parameter for writing to files
+  string file;
   int gamma = log2(eta);
   int mc = log2(MCcycles);
 
-  string file;
-  //Benchmark task a.
-  if (Task == "b"){
 
-    // Analytical Run
+  if (sampler == 1){
+
     cout << "-------------- \n" << "Brute Force \n" << "-------------- \n" << endl;
 
-    // Choose which file to write to
+    // Choose which file to write to, either non-interaction or interaction
     //file = "Python/Results/Statistical_Analysis/BF_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
     //file = "Python/Results/Statistical_Analysis/I_BF_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
 
@@ -166,9 +170,9 @@ int main() {
     ofile.close();
 
 
-    // Write to file
+    // Choose which file to write to, either non-interaction or interaction
     //file = "Python/Results/Brute_Force/E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
-    file = "Python/Results/Brute_Force/I_E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
+    //file = "Python/Results/Brute_Force/I_E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
 
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
@@ -185,11 +189,11 @@ int main() {
 
   }
 
-  if (Task == "c"){
+  if (sampler == 2){
 
     cout << "-------------- \n" << "Importance Sampling \n" << "-------------- \n" << endl;
 
-    // Choose which file to write to
+    // Choose which file to write to, either non-interaction or interaction
     //file = "Python/Results/Statistical_Analysis/IS_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
     //file = "Python/Results/Statistical_Analysis/I_IS_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
 
@@ -215,9 +219,9 @@ int main() {
     ofile.close();
 
 
-    // Write to file
+    // Choose which file to write to, either non-interaction or interaction
     //file = "Python/Results/Importance_Sampling/E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
-    file = "Python/Results/Importance_Sampling/I_E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
+    //file = "Python/Results/Importance_Sampling/I_E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
 
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
@@ -236,15 +240,14 @@ int main() {
 
 
 
-  if (Task == "f"){
+  if (sampler == 3){
 
-    // Analytical Run
     cout << "-------------- \n" << "Gibbs sampling \n" << "-------------- \n" << endl;
     gibbs = 2;
 
-    // Choose which file to write to
-    //file = "Python/Results/Statistical_Analysis/GI_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
-    //file = "Python/Results/Statistical_Analysis/I_GI_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + ".dat";
+    // Choose which file to write to, either non-interaction or interaction
+    //file = "Python/Results/Statistical_Analysis/GI_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + "sigma_" + to_string(sigma) + ".dat";
+    //file = "Python/Results/Statistical_Analysis/I_GI_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + "sigma_" + to_string(sigma) + ".dat";
 
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
@@ -265,9 +268,8 @@ int main() {
 
     ofile.close();
 
-    // Write to file
-    file = "Python/Results/Gibbs/E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + "sigma_" + to_string(sigma) + ".dat";
-
+    // Choose which file to write to, either non-interaction or interaction
+    //file = "Python/Results/Gibbs/E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + "sigma_" + to_string(sigma) + ".dat";
     //file = "Python/Results/Gibbs/I_E_eta_2^" + to_string(gamma) + "_nh_" + to_string(numberOfHidden) + "_nx_" + to_string(numberOfInputs) + "MC_2^" + to_string(mc) + "sigma_" + to_string(sigma) + ".dat";
 
     ofile.open(file);
