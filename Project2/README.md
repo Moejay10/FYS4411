@@ -1,4 +1,4 @@
-# Project 2 - Restricted Restricted Boltzmann Machine
+# Project 2 - Restricted Boltzmann Machine
 This class structure is forked and inspired by mortele (spring 2016) (https://github.com/mortele/variational-monte-carlo-fys4411), and is the main repository.
 
 ## Code skeleton
