@@ -22,7 +22,6 @@
 #include "Hamiltonians/harmonicoscillator.h"
 #include "InitialStates/initialstate.h"
 #include "InitialStates/randomuniform.h"
-#include "Math/random.h"
 
 ofstream ofile;
 using namespace arma;
