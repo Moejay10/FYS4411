@@ -2,7 +2,7 @@
 This class structure is forked and inspired by mortele (spring 2016) (https://github.com/mortele/variational-monte-carlo-fys4411), and is the main repository.
 
 ## Code skeleton
-This is to give an overview of the repository without going in-depth of the details, as this project is quite extensive (but that is of course debatable).
+This is to give an overview of the repository inside Code without going in-depth of the details, as this project is quite extensive (but that is of course debatable). 
 
   - Hamiltonians
     - harmonicoscillator.cpp (where energies are calculated)
@@ -11,18 +11,19 @@ This is to give an overview of the repository without going in-depth of the deta
     - randomuniform.cpp (where initial state is given)
     - ... classes of initialstate
   - Math (directory with classes of random and initialisers)
+  - Neural Networks
+    - neuralnetwork.cpp (where one computes gradients of the network and utilize stochastic gradient descent)
   - WaveFunctions
     - simplegaussian.cpp (where one evaluates the wavefunction in different forms)
     - ... classes of wavefunction
   - Python
     - Variational_Monte_Carlo.ipynb (all results used in report is stated here for easy reproducibility)
     - Results (with a lot of .PGFs and .dat files)
-      - task_a
-      - (to)
-      - task_g
+      - Brute_Force 
+      - Importance_Sampling
+      - Gibbs_
       - statistical_tools
-  - report
-    - report.pdf (the report of the project.)
+    - statistical_tools (python programs for statistical analysis) 
   - CMakeLists.txt (set flags and add executable)
   - compile_project (see how to compile project below)
   - main.cpp (main program, more details below)
@@ -80,7 +81,12 @@ and the same set of commands are done for you. Now the project can be run by exe
 ```bash
 ./vmc
 ```
-in the top-directory. This is how the authors of this project prefer to run it.
+in the top-directory. This is how the authors of this project prefer to run it. 
+
+If one meets some problems with compiling problems for gcc running macOS Catalina 10.15.4, add this line to CMakeLists.txt
+```bash
+cmake -DCMAKE_C_COMPILER=gcc-9 -DCMAKE_CXX_COMPILER=g++-9 ../
+```
 
 #### Cleaning the directory
 Run `make clean` in the top-directory to remove the executable `vmc` and the `build`-directory.
