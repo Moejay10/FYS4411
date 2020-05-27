@@ -7,7 +7,6 @@
 #include <omp.h>
 #include "system.h"
 #include "sampler.h"
-#include "particle.h"
 #include "WaveFunctions/wavefunction.h"
 #include "Hamiltonians/hamiltonian.h"
 #include "InitialStates/initialstate.h"

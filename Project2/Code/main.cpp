@@ -121,7 +121,7 @@ int main() {
 
   // Sampler parameters
   int OptCycles           = 500;          // Number of optimization iterations
-  int MCcycles            = pow(2, 20);   // Number of samples in each iteration
+  int MCcycles            = pow(2, 17);   // Number of samples in each iteration
   double stepLength       = 1.0;         // Metropolis step length.
   double timeStep         = 0.5;         // Timestep to be used in Metropolis-Hastings
   double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.
