@@ -2,7 +2,7 @@
 This class structure is forked and inspired by mortele (spring 2016) (https://github.com/mortele/variational-monte-carlo-fys4411), and is the main repository.
 
 ## Code skeleton
-This is to give an overview of the repository inside Code without going in-depth of the details, as this project is quite extensive (but that is of course debatable). 
+This is to give an overview of the repository inside Code without going in-depth of the details, as this project is quite extensive (but that is of course debatable).
 
   - Hamiltonians
     - harmonicoscillator.cpp (where energies are calculated)
@@ -14,16 +14,16 @@ This is to give an overview of the repository inside Code without going in-depth
   - Neural Networks
     - neuralnetwork.cpp (where one computes gradients of the network and utilize stochastic gradient descent)
   - WaveFunctions
-    - simplegaussian.cpp (where one evaluates the wavefunction in different forms)
+    - neuralquantumstate.cpp (where one evaluates the wavefunction in different forms)
     - ... classes of wavefunction
   - Python
-    - Variational_Monte_Carlo.ipynb (all results used in report is stated here for easy reproducibility)
+    - Restricted_Boltzmann_Machine.ipynb (all results used in report is stated here for easy reproducibility)
     - Results (with a lot of .PGFs and .dat files)
-      - Brute_Force 
+      - Brute_Force
       - Importance_Sampling
-      - Gibbs_
-      - statistical_tools
-    - statistical_tools (python programs for statistical analysis) 
+      - Gibbs
+      - Statistical_Analysis
+    - statistical_tools (python programs for statistical analysis)
   - CMakeLists.txt (set flags and add executable)
   - compile_project (see how to compile project below)
   - main.cpp (main program, more details below)
@@ -81,7 +81,7 @@ and the same set of commands are done for you. Now the project can be run by exe
 ```bash
 ./vmc
 ```
-in the top-directory. This is how the authors of this project prefer to run it. 
+in the top-directory. This is how the authors of this project prefer to run it.
 
 If one meets some problems with compiling problems for gcc running macOS Catalina 10.15.4, add this line to CMakeLists.txt
 ```bash
@@ -96,12 +96,8 @@ Compilation of the project using Windows is still an open question to me, but pl
 
 ## Running the program (code in main.cpp)
 
-Runnning the program will firstly make you choose which task you would like to choose, starting from b to f.
+Runnning the program will only make you choose which sampler algorithm you would like to choose, starting from 1 to 3.
 
-Then it will ask how many Monte Carlo cycles. Pay attention to what it asks you about.
+And voilá, the results will be found in the Python/Results folder under their respective task, and the Jupyter Notebook will then automatically renew all the figures. This will however not update the report, and we will leave the latest updated Notebook updated with the report added.
 
-After that, insert the number of particles and dimensions.
-
-And voilá, the results will be found in the Python/Results folder under their respective task, and the Jupyter Notebook will then automatically renew all the figures. This will however not update the report, and we will leave the latest updated Notebook updated with the report added. 
-
-## Last updated 24.03.2020
+## Last updated 27.05.2020
