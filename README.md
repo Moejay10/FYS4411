@@ -10,4 +10,4 @@ The course consists of two main projects, where you will find more information r
 
 # Project 2
 
-## To be decided.
+## Restricted Boltzmann machine on a VMC.
