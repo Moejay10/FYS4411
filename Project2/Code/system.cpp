@@ -11,7 +11,6 @@
 #include "Hamiltonians/hamiltonian.h"
 #include "InitialStates/initialstate.h"
 #include "NeuralNetworks/network.h"
-#include "Math/random.h"
 
 
 bool System::metropolisStep() {
