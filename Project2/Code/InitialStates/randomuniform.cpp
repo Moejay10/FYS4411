@@ -1,7 +1,6 @@
 #include <iostream>
 #include <cassert>
 #include <random>
-#include "Math/random.h"
 #include "randomuniform.h"
 
 #include "../NeuralNetworks/network.h"
