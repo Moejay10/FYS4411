@@ -1,8 +1,8 @@
 # Project 2 - Restricted Boltzmann Machine
 This class structure is forked and inspired by mortele (spring 2016) (https://github.com/mortele/variational-monte-carlo-fys4411), and is the main repository.
 
-## Code skeleton
-This is to give an overview of the repository inside Code without going in-depth of the details, as this project is quite extensive (but that is of course debatable).
+## serial_code skeleton
+This is to give an overview of the repository inside serial_code without going in-depth of the details. Same structure has also been used for parallell_code, however with some adjustment for running on the supercomputer Saga. 
 
   - Hamiltonians
     - harmonicoscillator.cpp (where energies are calculated)
