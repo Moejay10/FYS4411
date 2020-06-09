@@ -4,7 +4,7 @@ int main(int argc, char **argv) {
 
   MPI_Init (&argc, &argv);
   // Optimizer parameters
-  double eta              = pow(2, -1);   // Learning rate
+  double eta              = pow(2, -2);   // Learning rate
   int numberOfHidden      = 2;            // Number of hidden units
 
   // Initialisation parameters
@@ -16,8 +16,8 @@ int main(int argc, char **argv) {
   bool gaussianInitialization = false;    // Weights & biases (a,b,w) initialized uniformly or gaussian
 
   // Sampler parameters
-  int OptCycles           = 10;          // Number of optimization iterations
-  int MCcycles            = pow(2, 19);   // Number of samples in each iteration
+  int OptCycles           = 1000;          // Number of optimization iterations
+  int MCcycles            = pow(2, 24);   // Number of samples in each iteration
   double stepLength       = 1.0;         // Metropolis step length.
   double timeStep         = 0.5;         // Timestep to be used in Metropolis-Hastings
   double diffusionCoefficient  = 0.5;     // DiffusionCoefficient.

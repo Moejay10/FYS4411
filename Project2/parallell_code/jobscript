@@ -16,10 +16,10 @@
 #SBATCH --partition=normal
 #
 # Number of tasks (MPI ranks):
-#SBATCH --ntasks=4
+#SBATCH --ntasks=124
 #
 # Number of nodes
-#SBATCH --nodes=1
+#SBATCH --nodes=8
 #
 #
 # Send mail with info:
@@ -35,4 +35,4 @@ set -o errexit # exit on errors
 #module load CMake/3.16.4-GCCcore-9.3.0 
 module r yes_compiled
 
-mpirun ./vmc 1 
+mpirun ./vmc  

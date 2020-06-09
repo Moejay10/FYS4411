@@ -1,6 +1,7 @@
 #!/bin/bash
 export PMIX_MCA_gds=hash
 # Create build-directory
+module r yes_compiled
 mkdir build
 
 # Move into the build-directory

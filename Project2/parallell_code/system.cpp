@@ -189,7 +189,7 @@ void System::runOptimizer(int OptCycles, int numberOfMetropolisSteps) {
     m_sampler->computeAverages(localTime, m_numberOfProcesses);
     if (m_myRank==0){
       m_sampler->Energies(i, OptCycles);
-      m_sampler->printOutputToTerminal();
+      m_sampler->printOutputToTerminal(m_numberOfProcesses);
     }
 
   }

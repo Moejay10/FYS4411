@@ -17,7 +17,7 @@ public:
     void setBlocking(int MCcycles);
     void setGradients();
     void sample(int step);
-    void printOutputToTerminal();
+    void printOutputToTerminal(int numberOfProcesses);
     void computeAverages(double time, int numberOfProcesses);
     void Blocking(int MCcycles);
     void Energies(int OptCycle, int totOptCycles);

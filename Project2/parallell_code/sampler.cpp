@@ -112,7 +112,7 @@ void Sampler::sample(int step) {
     m_stepNumber++;
 }
 
-void Sampler::printOutputToTerminal() {
+void Sampler::printOutputToTerminal(int numberOfProcesses) {
 
     // Initialisers
     int     nx = m_system->getNumberOfInputs();
@@ -129,8 +129,10 @@ void Sampler::printOutputToTerminal() {
       cout << "  -- System info -- " << endl;
       cout << " Number of particles  : " << np << endl;
       cout << " Number of dimensions : " << nd << endl;
-      cout << " Number of Monte Carlo cycles : 10^" << std::log10(ms) << endl;
-      cout << " Number of equilibration steps  : 10^" << std::log10(std::round(ms*ef)) << endl;
+      cout << " Number of Processes : " << numberOfProcesses << endl;
+      cout << " Number of Monte Carlo cycles per process : 2^" << std::log2(ms) << endl;
+      cout << " Total number of Monte Carlo cycles : 2^" << std::log2(ms*numberOfProcesses) << endl;
+      cout << " Number of equilibration steps per rank : 2^" << std::log2(ms*ef) << endl;
       cout << endl;
       cout << "  -- Wave function parameters -- " << endl;
       cout << " Number of parameters : " << p << endl;
@@ -141,7 +143,8 @@ void Sampler::printOutputToTerminal() {
       cout << "  -- Results -- " << endl;
       cout << " Energy : " << m_globalcumulativeEnergy << endl;
       cout << " Variance : " << m_globalvariance << endl;
-      cout << " Time : " << m_globalTime << endl;
+      cout << " Local time : " << m_localTime << endl; 
+      cout << " Total time : " << m_globalTime << endl;
       if (m_system->getGibbsSampling() == false){
         cout << " # Accepted Steps : " << m_globalacceptedSteps << endl;
       }
@@ -158,7 +161,7 @@ void Sampler::computeAverages(double localTime, int numberOfProcesses) {
     int     nh = m_system->getNumberOfHidden();
 
     double norm = 1.0/((double) (m_MCcycles*numberOfProcesses));     // divided by  number of cycles
-
+    m_localTime = localTime; 
     m_localcumulativeEnergy = m_localcumulativeEnergy*norm;
     m_localcumulativeEnergy2 = m_localcumulativeEnergy2*norm;
     // should implement blocking in c++. These two quantities overestimate themselves.
