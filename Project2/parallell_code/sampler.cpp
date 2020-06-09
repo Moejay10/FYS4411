@@ -9,11 +9,14 @@
 #include "Hamiltonians/hamiltonian.h"
 #include "WaveFunctions/wavefunction.h"
 #include "NeuralNetworks/network.h"
+#include "Block/blocker.h"
 #include <mpi.h>
 
 using std::cout;
 using std::endl;
 using namespace arma;
+
+ofstream ofile;
 
 Sampler::Sampler(System* system) {
     m_system = system;
@@ -211,35 +214,38 @@ void Sampler::Blocking(int MCcycles){
   m_Blocking(MCcycles-1) = Energy;
 }
 
-void Sampler::Energies(int OptCycles){
-  if (OptCycles==0){
-    if (getImportanceSampling()){
-        string file = "Python/Results/Brute_Force/data.dat"
+void Sampler::Energies(int OptCycle, int totOptCycles){
+  if (OptCycle==0){
+    string file;
+    if (m_system->getImportanceSampling()){
+        file = "Python/Results/Importance_Sampling/data.dat";
     }
 
-    else if (getGibbsSampling()){
-        string file = "Python/Results/Gibbs/data.dat"
+    else if (m_system->getGibbsSampling()){
+        file = "Python/Results/Gibbs/data.dat";
     }
     else{
-        string file = "Python/Results/Importance_Sampling/data.dat"
+        file = "Python/Results/Brute_Force/data.dat";
     }
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
-    ofile << setw(15) << setprecision(10) << "Iteration"; // OptCycles
+    ofile << setw(15) << setprecision(10) << "Iteration"; // OptCycle
     ofile << setw(15) << setprecision(10) << "Mean"; // Mean energy
     ofile << setw(15) << setprecision(10) << "mse_mean"; // mse energy
     ofile << setw(15) << setprecision(10) << "stdErr"; // std error
     ofile << setw(15) << setprecision(10) << "mse_stdErr" << endl; // mse std error
   }
   Blocker block(m_Blocking);
-  ofile << setw(15) << setprecision(10) << OptCycles;
+  ofile << setw(15) << setprecision(10) << OptCycle;
   ofile << setw(15) << setprecision(10) << block.mean;
   ofile << setw(15) << setprecision(10) << block.mse_mean;
   ofile << setw(15) << setprecision(10) << block.stdErr;
   ofile << setw(15) << setprecision(10) << block.mse_stdErr << endl; 
 
-  m_Energies(OptCycles) = m_globalcumulativeEnergy;
-
+  m_Energies(OptCycle) = m_globalcumulativeEnergy;
+  if (totOptCycles == (OptCycle+1)){
+     ofile.close();
+  } 
 }
 
 

@@ -161,8 +161,6 @@ void System::Gibbs() {
 
 
 void System::runOptimizer(int OptCycles, int numberOfMetropolisSteps) {
-  int initialized;
-  MPI_Initialized(&initialized);
 
   MPI_Comm_rank (MPI_COMM_WORLD, &m_myRank);
   MPI_Comm_size (MPI_COMM_WORLD, &m_numberOfProcesses);
@@ -190,15 +188,16 @@ void System::runOptimizer(int OptCycles, int numberOfMetropolisSteps) {
 
     m_sampler->computeAverages(localTime, m_numberOfProcesses);
     if (m_myRank==0){
-      m_sampler->Energies(i);
+      m_sampler->Energies(i, OptCycles);
       m_sampler->printOutputToTerminal();
     }
 
   }
-  ofile.close();
+  
   //if (m_myRank==0){
   //  m_sampler->WriteBlockingtoFile(ofile);
   //}
+  
 }
 
 

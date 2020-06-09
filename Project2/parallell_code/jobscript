@@ -23,7 +23,7 @@
 #
 #
 # Send mail with info:
-#SBATCH --mail-type=BEGIN,TIME_LIMIT_10,END
+#Nei -SBATCH --mail-type=BEGIN,TIME_LIMIT_10,END
 
 ## Set up job environment:
 

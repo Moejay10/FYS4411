@@ -2,6 +2,7 @@
 
 int main(int argc, char **argv) {
 
+  MPI_Init (&argc, &argv);
   // Optimizer parameters
   double eta              = pow(2, -1);   // Learning rate
   int numberOfHidden      = 2;            // Number of hidden units
@@ -37,6 +38,7 @@ int main(int argc, char **argv) {
   system->setRepulsivePotential       (includeInteraction);
   system->setPrintOutToTerminal       (true);
   system->runOptimizer                (OptCycles, MCcycles);
+  MPI_Finalize();
 
   return 0;
 }

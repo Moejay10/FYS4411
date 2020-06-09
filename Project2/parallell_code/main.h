@@ -24,7 +24,6 @@
 #include "InitialStates/initialstate.h"
 #include "InitialStates/randomuniform.h"
 
-ofstream ofile;
 using namespace arma;
 using namespace std;
 

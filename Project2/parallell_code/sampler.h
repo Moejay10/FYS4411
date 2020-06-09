@@ -20,7 +20,7 @@ public:
     void printOutputToTerminal();
     void computeAverages(double time, int numberOfProcesses);
     void Blocking(int MCcycles);
-    void Energies(int OptCycles);
+    void Energies(int OptCycle, int totOptCycles);
     void WriteBlockingtoFile(ofstream& ofile);
 
     double getSTD()                   { return m_globalSTD; }
