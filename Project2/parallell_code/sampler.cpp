@@ -232,18 +232,18 @@ void Sampler::Energies(int OptCycle, int totOptCycles){
     }
     ofile.open(file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
-    ofile << setw(15) << setprecision(10) << "Iteration"; // OptCycle
-    ofile << setw(15) << setprecision(10) << "Mean"; // Mean energy
-    ofile << setw(15) << setprecision(10) << "mse_mean"; // mse energy
-    ofile << setw(15) << setprecision(10) << "stdErr"; // std error
-    ofile << setw(15) << setprecision(10) << "mse_stdErr" << endl; // mse std error
+    ofile << setw(15) << setprecision(8) << "Iteration"; // OptCycle
+    ofile << setw(15) << setprecision(8) << "Mean"; // Mean energy
+    ofile << setw(15) << setprecision(8) << "mse_mean"; // mse energy
+    ofile << setw(15) << setprecision(8) << "stdErr"; // std error
+    ofile << setw(15) << setprecision(8) << "mse_stdErr" << endl; // mse std error
   }
   Blocker block(m_Blocking);
-  ofile << setw(15) << setprecision(10) << OptCycle;
-  ofile << setw(15) << setprecision(10) << block.mean;
-  ofile << setw(15) << setprecision(10) << block.mse_mean;
-  ofile << setw(15) << setprecision(10) << block.stdErr;
-  ofile << setw(15) << setprecision(10) << block.mse_stdErr << endl; 
+  ofile << setw(15) << setprecision(8) << OptCycle;
+  ofile << setw(15) << setprecision(8) << block.mean;
+  ofile << setw(15) << setprecision(8) << block.mse_mean;
+  ofile << setw(15) << setprecision(8) << block.stdErr;
+  ofile << setw(15) << setprecision(8) << block.mse_stdErr << endl; 
 
   m_Energies(OptCycle) = m_globalcumulativeEnergy;
   if (totOptCycles == (OptCycle+1)){

@@ -35,10 +35,15 @@ int main(int argc, char **argv) {
   system->setWaveFunction             (new NeuralQuantumState(system, sigma, gibbs));
   system->setStepLength               (stepLength);
   system->setEquilibrationFraction    (equilibration);
+
+  system->setTimeStep		      (timeStep);
+  system->setImportanceSampling       (true);
+
   system->setRepulsivePotential       (includeInteraction);
   system->setPrintOutToTerminal       (true);
   system->runOptimizer                (OptCycles, MCcycles);
-  MPI_Finalize();
 
+
+  MPI_Finalize();
   return 0;
 }
